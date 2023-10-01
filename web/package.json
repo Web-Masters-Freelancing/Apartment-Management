@@ -1,0 +1,35 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "openapi": "rtk-query-codegen-openapi openapi-config.ts"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.11",
+    "@reduxjs/toolkit": "^1.9.6",
+    "@rtk-query/codegen-openapi": "^1.0.0",
+    "next": "latest",
+    "npm-run-all": "^4.1.5",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-hook-form": "^7.46.2",
+    "react-redux": "^8.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "ts-node": "^10.9.1",
+    "typescript": "latest"
+  }
+}
