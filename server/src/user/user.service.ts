@@ -5,6 +5,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { compare } from 'bcrypt';
+import { Prisma } from '@prisma/client';
+
+export type LoginByUsernameAndPassword = Exclude<
+  Prisma.PromiseReturnType<UserService['login']>,
+  null
+>;
 
 @Injectable()
 export class UserService {
@@ -31,6 +37,7 @@ export class UserService {
         select: {
           id: true,
           password: true,
+          username: true,
         },
       });
 

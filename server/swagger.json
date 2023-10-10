@@ -11,6 +11,17 @@
           }
         }
       }
+    },
+    "/api/user/me": {
+      "get": {
+        "operationId": "UserController_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {
