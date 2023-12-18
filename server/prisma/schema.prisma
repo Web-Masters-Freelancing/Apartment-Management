@@ -7,10 +7,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique(map: "username") @db.VarChar(30)
-  password  String   @db.Text
-  token     String?  @db.Text
-  createdAt DateTime @default(now()) @db.Timestamp(0)
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique(map: "email") @db.VarChar(250)
+  password  String     @db.Text
+  contact   String     @db.Text
+  address   String     @db.Text
+  role      Role       @default(TENANT)
+  createdAt DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt DateTime   @default(now()) @db.Timestamp(0)
+  Auth      Auth?
+  Billable  Billable[]
+}
+
+model Auth {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       Int      @unique
+  token        String?  @db.Text
+  lastLoggedIn DateTime @default(now()) @db.Timestamp(0)
+}
+
+model Billable {
+  id       Int            @id @default(autoincrement())
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId   Int
+  room     Room           @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roomId   Int
+  dueDate  DateTime
+  amount   Float
+  status   BillableStatus @default(ACTIVE)
+  Payments Payments[]
+}
+
+model Room {
+  id          Int        @id @default(autoincrement())
+  type        String
+  description String?    @db.Text
+  amount      Float
+  status      RoomStatus @default(NOT_AVAILABLE)
+  Billable    Billable[]
+}
+
+model Payments {
+  id         Int      @id @default(autoincrement())
+  billable   Billable @relation(fields: [billableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  billableId Int
+  paidOn     DateTime
+  amount     Float
+  attachment String   @db.Text
+}
+
+enum Role {
+  ADMIN
+  TENANT
+}
+
+enum RoomStatus {
+  AVAILABLE
+  NOT_AVAILABLE
+}
+
+enum BillableStatus {
+  ACTIVE
+  INACTIVE
 }
