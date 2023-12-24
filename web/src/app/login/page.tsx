@@ -3,7 +3,7 @@
 import { styled } from "@mui/system";
 import { LockOpenOutlined } from "@mui/icons-material";
 import { Form, Formik, FormikHelpers } from "formik";
-import CsInput from "../components/CsInput";
+import CsInput from "../components/Input";
 import { LoginSchema } from "../schemas";
 import { Button } from "@mui/material";
 
