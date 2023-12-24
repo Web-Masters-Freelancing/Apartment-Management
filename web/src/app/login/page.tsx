@@ -3,8 +3,9 @@
 import { styled } from "@mui/system";
 import { LockOpenOutlined } from "@mui/icons-material";
 import { Form, Formik, FormikHelpers } from "formik";
-import { CsInput, CsButton } from "../components";
+import CsInput from "../components/CsInput";
 import { LoginSchema } from "../schemas";
+import { Button } from "@mui/material";
 
 const Container = styled("div")({
 	display: "flex",
@@ -15,20 +16,20 @@ const Container = styled("div")({
 	background: "linear-gradient(to right bottom, #430089, #82ffa1)",
 });
 
-const FormStyle = styled("div")({
+const FormContainer = styled("div")({
 	display: "flex",
 	flexDirection: "column",
 	background: "#ffff",
 	padding: "10px",
 });
 
-const LoginStyle = styled("div")({
+const LoginContainer = styled("div")({
 	textAlign: "center",
 	textTransform: "uppercase",
 	padding: "20px",
 });
 
-type ILoginField = {
+type LoginFormValues = {
 	username: string;
 	password: string;
 };
@@ -37,8 +38,8 @@ type ILoginField = {
  * Handle Submit here
  */
 const onSubmit = async (
-	values: ILoginField,
-	actions: FormikHelpers<ILoginField>
+	values: LoginFormValues,
+	actions: FormikHelpers<LoginFormValues>
 ) => {
 	console.log("values", values);
 };
@@ -47,17 +48,17 @@ const LoginPage = () => {
 	return (
 		<Container>
 			<Formik
-				initialValues={{ username: "", password: "" } as ILoginField}
+				initialValues={{ username: "", password: "" } as LoginFormValues}
 				validationSchema={LoginSchema}
 				onSubmit={onSubmit}
 			>
 				{(props) => (
 					<Form>
-						<FormStyle>
-							<LoginStyle>
+						<FormContainer>
+							<LoginContainer>
 								<LockOpenOutlined />
 								<h2>Login</h2>
-							</LoginStyle>
+							</LoginContainer>
 							<CsInput
 								label="Username"
 								name="username"
@@ -71,8 +72,12 @@ const LoginPage = () => {
 								type="password"
 							/>
 
-							<CsButton name={"Sign In"} />
-						</FormStyle>
+							<div style={{ paddingTop: "6px", width: "100%" }}>
+								<Button style={{ width: "100%" }} variant="contained">
+									Sign In
+								</Button>
+							</div>
+						</FormContainer>
 					</Form>
 				)}
 			</Formik>

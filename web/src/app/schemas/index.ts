@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 /**
- * Login Schema
+ * This field is required.
  */
 export const LoginSchema = yup.object().shape({
 	username: yup.string().required("Required"),

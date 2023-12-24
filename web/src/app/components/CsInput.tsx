@@ -6,14 +6,14 @@ import { useField } from "formik";
  * Custom Input Props
  * Reactive Input built by formik third party library
  */
-type ICsInputProps = {
-	label: string;
-	name: string;
-	type: "text" | "password";
-	placeholder: string;
-	variant: "outlined";
-	margin: "dense";
-	id: string;
+type CustomInputProps = {
+	label?: string;
+	name?: string;
+	type?: "text" | "password";
+	placeholder?: string;
+	variant?: "outlined";
+	margin?: "dense";
+	id?: string;
 };
 
 /**
@@ -30,10 +30,9 @@ const ErrorStyle = styled("div")({
 const CsInput = ({
 	variant = "outlined",
 	margin = "dense",
-	label,
 	...props
-}: Partial<ICsInputProps>) => {
-	const [field, meta] = useField(props as Required<ICsInputProps>);
+}: CustomInputProps) => {
+	const [field, meta] = useField(props as Required<CustomInputProps>);
 
 	return (
 		<>
@@ -42,7 +41,6 @@ const CsInput = ({
 				{...props}
 				variant={variant}
 				margin={margin}
-				label={label}
 				className={meta.touched && meta.error ? "input-error" : ""}
 			/>
 			{meta.touched && meta.error && (
