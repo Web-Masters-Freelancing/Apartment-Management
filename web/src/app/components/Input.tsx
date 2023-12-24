@@ -27,7 +27,7 @@ const ErrorStyle = styled("div")({
 /**
  * Custom Input component
  */
-const CsInput = ({
+const CustomInput = ({
 	variant = "outlined",
 	margin = "dense",
 	...props
@@ -50,4 +50,4 @@ const CsInput = ({
 	);
 };
 
-export default CsInput;
+export default CustomInput;

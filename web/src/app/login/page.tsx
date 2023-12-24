@@ -3,7 +3,7 @@
 import { styled } from "@mui/system";
 import { LockOpenOutlined } from "@mui/icons-material";
 import { Form, Formik, FormikHelpers } from "formik";
-import CsInput from "../components/Input";
+import CustomInput from "../components/Input";
 import { LoginSchema } from "../schemas";
 import { Button } from "@mui/material";
 
@@ -59,13 +59,13 @@ const LoginPage = () => {
 								<LockOpenOutlined />
 								<h2>Login</h2>
 							</LoginContainer>
-							<CsInput
+							<CustomInput
 								label="Username"
 								name="username"
 								id="username"
 								type="text"
 							/>
-							<CsInput
+							<CustomInput
 								label="Password"
 								name="password"
 								id="password"
