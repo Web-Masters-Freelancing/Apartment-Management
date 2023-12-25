@@ -1,20 +1,20 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api": {
-      "get": {
-        "operationId": "AppController_getHello",
+    "/api/login": {
+      "post": {
+        "operationId": "AppController_login",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": ""
           }
         }
       }
     },
-    "/api/user/me": {
+    "/api/protected": {
       "get": {
-        "operationId": "UserController_login",
+        "operationId": "AppController_getHello",
         "parameters": [],
         "responses": {
           "200": {

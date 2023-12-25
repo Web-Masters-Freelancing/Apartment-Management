@@ -1,63 +1,42 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { compare } from 'bcrypt';
-import { Prisma } from '@prisma/client';
-
-export type LoginByUsernameAndPassword = Exclude<
-  Prisma.PromiseReturnType<UserService['login']>,
-  null
->;
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private async checkPassword({
-    plainPassword,
-    hashedPassword,
-  }: {
-    plainPassword: string;
-    hashedPassword: string;
-  }) {
-    return await compare(plainPassword, hashedPassword);
-  }
+  // For temporary testing since seeder is not created yet
+  data = [
+    {
+      email: 'test@gmail.com',
+      password: 'test',
+      name: 'Dexter Louie',
+    },
+    {
+      email: 'test1@gmail.com',
+      password: 'test1',
+      name: 'Alejandro Oletres',
+    },
+  ];
 
-  async login({ username, password }: { username: string; password: string }) {
-    try {
-      if (!password) throw new BadRequestException();
+  async findOne({ email }: { email: string }) {
+    // TODO: Remove this once seeder is merged to master. This is temporary implementation since we do not have seeder yet
+    const user = this.data.find((d) => d.email === email);
 
-      const user = await this.prisma.user.findUnique({
-        where: {
-          username,
-        },
-        select: {
-          id: true,
-          password: true,
-          username: true,
-        },
-      });
+    // TODO: Uncomment this once seeder is merged to master
+    // const user = await this.prisma.user.findUnique({
+    //   where: {
+    //     email,
+    //   },
+    //   select: {
+    //     password: true,
+    //     address: true,
+    //     contact: true,
+    //     email: true,
+    //     name: true,
+    //   },
+    // });
 
-      if (!user) throw new UnauthorizedException();
-
-      const { password: hashedPassword } = user;
-
-      const isValid = await this.checkPassword({
-        plainPassword: password,
-        hashedPassword,
-      });
-
-      if (!isValid) throw new UnauthorizedException();
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _, ...data } = user;
-
-      return data;
-    } catch (e) {
-      throw e;
-    }
+    return user;
   }
 }
