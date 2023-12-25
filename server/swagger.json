@@ -1,7 +1,18 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api": {
+    "/api/login": {
+      "post": {
+        "operationId": "AppController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/protected": {
       "get": {
         "operationId": "AppController_getHello",
         "parameters": [],
