@@ -105,3 +105,6 @@ a {
 .input-error {
 	border-color: #fc8181;
 }
+.active {
+	background-color: #e7e6e3;
+}

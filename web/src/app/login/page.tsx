@@ -3,9 +3,11 @@
 import { styled } from "@mui/system";
 import { LockOpenOutlined } from "@mui/icons-material";
 import { Form, Formik, FormikHelpers } from "formik";
-import CustomInput from "../components/Input";
+import CustomInput from "./../components/Input";
 import { LoginSchema } from "../schemas";
 import { Button } from "@mui/material";
+import Link from "next/link";
+import { EPathName } from "../utils/enums";
 
 const Container = styled("div")({
 	display: "flex",
@@ -74,7 +76,7 @@ const LoginPage = () => {
 
 							<div style={{ paddingTop: "6px", width: "100%" }}>
 								<Button style={{ width: "100%" }} variant="contained">
-									Sign In
+									<Link href={EPathName.DASHBOARD}>Sign In</Link>
 								</Button>
 							</div>
 						</FormContainer>
