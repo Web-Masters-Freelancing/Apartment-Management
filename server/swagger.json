@@ -12,6 +12,26 @@
         }
       }
     },
+    "/api/reset-password/{token}": {
+      "post": {
+        "operationId": "AppController_resetPassword",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/protected": {
       "get": {
         "operationId": "AppController_getHello",

@@ -35,9 +35,11 @@ export const seedRooms = async (props: SeedRoomProps) => {
 
   const roomService = app.get(RoomService);
 
+  console.log(`Starting to seed ${count} rooms...`);
   for (let i = 0; i < count; i++) {
     const room = getFakeRoom();
 
     await roomService.create({ ...room });
   }
+  console.log(`Done seeding ${count} rooms...`);
 };
