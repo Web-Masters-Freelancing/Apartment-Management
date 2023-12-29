@@ -8,20 +8,6 @@ import { signData } from '../lib/token';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // For temporary testing since seeder is not created yet
-  data = [
-    {
-      email: 'test@gmail.com',
-      password: 'test',
-      name: 'Dexter Louie',
-    },
-    {
-      email: 'test1@gmail.com',
-      password: 'test1',
-      name: 'Alejandro Oletres',
-    },
-  ];
-
   async create(payload: CreateUserDto) {
     const { name, email, password, address, contact, role } = payload;
 
@@ -53,22 +39,18 @@ export class UserService {
   }
 
   async findOne({ email }: { email: string }) {
-    // TODO: Remove this once seeder is merged to master. This is temporary implementation since we do not have seeder yet
-    const user = this.data.find((d) => d.email === email);
-
-    // TODO: Uncomment this once seeder is merged to master
-    // const user = await this.prisma.user.findUnique({
-    //   where: {
-    //     email,
-    //   },
-    //   select: {
-    //     password: true,
-    //     address: true,
-    //     contact: true,
-    //     email: true,
-    //     name: true,
-    //   },
-    // });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        password: true,
+        address: true,
+        contact: true,
+        email: true,
+        name: true,
+      },
+    });
 
     return user;
   }

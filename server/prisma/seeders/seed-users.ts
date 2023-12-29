@@ -20,6 +20,7 @@ export const seedUsers = async (props: SeedUsersProps) => {
   const adminPassword = await hashPassword('admin');
 
   // Seed admin account
+  console.log(`Seeding admin user...`);
   const adminToken = await userService.create({
     address: faker.location.city(),
     contact: faker.phone.number(),
@@ -28,6 +29,9 @@ export const seedUsers = async (props: SeedUsersProps) => {
     password: adminPassword,
     role: RoleEnum.ADMIN,
   });
+  console.log(
+    `Done seeding admin user, created admin token: ${adminToken}, reset your admin password here - http://localhost:3000/reset-password/${adminToken}\n\nNow seeding ${count} tenants...`,
+  );
 
   for (let i = 0; i < count; i++) {
     const email = `${userPart.replace(/\+.+/, '')}+${uuidv4()}@gmail.com`;
@@ -44,7 +48,5 @@ export const seedUsers = async (props: SeedUsersProps) => {
     });
   }
 
-  console.log(
-    `Users are successfully created, reset your admin password here: http://localhost:3000/reset-password/${adminToken}`,
-  );
+  console.log(`Successfully seeded ${count} tenants`);
 };

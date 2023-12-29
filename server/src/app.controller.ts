@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
@@ -22,6 +31,14 @@ export class AppController {
         expires: new Date(Date.now() + 1 * 24 * 60 * 1000), // 1Day, if you update this, please match this to token expiry in auth.module
       })
       .send({ status: 'ok' });
+  }
+
+  @Post('reset-password/:token')
+  async resetPassword(
+    @Body() body: { password: string },
+    @Param('token') token: string,
+  ) {
+    await this.authService.resetPassword({ password: body.password, token });
   }
 
   // TODO: Modify this endpoint after merging, this is just to test token functionality

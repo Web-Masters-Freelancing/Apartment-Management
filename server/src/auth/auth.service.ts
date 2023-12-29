@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-// import { compare } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { verifyResetPasswordToken } from '../lib/token';
+import { hashPassword } from '../lib/password';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   async validateUser({ email, password }: { email: string; password: string }) {
@@ -16,24 +20,50 @@ export class AuthService {
 
     if (!user) return null;
 
-    // TODO: Uncomment this once seeder is merged to master. Validate user's credentials
-    // const { password: hashedPassword, ...rest } = user;
+    const { password: hashedPassword, ...rest } = user;
 
-    // TODO: Remove this once seeder is merged to master. const isValid = await compare(password, hashedPassword);
-    const isValid = user.password === password;
+    const isValid = await compare(password, hashedPassword);
 
     if (!isValid) return null;
 
-    // TODO: Uncomment this once seeder is merged to master
-    // return rest;
-
-    // TODO: Remove this once seeder is merged to master
-    return user;
+    return rest;
   }
 
   async login(user: Exclude<User, 'password' | 'createdAt' | 'updatedAt'>) {
     return {
       access_token: this.jwtService.sign(user),
     };
+  }
+
+  async resetPassword({
+    password,
+    token,
+  }: {
+    token: string;
+    password: string;
+  }) {
+    /**
+     * Verified token contains id and email
+     * See user.service.ts file
+     */
+    const verifyToken = verifyResetPasswordToken(token);
+
+    if (!verifyToken) throw new ForbiddenException();
+
+    const { email, id } = verifyToken as unknown as Pick<User, 'email' | 'id'>;
+
+    const hash = await hashPassword(password);
+
+    return await this.prismaService.user.update({
+      where: {
+        id,
+        AND: {
+          email,
+        },
+      },
+      data: {
+        password: hash,
+      },
+    });
   }
 }
