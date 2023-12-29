@@ -1,0 +1,19 @@
+import { User } from './user';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export class Auth {
+  @ApiProperty({ type: Number })
+  id: number;
+
+  @ApiProperty({ type: () => User })
+  user: User;
+
+  @ApiProperty({ type: Number })
+  userId: number;
+
+  @ApiPropertyOptional({ type: String })
+  token?: string;
+
+  @ApiProperty({ type: Date })
+  lastLoggedIn: Date;
+}
