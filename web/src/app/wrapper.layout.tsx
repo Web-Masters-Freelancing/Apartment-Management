@@ -1,33 +1,25 @@
 "use client";
-import styled from "@emotion/styled";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-
-const Wrapper = styled("div")({
-	display: "flex",
-	justifyContent: "start",
-});
-
-const Container = styled("div")({
-	overflow: "hidden",
-	height: "100vh",
-});
-
-const Content = styled("div")({
-	display: "flex",
-	width: "100%",
-	backgroundColor: "ButtonHighlight",
-});
+import { Box } from "@mui/material";
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<Container>
+		<Box sx={{ overflow: "hidden", height: "100vh" }}>
 			<Navbar />
-			<Wrapper>
+			<Box sx={{ display: "flex", justifyContent: "start" }}>
 				<Sidebar />
-				<Content>{children}</Content>
-			</Wrapper>
-		</Container>
+				<Box
+					sx={{
+						display: "flex",
+						width: "100%",
+						backgroundColor: "ButtonHighlight",
+					}}
+				>
+					{children}
+				</Box>
+			</Box>
+		</Box>
 	);
 };
 

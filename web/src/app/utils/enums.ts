@@ -1,4 +1,4 @@
 export enum EPathName {
-	DASHBOARD = "/dashboard",
-	ROOM = "/room",
+	DASHBOARD = "dashboard",
+	ROOM = "room",
 }

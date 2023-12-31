@@ -1,9 +1,10 @@
+import { Typography } from "@mui/material";
 import WrapperLayout from "../wrapper.layout";
 
 const Room = () => {
 	return (
 		<WrapperLayout>
-			<div>Room is works</div>
+			<Typography>Room is works</Typography>
 		</WrapperLayout>
 	);
 };

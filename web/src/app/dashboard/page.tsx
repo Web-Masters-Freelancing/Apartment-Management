@@ -1,9 +1,10 @@
+import { Typography } from "@mui/material";
 import WrapperLayout from "../wrapper.layout";
 
 const DashBoard = () => {
 	return (
 		<WrapperLayout>
-			<div>Dasboard is works</div>
+			<Typography>Dasboard is works</Typography>
 		</WrapperLayout>
 	);
 };

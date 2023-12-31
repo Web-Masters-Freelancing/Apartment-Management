@@ -1,19 +1,14 @@
-import styled from "@emotion/styled";
-
-const Container = styled("div")({
-	width: "100%",
-	backgroundColor: "#000",
-	color: "#fff",
-	padding: "20px",
-	letterSpacing: 2,
-	fontSize: 20,
-});
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
 const Navbar = () => {
 	return (
-		<Container>
-			<span>Whitehouse Apartment Management</span>
-		</Container>
+		<div>
+			<AppBar sx={{ background: "#000" }} position="static">
+				<Toolbar>
+					<Typography variant="h6">Whitehouse Apartment Management</Typography>
+				</Toolbar>
+			</AppBar>
+		</div>
 	);
 };
 
