@@ -43,9 +43,7 @@ const CustomInput = ({
 				margin={margin}
 				className={meta.touched && meta.error ? "input-error" : ""}
 			/>
-			{meta.touched && meta.error && (
-				<ErrorStyle className="error"> *{meta.error} </ErrorStyle>
-			)}
+			{meta.touched && meta.error && <ErrorStyle> *{meta.error} </ErrorStyle>}
 		</>
 	);
 };
