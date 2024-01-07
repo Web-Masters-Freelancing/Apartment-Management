@@ -6,6 +6,10 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { RoomModule } from './room/room.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronjobService } from './cronjob/cronjob.service';
+import { TwilioService } from './twilio/twilio.service';
+import { BillableService } from './billable/billable.service';
 
 @Module({
   imports: [
@@ -14,8 +18,9 @@ import { RoomModule } from './room/room.module';
     PrismaModule,
     ConfigModule.forRoot(),
     RoomModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CronjobService, TwilioService, BillableService],
 })
 export class AppModule {}
