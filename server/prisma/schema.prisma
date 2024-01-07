@@ -43,7 +43,7 @@ model Billable {
   userId   Int                @unique
   room     Room               @relation(fields: [roomId], references: [id])
   roomId   Int
-  dueDate  DateTime
+  dueDate  DateTime           @db.Date
   amount   Float
   status   BillableStatusEnum @default(ACTIVE)
   Payments Payments[]
