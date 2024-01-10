@@ -4,7 +4,7 @@ import WrapperLayout from "../wrapper.layout";
 const Room = () => {
 	return (
 		<WrapperLayout>
-			<Typography>Room is works</Typography>
+			<Typography>Room works</Typography>
 		</WrapperLayout>
 	);
 };
