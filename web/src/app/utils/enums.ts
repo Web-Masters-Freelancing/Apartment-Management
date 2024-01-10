@@ -1,4 +1,9 @@
 export enum EPathName {
 	DASHBOARD = "dashboard",
-	ROOM = "room",
+	ROOM = "rooms",
+	TENANT = "tenants",
+	BILLABLES = "billables",
+	REPORTS = "reports",
+	SETTINGS = "settings",
+	TRANSACTIONS = "transactions",
 }

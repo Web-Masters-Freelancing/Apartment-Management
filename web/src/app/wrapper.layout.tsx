@@ -16,7 +16,7 @@ const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
 						backgroundColor: "ButtonHighlight",
 					}}
 				>
-					{children}
+					<Box sx={{ padding: "10px", width: "100%" }}>{children}</Box>
 				</Box>
 			</Box>
 		</Box>

@@ -2,6 +2,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { EPathName } from "../utils/enums";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import {
+	DashboardCustomize,
+	BedroomChild,
+	Person3,
+	MonetizationOnOutlined,
+	AccountBalance,
+	SettingsSuggest,
+	Summarize,
+} from "@mui/icons-material";
 
 const Sidebar = () => {
 	// Url Name
@@ -24,6 +33,7 @@ const Sidebar = () => {
 					<ListItemButton
 						className={pathname === EPathName.DASHBOARD ? "active" : ""}
 					>
+						<DashboardCustomize />
 						<ListItemText primary={EPathName.DASHBOARD} />
 					</ListItemButton>
 				</Link>
@@ -32,7 +42,53 @@ const Sidebar = () => {
 					<ListItemButton
 						className={pathname === EPathName.ROOM ? "active" : ""}
 					>
+						<BedroomChild />
 						<ListItemText primary={EPathName.ROOM} />
+					</ListItemButton>
+				</Link>
+
+				<Link href={EPathName.TENANT}>
+					<ListItemButton
+						className={pathname === EPathName.TENANT ? "active" : ""}
+					>
+						<Person3 />
+						<ListItemText primary={EPathName.TENANT} />
+					</ListItemButton>
+				</Link>
+
+				<Link href={EPathName.BILLABLES}>
+					<ListItemButton
+						className={pathname === EPathName.BILLABLES ? "active" : ""}
+					>
+						<MonetizationOnOutlined />
+						<ListItemText primary={EPathName.BILLABLES} />
+					</ListItemButton>
+				</Link>
+
+				<Link href={EPathName.TRANSACTIONS}>
+					<ListItemButton
+						className={pathname === EPathName.TRANSACTIONS ? "active" : ""}
+					>
+						<AccountBalance />
+						<ListItemText primary={EPathName.TRANSACTIONS} />
+					</ListItemButton>
+				</Link>
+
+				<Link href={EPathName.SETTINGS}>
+					<ListItemButton
+						className={pathname === EPathName.SETTINGS ? "active" : ""}
+					>
+						<SettingsSuggest />
+						<ListItemText primary={EPathName.SETTINGS} />
+					</ListItemButton>
+				</Link>
+
+				<Link href={EPathName.REPORTS}>
+					<ListItemButton
+						className={pathname === EPathName.REPORTS ? "active" : ""}
+					>
+						<Summarize />
+						<ListItemText primary={EPathName.REPORTS} />
 					</ListItemButton>
 				</Link>
 			</List>
