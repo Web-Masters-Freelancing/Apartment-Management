@@ -14,13 +14,25 @@ import CustomSelect, { MenuItems } from "../components/Select";
 import { useState } from "react";
 import { Typography } from "@mui/material";
 import { ERoomType } from "../utils/enums";
+import { RoomSchema } from "../schemas";
+
+type IRoomsFormValues = {
+	id?: number;
+	room: string;
+	type: string;
+	description?: string;
+	amount: number;
+};
 
 /**
  * Sub Components
  */
 const ModalContent = () => {
 	// Onsubmit
-	const onSubmit = async (values: any, actions: FormikHelpers<any>) => {
+	const onSubmit = async (
+		values: IRoomsFormValues,
+		actions: FormikHelpers<IRoomsFormValues>
+	) => {
 		console.log("values", values);
 	};
 
@@ -45,7 +57,11 @@ const ModalContent = () => {
 	return (
 		<Box sx={{ width: "100%" }}>
 			<Typography>CREATE ROOMS</Typography>
-			<Formik initialValues={{ search: "", type: "" }} onSubmit={onSubmit}>
+			<Formik
+				initialValues={{ room: "", type: "", description: "", amount: 0 }}
+				validationSchema={RoomSchema}
+				onSubmit={onSubmit}
+			>
 				{(props) => (
 					<Form>
 						<CustomInput
