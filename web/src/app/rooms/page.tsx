@@ -25,10 +25,9 @@ type IRoomsFormValues = {
 };
 
 /**
- * Sub Components
+ * Sub Component
  */
 const ModalContent = () => {
-	// Onsubmit
 	const onSubmit = async (
 		values: IRoomsFormValues,
 		actions: FormikHelpers<IRoomsFormValues>
@@ -36,24 +35,20 @@ const ModalContent = () => {
 		console.log("values", values);
 	};
 
-	// Set Open
 	const [type, setType] = useState("");
 
-	// Select Handle Change
 	const handleChange = (event: SelectChangeEvent<any>) => {
 		setType(event.target.value);
 	};
 
 	// Initialize Menu items
 	const menuItems: MenuItems[] = [];
-	// Rooms
+
 	const roomsType = Object.values(ERoomType);
-	// Loop rooms
 	roomsType.map((value) => {
 		menuItems.push({ key: value, value });
 	});
 
-	// Return Components
 	return (
 		<Box sx={{ width: "100%" }}>
 			<Typography>CREATE ROOMS</Typography>
@@ -118,13 +113,9 @@ const ModalContent = () => {
 type SearchValue = { search: string };
 
 const Room = () => {
-	// Set Open
 	const [open, setOpen] = useState(false);
-	// Toggle Modal
 	const toggleModal = () => setOpen((state) => !state);
-	/**
-	 * Handle Submit here
-	 */
+
 	const onSubmit = async (
 		values: SearchValue,
 		actions: FormikHelpers<SearchValue>
