@@ -9,7 +9,7 @@ export class RoomService {
   async create({ amount, type, description }: CreateRoomDto) {
     await this.prisma.room.create({
       data: {
-        amount,
+        amount: parseFloat(amount as unknown as string),
         type,
         description,
       },

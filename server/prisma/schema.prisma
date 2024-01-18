@@ -63,7 +63,7 @@ model Room {
   type        String
   description String?        @db.Text
   amount      Float
-  status      RoomStatusEnum @default(NOT_AVAILABLE)
+  status      RoomStatusEnum @default(AVAILABLE)
   Billable    Billable[]
   RoomHistory RoomHistory[]
 }

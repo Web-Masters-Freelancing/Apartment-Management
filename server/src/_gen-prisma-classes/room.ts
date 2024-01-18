@@ -17,7 +17,7 @@ export class Room {
   amount: number;
 
   @ApiProperty({ enum: RoomStatusEnum, enumName: 'RoomStatusEnum' })
-  status: RoomStatusEnum = RoomStatusEnum.NOT_AVAILABLE;
+  status: RoomStatusEnum = RoomStatusEnum.AVAILABLE;
 
   @ApiProperty({ isArray: true, type: () => Billable })
   Billable: Billable[];

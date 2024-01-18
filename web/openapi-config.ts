@@ -1,17 +1,17 @@
-import type { ConfigFile } from '@rtk-query/codegen-openapi'
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
 
 const config: ConfigFile = {
-  schemaFile: '../server/swagger.json',
-  apiFile: './src/store/api/baseApi.ts',
-  apiImport: 'baseApi',
-  argSuffix: 'Args',
+  schemaFile: "../server/swagger.json",
+  apiFile: "./src/store/api/baseApi.ts",
+  apiImport: "baseApi",
+  argSuffix: "Args",
   hooks: true,
-  responseSuffix: 'Response',
+  responseSuffix: "Response",
   outputFiles: {
-    './src/store/api/gen/sample.ts': {
-      filterEndpoints: [/appController/],
+    "./src/store/api/gen/room.ts": {
+      filterEndpoints: [/roomController/],
     },
   },
-}
+};
 
-export default config
+export default config;
