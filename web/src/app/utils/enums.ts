@@ -7,3 +7,9 @@ export enum EPathName {
 	SETTINGS = "settings",
 	TRANSACTIONS = "transactions",
 }
+
+export enum ERoomType {
+	SMALL = "Small",
+	MEDIUM = "Medium",
+	LARGE = "Large",
+}

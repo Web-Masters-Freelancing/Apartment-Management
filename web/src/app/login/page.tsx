@@ -50,7 +50,7 @@ const LoginPage = () => {
 	return (
 		<Container>
 			<Formik
-				initialValues={{ username: "", password: "" } as LoginFormValues}
+				initialValues={{ username: "", password: "" }}
 				validationSchema={LoginSchema}
 				onSubmit={onSubmit}
 			>

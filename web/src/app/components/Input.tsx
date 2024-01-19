@@ -9,11 +9,12 @@ import { useField } from "formik";
 type CustomInputProps = {
 	label?: string;
 	name?: string;
-	type?: "text" | "password";
+	type?: "text" | "password" | "number";
 	placeholder?: string;
 	variant?: "outlined";
-	margin?: "dense";
+	margin?: "dense" | "normal" | "none";
 	id?: string;
+	size?: "small" | "medium";
 };
 
 /**
@@ -30,6 +31,7 @@ const ErrorStyle = styled("div")({
 const CustomInput = ({
 	variant = "outlined",
 	margin = "dense",
+	size = "medium",
 	...props
 }: CustomInputProps) => {
 	const [field, meta] = useField(props as Required<CustomInputProps>);
@@ -37,11 +39,13 @@ const CustomInput = ({
 	return (
 		<>
 			<TextField
+				size={size}
 				{...field}
 				{...props}
 				variant={variant}
 				margin={margin}
 				className={meta.touched && meta.error ? "input-error" : ""}
+				sx={{ width: "100%" }}
 			/>
 			{meta.touched && meta.error && <ErrorStyle> *{meta.error} </ErrorStyle>}
 		</>
