@@ -17,8 +17,6 @@ datasource db {
 model User {
   id          Int           @id @default(autoincrement())
   name        String
-  email       String        @unique(map: "email") @db.VarChar(250)
-  password    String        @db.Text
   contact     String        @db.Text
   address     String        @db.Text
   role        RoleEnum      @default(TENANT)
@@ -31,6 +29,8 @@ model User {
 
 model Auth {
   id           Int      @id @default(autoincrement())
+  email        String   @unique(map: "email") @db.VarChar(250)
+  password     String   @db.Text
   user         User     @relation(fields: [userId], references: [id])
   userId       Int      @unique
   token        String?  @db.Text

@@ -27,7 +27,7 @@ const questions = [
     message: 'What is your email?',
     default: process.env.ADMIN_EMAIL || undefined,
     async validate(value: string) {
-      const exists = await prisma.user.findUnique({ where: { email: value } });
+      const exists = await prisma.auth.findUnique({ where: { email: value } });
       if (exists) {
         return 'This email is already used. Please use other email.';
       }

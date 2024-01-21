@@ -14,8 +14,6 @@ export class UserService {
     const createdUser = await this.prisma.user.create({
       data: {
         name,
-        password,
-        email,
         address,
         contact,
         role,
@@ -24,13 +22,19 @@ export class UserService {
             ? {
                 create: {
                   token: undefined,
+                  email,
+                  password,
                 },
               }
             : undefined,
       },
       select: {
         id: true,
-        email: true,
+        Auth: {
+          select: {
+            email: true,
+          },
+        },
       },
     });
 
@@ -39,16 +43,20 @@ export class UserService {
   }
 
   async findOne({ email }: { email: string }) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.auth.findUnique({
       where: {
         email,
       },
       select: {
         password: true,
-        address: true,
-        contact: true,
         email: true,
-        name: true,
+        user: {
+          select: {
+            address: true,
+            contact: true,
+            name: true,
+          },
+        },
       },
     });
 
