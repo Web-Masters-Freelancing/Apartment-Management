@@ -46,23 +46,26 @@ export class AuthService {
      * Verified token contains id and email
      * See user.service.ts file
      */
-    const verifyToken = verifyResetPasswordToken(token);
+    const verifyToken = verifyResetPasswordToken(token) as unknown as {
+      id: number;
+    };
 
     if (!verifyToken) throw new ForbiddenException();
 
-    const { email, id } = verifyToken as unknown as Pick<User, 'email' | 'id'>;
+    const { id } = verifyToken;
 
     const hash = await hashPassword(password);
 
     return await this.prismaService.user.update({
       where: {
         id,
-        AND: {
-          email,
-        },
       },
       data: {
-        password: hash,
+        Auth: {
+          update: {
+            password: hash,
+          },
+        },
       },
     });
   }

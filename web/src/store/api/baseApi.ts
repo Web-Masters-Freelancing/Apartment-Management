@@ -2,37 +2,37 @@ import {
   createApi,
   defaultSerializeQueryArgs,
   fetchBaseQuery,
-} from '@reduxjs/toolkit/query/react'
+} from "@reduxjs/toolkit/query/react";
 
-import { logoutUser } from '@/lib/logoutUser'
-import { getToken } from '@/lib/tokenStorage'
+import { LogoutUser } from "@/lib/LogoutUser";
+import { getToken } from "@/lib/tokenStorage";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const baseApi = createApi({
-  reducerPath: 'baseApi',
+  reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_ORIGIN,
     prepareHeaders: async (headers) => {
       if (location?.href) {
-        headers.set('referer', location.href)
+        headers.set("referer", location.href);
       }
 
-      const token = getToken()
+      const token = getToken();
       if (token) {
-        headers.set('authorization', `Bearer ${token}`)
+        headers.set("authorization", `Bearer ${token}`);
       }
 
-      return headers
+      return headers;
     },
     validateStatus(response) {
-      if (response.status >= 200 && response.status <= 299) return true
+      if (response.status >= 200 && response.status <= 299) return true;
       if (response.status === 401) {
-        logoutUser()
+        LogoutUser();
       }
       if (response.status === 503) {
-        location.href = '/maintenance'
+        location.href = "/maintenance";
       }
-      return false
+      return false;
     },
   }),
 
@@ -41,7 +41,7 @@ export const baseApi = createApi({
       queryArgs,
       endpointDefinition,
       endpointName: `[${getToken()}]${endpointName}`,
-    })
+    });
   },
   endpoints: () => ({}),
-})
+});
