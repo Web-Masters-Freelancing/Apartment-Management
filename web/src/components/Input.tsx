@@ -3,10 +3,17 @@ import { TextField } from "@mui/material";
 import { useField } from "formik";
 
 /**
+ * Error style
+ */
+const ErrorStyle = styled("div")({
+	color: "#fc8181",
+	fontSize: 10,
+});
+/**
  * Custom Input Props
  * Reactive Input built by formik third party library
  */
-type CustomInputProps = {
+export interface CustomInputProps {
 	label?: string;
 	name?: string;
 	type?: "text" | "password" | "number";
@@ -15,16 +22,7 @@ type CustomInputProps = {
 	margin?: "dense" | "normal" | "none";
 	id?: string;
 	size?: "small" | "medium";
-};
-
-/**
- * Error style
- */
-const ErrorStyle = styled("div")({
-	color: "#fc8181",
-	fontSize: 10,
-});
-
+}
 /**
  * Custom Input component
  */

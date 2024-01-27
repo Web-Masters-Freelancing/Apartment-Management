@@ -6,18 +6,18 @@ import {
 	SelectProps,
 } from "@mui/material";
 
-export type MenuItems = {
+export type OptionSelect = {
 	value?: string | number;
 	key?: string;
 };
 
-type CustomSelectProps = SelectProps & {
-	menuItem?: MenuItems[];
+export interface CustomSelectProps extends SelectProps {
+	options?: OptionSelect[];
 	inputLabelId: string;
-};
+}
 
 const CustomSelect = ({
-	menuItem,
+	options,
 	inputLabelId,
 	...props
 }: CustomSelectProps) => {
@@ -32,8 +32,8 @@ const CustomSelect = ({
 				<MenuItem value="">
 					<em>None</em>
 				</MenuItem>
-				{menuItem?.length &&
-					menuItem.map((item, index) => {
+				{options?.length &&
+					options.map((item, index) => {
 						return (
 							<MenuItem key={index} value={item.key}>
 								{item.value}
