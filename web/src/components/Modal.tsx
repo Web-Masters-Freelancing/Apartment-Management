@@ -38,17 +38,18 @@ const CustomModal = ({
 	contentFields,
 	title,
 }: CustomModalProps) => {
-	useHooksModal({ contentFields });
+	const { initialValues } = useHooksModal({ contentFields });
 
 	return (
 		<>
-			<Typography>Modal Works!</Typography>
 			<Modal keepMounted open={open} onClose={handleClick}>
 				<Box sx={style}>
 					<Box sx={{ width: "100%", alignItems: "center" }}>
-						<Typography>{title}</Typography>
+						<Typography sx={{ paddingBottom: 2, textTransform: "uppercase" }}>
+							{title}
+						</Typography>
 						<Formik
-							initialValues={{}}
+							initialValues={initialValues}
 							validationSchema={RoomSchema}
 							onSubmit={() => console.log("Alejandro oletres")}
 						>
@@ -80,6 +81,7 @@ const CustomModal = ({
 															inputLabelId={schema.inputLabelId}
 															labelId={schema.labelId}
 															onChange={schema.onChange}
+															key={key}
 														/>
 													);
 

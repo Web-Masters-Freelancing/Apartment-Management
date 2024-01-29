@@ -39,5 +39,36 @@ export const useHooksModal = ({
 }: {
 	contentFields: ModalSchema[];
 }) => {
-	console.log("contentFields", contentFields);
+	// Assign Initial keys
+	const initialKeys: any[] = [];
+
+	// Content Fields
+	if (contentFields && contentFields.length) {
+		contentFields.forEach((value) => {
+			const { name } = value;
+			if (name && typeof name !== "undefined") {
+				// Check the type if it is a number or string
+				const initial_value = value.type === "number" ? 0 : "";
+
+				initialKeys.push({ [name]: initial_value });
+			}
+		});
+	}
+
+	let initialValues: object = {} as object;
+	let temp = initialKeys[0] as object;
+
+	// Loop initialKeys
+	initialKeys?.length &&
+		initialKeys.map((obj, key) => {
+			if (key > 0) {
+				initialValues = {
+					...temp,
+					...obj,
+				}; /** <--- concat the array of objects */
+				temp = initialValues;
+			}
+		});
+
+	return { initialValues };
 };
