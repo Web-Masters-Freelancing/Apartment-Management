@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { Response } from 'express';
 
 @Controller()
@@ -39,12 +38,5 @@ export class AppController {
     @Param('token') token: string,
   ) {
     await this.authService.resetPassword({ password: body.password, token });
-  }
-
-  // TODO: Modify this endpoint after merging, this is just to test token functionality
-  @UseGuards(JwtAuthGuard)
-  @Get('protected')
-  getHello(@Request() req) {
-    return req.user;
   }
 }
