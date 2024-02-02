@@ -1,4 +1,3 @@
-import { RoomSchema } from "@/schemas";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import { Formik, Form } from "formik";
 import CustomInput, { CustomInputProps } from "./Input";
@@ -38,7 +37,7 @@ const CustomModal = ({
 	contentFields,
 	title,
 }: CustomModalProps) => {
-	const { initialValues } = useHooksModal({ contentFields });
+	const { initialValues, formGroup } = useHooksModal({ contentFields });
 
 	return (
 		<>
@@ -50,22 +49,22 @@ const CustomModal = ({
 						</Typography>
 						<Formik
 							initialValues={initialValues}
-							validationSchema={RoomSchema}
+							validationSchema={formGroup}
 							onSubmit={() => console.log("Alejandro oletres")}
 						>
 							{({ isSubmitting, submitForm }) => (
 								<Form>
-									{contentFields.length &&
-										contentFields.map((schema, key) => {
-											switch (schema.fieldType) {
+									{contentFields?.length &&
+										contentFields.map((field, key) => {
+											switch (field.fieldType) {
 												case "textField":
 													return (
 														<CustomInput
-															label={schema.label}
-															name={schema.name}
-															id={schema.id}
-															type={schema.type}
-															size={schema.size}
+															label={field.label}
+															name={field.name}
+															id={field.id}
+															type={field.type}
+															size={field.size}
 															key={key}
 														/>
 													);
@@ -73,14 +72,14 @@ const CustomModal = ({
 												case "selectField":
 													return (
 														<CustomSelect
-															id={schema.id}
-															label={schema.label}
-															options={schema.options}
-															value={schema.value}
-															name={schema.name}
-															inputLabelId={schema.inputLabelId}
-															labelId={schema.labelId}
-															onChange={schema.onChange}
+															id={field.id}
+															label={field.label}
+															options={field.options}
+															value={field.value}
+															name={field.name}
+															inputLabelId={field.inputLabelId}
+															labelId={field.labelId}
+															onChange={field.onChange}
 															key={key}
 														/>
 													);
@@ -98,7 +97,13 @@ const CustomModal = ({
 											marginTop: 1,
 										}}
 									>
-										<Button variant="contained">Save</Button>
+										<Button
+											variant="contained"
+											disabled={isSubmitting}
+											onClick={submitForm}
+										>
+											Save
+										</Button>
 									</Box>
 								</Form>
 							)}

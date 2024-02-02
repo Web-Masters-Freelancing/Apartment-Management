@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { EPathName } from "../../utils/enums";
 import { useSnackbar } from "../../hooks/useSnackbar";
 
-type LoginFormValues = {
+export type LoginFormValues = {
 	username: string;
 	password: string;
 };
@@ -19,7 +19,7 @@ export const useHooks = () => {
 	) => {
 		setSubmitting(true);
 
-		// await axios.post("http://localhost:3031/api/login", values);
+		await axios.post("http://localhost:3031/api/login", values);
 
 		setSubmitting(false);
 		resetForm();

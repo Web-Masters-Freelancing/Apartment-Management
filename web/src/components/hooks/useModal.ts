@@ -1,3 +1,4 @@
+import { CustomValidationSchema } from "@/schemas";
 import { ModalSchema } from "../Modal";
 import { SelectProps, InputProps } from "@mui/material";
 
@@ -70,5 +71,8 @@ export const useHooksModal = ({
 			}
 		});
 
-	return { initialValues };
+	// Create custom schema for yup form validation
+	const { formGroup } = CustomValidationSchema<any>(initialValues);
+
+	return { initialValues, formGroup };
 };

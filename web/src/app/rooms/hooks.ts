@@ -5,7 +5,7 @@ import { ERoomType } from "../../utils/enums";
 import { ModalSchema } from "@/components/Modal";
 import { OptionSelect } from "@/components/Select";
 
-type IRoomsFormValues = {
+export type IRoomsFormValues = {
 	id?: number;
 	room: string;
 	type: string;
@@ -56,7 +56,6 @@ export const useHooks = () => {
 		setType(event.target.value);
 	};
 
-	// Modal Schema
 	const modalSchema: ModalSchema[] = [
 		{
 			fieldType: "selectField",
