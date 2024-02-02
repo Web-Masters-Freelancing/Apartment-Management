@@ -5,8 +5,8 @@ generator client {
 generator prismaClassGenerator {
   provider      = "prisma-class-generator"
   output        = "./../src/_gen-prisma-classes"
-  dryRun        = false
-  makeIndexFile = false
+  makeIndexFile = "false"
+  dryRun        = "false"
 }
 
 datasource db {
@@ -14,82 +14,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          Int           @id @default(autoincrement())
-  name        String
-  contact     String        @db.Text
-  address     String        @db.Text
-  role        RoleEnum      @default(TENANT)
-  createdAt   DateTime      @default(now()) @db.Timestamp(0)
-  updatedAt   DateTime      @default(now()) @db.Timestamp(0)
-  Auth        Auth?
-  Billable    Billable?
-  RoomHistory RoomHistory[]
-}
-
-model Auth {
+model auth {
   id           Int      @id @default(autoincrement())
-  email        String   @unique(map: "email") @db.VarChar(250)
+  email        String   @unique(map: "email") @db.VarChar(100)
   password     String   @db.Text
-  user         User     @relation(fields: [userId], references: [id])
-  userId       Int      @unique
+  userId       Int      @unique(map: "Auth_userId_key")
   token        String?  @db.Text
   lastLoggedIn DateTime @default(now()) @db.Timestamp(0)
+  user         user     @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
 }
 
-model Billable {
-  id       Int                @id @default(autoincrement())
-  user     User               @relation(fields: [userId], references: [id])
-  userId   Int                @unique
-  room     Room               @relation(fields: [roomId], references: [id])
+model billable {
+  id       Int             @id @default(autoincrement())
+  userId   Int             @unique(map: "Billable_userId_key")
   roomId   Int
-  dueDate  DateTime           @db.Date
+  dueDate  DateTime        @db.Date
   amount   Float
-  status   BillableStatusEnum @default(ACTIVE)
-  Payments Payments[]
+  status   billable_status @default(dbgenerated("(ACTIVE)"))
+  room     room            @relation(fields: [roomId], references: [id], map: "Billable_roomId_fkey")
+  user     user            @relation(fields: [userId], references: [id], map: "Billable_userId_fkey")
+  payments payments[]
+
+  @@index([roomId], map: "Billable_roomId_fkey")
 }
 
-model RoomHistory {
-  id         Int      @id @default(autoincrement())
-  room       Room     @relation(fields: [roomId], references: [id])
-  roomId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @unique
-  occupiedOn DateTime @default(now()) @db.Timestamp(0)
-}
-
-model Room {
-  id          Int            @id @default(autoincrement())
-  type        String
-  description String?        @db.Text
-  amount      Float
-  status      RoomStatusEnum @default(AVAILABLE)
-  Billable    Billable[]
-  RoomHistory RoomHistory[]
-}
-
-// This will also serve as the payment transaction history
-model Payments {
+model payments {
   id            Int      @id @default(autoincrement())
-  billable      Billable @relation(fields: [billableId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   billableId    Int
   paidOn        DateTime
   amount        Float
   attachment    String   @db.Text
   monthsCovered String   @db.Text
+  billable      billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
+
+  @@index([billableId], map: "Payments_billableId_fkey")
 }
 
-enum RoleEnum {
-  ADMIN
-  TENANT
+model room {
+  id          Int           @id @default(autoincrement())
+  type        String
+  description String?       @db.Text
+  amount      Float
+  status      room_status   @default(dbgenerated("(AVAILABLE)"))
+  billable    billable[]
+  roomhistory roomhistory[]
 }
 
-enum RoomStatusEnum {
+model roomhistory {
+  id         Int      @id @default(autoincrement())
+  roomId     Int
+  userId     Int      @unique(map: "RoomHistory_userId_key")
+  occupiedOn DateTime @default(now()) @db.Timestamp(0)
+  room       room     @relation(fields: [roomId], references: [id], map: "RoomHistory_roomId_fkey")
+  user       user     @relation(fields: [userId], references: [id], map: "RoomHistory_userId_fkey")
+
+  @@index([roomId], map: "RoomHistory_roomId_fkey")
+}
+
+model user {
+  id          Int          @id @default(autoincrement())
+  name        String
+  contact     String       @db.Text
+  address     String       @db.Text
+  role        user_role    @default(dbgenerated("(TENANT)"))
+  createdAt   DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime     @default(now()) @db.Timestamp(0)
+  auth        auth?
+  billable    billable?
+  roomhistory roomhistory?
+}
+
+enum room_status {
   AVAILABLE
   NOT_AVAILABLE
 }
 
-enum BillableStatusEnum {
+enum user_role {
+  ADMIN
+  TENANT
+}
+
+enum billable_status {
   ACTIVE
   INACTIVE
 }

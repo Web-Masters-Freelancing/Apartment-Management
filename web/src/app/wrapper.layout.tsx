@@ -1,6 +1,6 @@
 "use client";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
 import { Box } from "@mui/material";
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
