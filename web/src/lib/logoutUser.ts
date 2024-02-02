@@ -3,8 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { removeToken } from "@/lib/tokenStorage";
 
 /**
- * Logout function that can be called to trigger logout of an
- * M1 API user.
+ * Logout function that can be called to trigger logout of a user
  */
 export type LogoutUserFn = () => void;
 

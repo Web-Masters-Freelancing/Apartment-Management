@@ -1,125 +1,125 @@
-import { SelectChangeEvent } from "@mui/material";
 import { FormikHelpers } from "formik";
 import { useState } from "react";
-import { MenuItems } from "../../components/Select";
-import { ERoomType } from "../../utils/enums";
+import { Field, InputFieldProps } from "@/components/hooks/useModal";
+import { useRoomApi } from "@/hooks/api/room";
+import { useSnackbar } from "@/hooks/useSnackbar";
+import { OptionSelect, SelectFieldProps } from "@/components/Select";
 
-type IRoomsFormValues = {
+export type RoomsFormValues = {
   id?: number;
-  room: string;
   type: string;
   description?: string;
   amount: number;
 };
 
+export type SearchRoom = {
+  keyword: string;
+};
+
 export const useHooks = () => {
-  // const [type, setType] = useState("");
-  // const [open, setOpen] = useState(false);
+  const { handleCreateRoom } = useRoomApi();
+  const { setSnackbarProps } = useSnackbar();
 
-  // /**
-  //  * Modal Hooks
-  //  */
-  // const toggleModal = () => setOpen((state) => !state);
+  const [open, setOpen] = useState(false);
 
-  // const handleModalSubmit = async (
-  // 	values: IRoomsFormValues,
-  // 	actions: FormikHelpers<IRoomsFormValues>
-  // ) => {
-  // 	console.log("values", values);
-  // };
+  const initialValues: RoomsFormValues = {
+    type: "",
+    description: "",
+    amount: 0,
+  };
 
-  // /**
-  //  * Rooms Hooks
-  //  */
-  // // Initialize Menu items
-  // const optionSelect: OptionSelect[] = [];
-
-  // const roomsType = Object.values(ERoomType);
-
-  // // Select options list
-  // roomsType.map((value) => {
-  // 	optionSelect.push({ key: value, value });
-  // });
-
-  // const handleRoomSubmit = async (
-  // 	values: SearchValue,
-  // 	actions: FormikHelpers<SearchValue>
-  // ) => {
-  // 	console.log("values", values);
-  // };
-
-  // // Select Handle Change
-  // const handleChange = (event: SelectChangeEvent<any>) => {
-  // 	setType(event.target.value);
-  // };
-
-  // const modalSchema: ModalSchema[] = [
-  // 	{
-  // 		fieldType: "selectField",
-  // 		id: "type",
-  // 		label: "Room type",
-  // 		options: optionSelect,
-  // 		value: type,
-  // 		name: "type",
-  // 		inputLabelId: "type",
-  // 		labelId: "type",
-  // 		onChange: handleChange,
-  // 		margin: "dense",
-  // 	},
-  // 	{
-  // 		fieldType: "textField",
-  // 		label: "Description",
-  // 		name: "description",
-  // 		id: "description",
-  // 		type: "text",
-  // 		margin: "dense",
-  // 		inputLabelId: "description",
-  // 	},
-  // 	{
-  // 		fieldType: "textField",
-  // 		label: "Amount",
-  // 		name: "amount",
-  // 		id: "amount",
-  // 		type: "number",
-  // 		margin: "dense",
-  // 		inputLabelId: "amount",
-  // 	},
-  // ];
-
-  // return {
-  // 	handleModalSubmit,
-  // 	optionSelect,
-  // 	type,
-  // 	handleRoomSubmit,
-  // 	open,
-  // 	toggleModal,
-  // 	modalSchema,
-  // };
-  const handleCreateRoomSubmission = async (
-    values: IRoomsFormValues,
-    actions: FormikHelpers<IRoomsFormValues>
+  const handleSearch = async (
+    values: SearchRoom,
+    _: FormikHelpers<SearchRoom>
   ) => {
     console.log("values", values);
   };
 
-  const [type, setType] = useState("");
+  const handleSubmit = async (
+    { description, amount, type }: RoomsFormValues,
+    { setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
+  ) => {
+    try {
+      await handleCreateRoom({
+        amount,
+        type,
+        description,
+      });
 
-  const handleChange = (event: SelectChangeEvent<any>) => {
-    setType(event.target.value);
+      setSnackbarProps({
+        open: true,
+        message: "Room is successfully created!",
+        severity: "success",
+      });
+
+      setSubmitting(false);
+      resetForm({ values: initialValues });
+
+      toggleModal();
+    } catch (e: any) {
+      console.error(e);
+      setSnackbarProps({
+        open: true,
+        message: e.message || "Something went wrong, please try again later.",
+        severity: "success",
+      });
+
+      toggleModal();
+    }
   };
 
-  // Initialize Menu items
-  const menuItems: MenuItems[] = [];
+  const toggleModal = () => setOpen((modalState) => !modalState);
 
-  const roomsType = Object.values(ERoomType);
-  roomsType.forEach((value) => {
-    menuItems.push({ key: value, value });
-  });
+  const roomTypes: OptionSelect[] = [
+    { key: "", value: "Family" },
+    { key: "room2", value: "Deluxe" },
+    { key: "room3", value: "Standard" },
+    { key: "room4", value: "Barkada" },
+  ];
+
+  // Form fields
+  const fields: Field<InputFieldProps | SelectFieldProps>[] = [
+    {
+      fieldType: "select",
+      fieldProps: <SelectFieldProps>{
+        id: "type",
+        label: "Room type",
+        options: roomTypes,
+        inputLabelId: "type",
+        labelId: "type",
+        margin: "dense",
+        name: "type",
+        defaultValue: "",
+      },
+    },
+    {
+      fieldType: "text",
+      fieldProps: <InputFieldProps>{
+        label: "Description",
+        name: "description",
+        id: "description",
+        type: "text",
+        margin: "dense",
+      },
+    },
+    {
+      fieldType: "text",
+      fieldProps: <InputFieldProps>{
+        label: "Amount",
+        name: "amount",
+        id: "amount",
+        type: "number",
+        margin: "dense",
+      },
+    },
+  ];
 
   return {
-    handleCreateRoomSubmission,
-    type,
-    handleChange,
-    menuItems,
+    handleSubmit,
+    fields,
+    toggleModal,
+    open,
+    initialValues,
+    handleSearch,
   };
 };

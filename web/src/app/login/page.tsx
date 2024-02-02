@@ -3,11 +3,9 @@
 import { styled } from "@mui/system";
 import { LockOpenOutlined } from "@mui/icons-material";
 import { Form, Formik } from "formik";
-import CustomInput from "../../components/Input";
-import { LoginSchema } from "../../schemas";
+import CustomInput from "@/components/Input";
+import { LoginSchema } from "@/schemas";
 import { Button } from "@mui/material";
-import Link from "next/link";
-import { EPathName } from "../../utils/enums";
 import { useHooks } from "./hooks";
 
 const Container = styled("div")({

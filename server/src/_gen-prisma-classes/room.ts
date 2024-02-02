@@ -1,6 +1,6 @@
 import { Billable } from './billable';
 import { RoomHistory } from './room_history';
-import { RoomStatusEnum } from '@prisma/client';
+import { ROOM_STATUS } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class Room {
@@ -16,12 +16,12 @@ export class Room {
   @ApiProperty({ type: Number })
   amount: number;
 
-  @ApiProperty({ enum: RoomStatusEnum, enumName: 'RoomStatusEnum' })
-  status: RoomStatusEnum = RoomStatusEnum.AVAILABLE;
+  @ApiProperty({ enum: ROOM_STATUS, enumName: 'ROOM_STATUS' })
+  status: ROOM_STATUS = ROOM_STATUS.AVAILABLE;
 
   @ApiProperty({ isArray: true, type: () => Billable })
-  Billable: Billable[];
+  billable: Billable[];
 
   @ApiProperty({ isArray: true, type: () => RoomHistory })
-  RoomHistory: RoomHistory[];
+  roomhistory: RoomHistory[];
 }

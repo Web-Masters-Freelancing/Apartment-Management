@@ -6,18 +6,18 @@ export class RoomHistory {
   @ApiProperty({ type: Number })
   id: number;
 
-  @ApiProperty({ type: () => Room })
-  room: Room;
-
   @ApiProperty({ type: Number })
   roomId: number;
-
-  @ApiProperty({ type: () => User })
-  user: User;
 
   @ApiProperty({ type: Number })
   userId: number;
 
   @ApiProperty({ type: Date })
   occupiedOn: Date;
+
+  @ApiProperty({ type: () => Room })
+  room: Room;
+
+  @ApiProperty({ type: () => User })
+  user: User;
 }

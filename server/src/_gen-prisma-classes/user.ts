@@ -1,7 +1,7 @@
 import { Auth } from './auth';
 import { Billable } from './billable';
 import { RoomHistory } from './room_history';
-import { RoleEnum } from '@prisma/client';
+import { USER_ROLE } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class User {
@@ -17,8 +17,8 @@ export class User {
   @ApiProperty({ type: String })
   address: string;
 
-  @ApiProperty({ enum: RoleEnum, enumName: 'RoleEnum' })
-  role: RoleEnum = RoleEnum.TENANT;
+  @ApiProperty({ enum: USER_ROLE, enumName: 'USER_ROLE' })
+  role: USER_ROLE = USER_ROLE.TENANT;
 
   @ApiProperty({ type: Date })
   createdAt: Date;
@@ -27,11 +27,11 @@ export class User {
   updatedAt: Date;
 
   @ApiPropertyOptional({ type: () => Auth })
-  Auth?: Auth;
+  auth?: Auth;
 
   @ApiPropertyOptional({ type: () => Billable })
-  Billable?: Billable;
+  billable?: Billable;
 
-  @ApiProperty({ isArray: true, type: () => RoomHistory })
-  RoomHistory: RoomHistory[];
+  @ApiPropertyOptional({ type: () => RoomHistory })
+  roomhistory?: RoomHistory;
 }

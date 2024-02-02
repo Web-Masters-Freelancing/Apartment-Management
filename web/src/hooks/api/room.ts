@@ -1,5 +1,5 @@
 import { roomApi } from "@/store/enhancedApi";
-import { CreateRoomDto } from "../../store/api/gen/room";
+import { CreateRoomDto } from "@/store/api/gen/room";
 
 /**
  * This hook is dedicated to calling room endpoints via RTK query

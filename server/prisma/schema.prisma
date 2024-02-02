@@ -14,87 +14,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model auth {
+model Auth {
   id           Int      @id @default(autoincrement())
   email        String   @unique(map: "email") @db.VarChar(100)
   password     String   @db.Text
   userId       Int      @unique(map: "Auth_userId_key")
   token        String?  @db.Text
   lastLoggedIn DateTime @default(now()) @db.Timestamp(0)
-  user         user     @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
+  user         User     @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
 }
 
-model billable {
+model Billable {
   id       Int             @id @default(autoincrement())
   userId   Int             @unique(map: "Billable_userId_key")
   roomId   Int
   dueDate  DateTime        @db.Date
   amount   Float
-  status   billable_status @default(dbgenerated("(ACTIVE)"))
-  room     room            @relation(fields: [roomId], references: [id], map: "Billable_roomId_fkey")
-  user     user            @relation(fields: [userId], references: [id], map: "Billable_userId_fkey")
-  payments payments[]
+  status   BILLABLE_STATUS @default(ACTIVE)
+  room     Room            @relation(fields: [roomId], references: [id], map: "Billable_roomId_fkey")
+  user     User            @relation(fields: [userId], references: [id], map: "Billable_userId_fkey")
+  payments Payments[]
 
   @@index([roomId], map: "Billable_roomId_fkey")
 }
 
-model payments {
+model Payments {
   id            Int      @id @default(autoincrement())
   billableId    Int
   paidOn        DateTime
   amount        Float
   attachment    String   @db.Text
   monthsCovered String   @db.Text
-  billable      billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
+  billable      Billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
 
   @@index([billableId], map: "Payments_billableId_fkey")
 }
 
-model room {
+model Room {
   id          Int           @id @default(autoincrement())
   type        String
   description String?       @db.Text
   amount      Float
-  status      room_status   @default(dbgenerated("(AVAILABLE)"))
-  billable    billable[]
-  roomhistory roomhistory[]
+  status      ROOM_STATUS   @default(AVAILABLE)
+  billable    Billable[]
+  roomhistory RoomHistory[]
 }
 
-model roomhistory {
+model RoomHistory {
   id         Int      @id @default(autoincrement())
   roomId     Int
   userId     Int      @unique(map: "RoomHistory_userId_key")
   occupiedOn DateTime @default(now()) @db.Timestamp(0)
-  room       room     @relation(fields: [roomId], references: [id], map: "RoomHistory_roomId_fkey")
-  user       user     @relation(fields: [userId], references: [id], map: "RoomHistory_userId_fkey")
+  room       Room     @relation(fields: [roomId], references: [id], map: "RoomHistory_roomId_fkey")
+  user       User     @relation(fields: [userId], references: [id], map: "RoomHistory_userId_fkey")
 
   @@index([roomId], map: "RoomHistory_roomId_fkey")
 }
 
-model user {
+model User {
   id          Int          @id @default(autoincrement())
   name        String
   contact     String       @db.Text
   address     String       @db.Text
-  role        user_role    @default(dbgenerated("(TENANT)"))
+  role        USER_ROLE    @default(TENANT)
   createdAt   DateTime     @default(now()) @db.Timestamp(0)
   updatedAt   DateTime     @default(now()) @db.Timestamp(0)
-  auth        auth?
-  billable    billable?
-  roomhistory roomhistory?
+  auth        Auth?
+  billable    Billable?
+  roomhistory RoomHistory?
 }
 
-enum room_status {
+enum ROOM_STATUS {
   AVAILABLE
   NOT_AVAILABLE
 }
 
-enum user_role {
+enum USER_ROLE {
   ADMIN
   TENANT
 }
 
-enum billable_status {
+enum BILLABLE_STATUS {
   ACTIVE
   INACTIVE
 }

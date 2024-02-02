@@ -10,6 +10,6 @@ export class RoomController {
 
   @Post('create')
   async create(@Body() payload: CreateRoomDto) {
-    await this.roomService.create(payload);
+    return await this.roomService.create(payload);
   }
 }

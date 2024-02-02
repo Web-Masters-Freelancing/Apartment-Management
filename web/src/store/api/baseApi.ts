@@ -4,7 +4,7 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 
-import { LogoutUser } from "@/lib/LogoutUser";
+import { LogoutUser } from "@/lib/logoutUser";
 import { getToken } from "@/lib/tokenStorage";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
