@@ -11,9 +11,6 @@ export class Auth {
   @ApiProperty({ type: String })
   password: string;
 
-  @ApiProperty({ type: () => User })
-  user: User;
-
   @ApiProperty({ type: Number })
   userId: number;
 
@@ -22,4 +19,7 @@ export class Auth {
 
   @ApiProperty({ type: Date })
   lastLoggedIn: Date;
+
+  @ApiProperty({ type: () => User })
+  user: User;
 }

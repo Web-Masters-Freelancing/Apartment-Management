@@ -5,9 +5,6 @@ export class Payments {
   @ApiProperty({ type: Number })
   id: number;
 
-  @ApiProperty({ type: () => Billable })
-  billable: Billable;
-
   @ApiProperty({ type: Number })
   billableId: number;
 
@@ -22,4 +19,7 @@ export class Payments {
 
   @ApiProperty({ type: String })
   monthsCovered: string;
+
+  @ApiProperty({ type: () => Billable })
+  billable: Billable;
 }

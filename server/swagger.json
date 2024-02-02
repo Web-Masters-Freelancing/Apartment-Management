@@ -32,17 +32,6 @@
         }
       }
     },
-    "/api/protected": {
-      "get": {
-        "operationId": "AppController_getHello",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/room/create": {
       "post": {
         "operationId": "RoomController_create",

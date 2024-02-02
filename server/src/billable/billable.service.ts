@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BillableStatusEnum } from '@prisma/client';
+import { BILLABLE_STATUS } from '@prisma/client';
 
 type BillableDueType = {
   type: 'AfterDue' | 'BeforeDue';
@@ -29,7 +29,7 @@ export class BillableService {
           equals: new Date(dateReference).toISOString(),
         },
         AND: {
-          status: BillableStatusEnum.ACTIVE,
+          status: BILLABLE_STATUS.ACTIVE,
         },
       },
       select: {

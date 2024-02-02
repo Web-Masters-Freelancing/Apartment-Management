@@ -61,7 +61,7 @@ export class AuthService {
         id,
       },
       data: {
-        Auth: {
+        auth: {
           update: {
             password: hash,
           },

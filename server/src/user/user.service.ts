@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { RoleEnum } from '@prisma/client';
+import { USER_ROLE } from '@prisma/client';
 import { signData } from '../lib/token';
 
 @Injectable()
@@ -17,8 +17,8 @@ export class UserService {
         address,
         contact,
         role,
-        Auth:
-          role === RoleEnum.ADMIN
+        auth:
+          role === USER_ROLE.ADMIN
             ? {
                 create: {
                   token: undefined,
@@ -30,7 +30,7 @@ export class UserService {
       },
       select: {
         id: true,
-        Auth: {
+        auth: {
           select: {
             email: true,
           },
@@ -39,7 +39,7 @@ export class UserService {
     });
 
     // if role is admin, return the token to instruct the user for password reset
-    return role === RoleEnum.ADMIN ? signData(createdUser) : undefined;
+    return role === USER_ROLE.ADMIN ? signData(createdUser) : undefined;
   }
 
   async findOne({ email }: { email: string }) {
