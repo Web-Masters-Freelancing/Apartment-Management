@@ -1,4 +1,4 @@
-export enum EPathName {
+export enum EProtectedPage {
 	DASHBOARD = "dashboard",
 	ROOM = "rooms",
 	TENANT = "tenants",
@@ -6,6 +6,10 @@ export enum EPathName {
 	REPORTS = "reports",
 	SETTINGS = "settings",
 	TRANSACTIONS = "transactions",
+}
+
+export enum EPublicPage {
+	LOGIN = "login",
 }
 
 export enum ERoomType {
