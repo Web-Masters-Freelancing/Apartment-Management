@@ -52,6 +52,27 @@
           }
         }
       }
+    },
+    "/api/room/available-rooms": {
+      "get": {
+        "operationId": "RoomController_getAvailableRooms",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailableRoomsResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "info": {
@@ -78,6 +99,28 @@
           }
         },
         "required": [
+          "type",
+          "amount"
+        ]
+      },
+      "AvailableRoomsResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
           "type",
           "amount"
         ]
