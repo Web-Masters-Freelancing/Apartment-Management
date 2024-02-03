@@ -40,6 +40,7 @@ TWILIO_PHONE_NUMBER=+12017013598
 You can then access the app using the URL `http://localhost:3000`
 
 - Inside `server/` directory, run the following commands in sequence:
+  - Run `npm install` to install dependencies
   - Run `npx prisma generate` to generate tables
   - Run `npx prisma db push` to update your local prisma client
   - Run `npm run start` to start your development server
