@@ -34,7 +34,7 @@ TWILIO_PHONE_NUMBER=+12017013598
   - Create a database called `apartment`, don't worry about it's tables yet
 
 - Inside `web/` directory, run the following in sequence:
-  - `npm run install` to install dependencies
+  - `npm install` to install dependencies
   - `npm run dev` to start the app locally
 
 You can then access the app using the URL `http://localhost:3000`
