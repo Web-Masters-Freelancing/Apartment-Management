@@ -17,7 +17,7 @@ export default function middleware(req: NextRequest) {
 		return NextResponse.redirect(url.toString());
 	}
 
-	if (isAuth && isAuth.name && mainRoutes.includes(req.nextUrl.pathname)) {
+	if (isAuth?.name && mainRoutes.includes(req.nextUrl.pathname)) {
 		const url = new URL(`/${EProtectedPage.DASHBOARD}`, req.nextUrl.origin);
 		return NextResponse.redirect(url.toString());
 	}
