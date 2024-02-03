@@ -15,7 +15,7 @@ const injectedRtkApi = api.injectEndpoints({
       RoomControllerGetAvailableRoomsResponse,
       RoomControllerGetAvailableRoomsArgs
     >({
-      query: () => ({ url: `/api/room/available-rooms` }),
+      query: () => ({ url: `/api/room/available` }),
     }),
   }),
   overrideExisting: false,

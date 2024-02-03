@@ -53,7 +53,7 @@
         }
       }
     },
-    "/api/room/available-rooms": {
+    "/api/room/available": {
       "get": {
         "operationId": "RoomController_getAvailableRooms",
         "parameters": [],

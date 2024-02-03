@@ -21,7 +21,7 @@ export class RoomController {
     type: AvailableRoomsResponseDto,
     isArray: true,
   })
-  @Get('available-rooms')
+  @Get('available')
   async getAvailableRooms(): Promise<AvailableRoomsResponseDto[]> {
     return await this.roomService.fetchAvailableRooms();
   }
