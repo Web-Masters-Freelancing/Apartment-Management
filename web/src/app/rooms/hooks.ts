@@ -172,6 +172,13 @@ export const useHooks = () => {
 		},
 	];
 
+	const handleEditSubmit = (
+		values: RoomsFormValues,
+		helpers: FormikHelpers<RoomsFormValues>
+	) => {
+		console.log("values", values, helpers);
+	};
+
 	const tableActions: ActionButtonProps[] = [
 		{
 			name: "tenant",
