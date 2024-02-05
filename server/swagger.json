@@ -73,6 +73,27 @@
           }
         }
       }
+    },
+    "/api/room/all": {
+      "get": {
+        "operationId": "RoomController_getRooms",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AllRoomsResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "info": {
@@ -123,6 +144,39 @@
           "id",
           "type",
           "amount"
+        ]
+      },
+      "ROOM_STATUS": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "NOT_AVAILABLE"
+        ]
+      },
+      "AllRoomsResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ROOM_STATUS"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "amount",
+          "status"
         ]
       }
     }

@@ -4,6 +4,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AvailableRoomsResponseDto } from './dto/available-rooms.dto';
 import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
+import { AllRoomsResponseDto } from './dto/fetch-rooms.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('room')
@@ -24,5 +25,18 @@ export class RoomController {
   @Get('available')
   async getAvailableRooms(): Promise<AvailableRoomsResponseDto[]> {
     return await this.roomService.fetchAvailableRooms();
+  }
+
+  @ApiExtraModels(AllRoomsResponseDto)
+  @ApiResponse({
+    status: 200,
+    type: AllRoomsResponseDto,
+    isArray: true,
+  })
+  @Get(
+    '/all',
+  ) /** <-- We can create a separate GET /api/rooms endpoint for this, but we'll just do it this way instead */
+  async getRooms(): Promise<AllRoomsResponseDto[]> {
+    return await this.roomService.fetchRooms();
   }
 }
