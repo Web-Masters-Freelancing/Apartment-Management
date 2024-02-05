@@ -17,6 +17,12 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/api/room/available` }),
     }),
+    roomControllerGetRooms: build.query<
+      RoomControllerGetRoomsResponse,
+      RoomControllerGetRoomsArgs
+    >({
+      query: () => ({ url: `/api/room/all` }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -28,6 +34,9 @@ export type RoomControllerCreateArgs = {
 export type RoomControllerGetAvailableRoomsResponse =
   /** status 200  */ AvailableRoomsResponseDto[];
 export type RoomControllerGetAvailableRoomsArgs = void;
+export type RoomControllerGetRoomsResponse =
+  /** status 200  */ AllRoomsResponseDto[];
+export type RoomControllerGetRoomsArgs = void;
 export type CreateRoomDto = {
   type: string;
   description?: string;
@@ -39,7 +48,16 @@ export type AvailableRoomsResponseDto = {
   description?: string;
   amount: number;
 };
+export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE";
+export type AllRoomsResponseDto = {
+  id: number;
+  type: string;
+  description?: string;
+  amount: number;
+  status: RoomStatus;
+};
 export const {
   useRoomControllerCreateMutation,
   useRoomControllerGetAvailableRoomsQuery,
+  useRoomControllerGetRoomsQuery,
 } = injectedRtkApi;
