@@ -1,12 +1,12 @@
-import { EProtectedPage, EPublicPage } from "@/utils/enums";
+import { Routes } from "@/utils/enums";
 import { NextRequest, NextResponse } from "next/server";
 import { tokenKey } from "./lib/tokenStorage";
 
-const protectedRoutes = Object.values(EProtectedPage).map(
+const protectedRoutes = Object.values(Routes.Protected).map(
 	(value) => `/${value}`
 );
 
-const mainRoutes = ["/", `/${EPublicPage.LOGIN}`];
+const mainRoutes = ["/", `/${Routes.Public.LOGIN}`];
 
 export default function middleware(req: NextRequest) {
 	const isAuth = req.cookies.get(tokenKey);
@@ -18,7 +18,7 @@ export default function middleware(req: NextRequest) {
 	}
 
 	if (isAuth?.name && mainRoutes.includes(req.nextUrl.pathname)) {
-		const url = new URL(`/${EProtectedPage.DASHBOARD}`, req.nextUrl.origin);
+		const url = new URL(`/${Routes.Protected.DASHBOARD}`, req.nextUrl.origin);
 		return NextResponse.redirect(url.toString());
 	}
 }

@@ -1,9 +1,9 @@
 import { FormikHelpers } from "formik";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { EProtectedPage } from "@/utils/enums";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { setToken } from "@/lib/tokenStorage";
+import { Routes } from "@/utils/enums";
 
 export type LoginFormValues = {
 	username: string;
@@ -33,7 +33,7 @@ export const useHooks = () => {
 			open: true,
 			message: "Logged in successfully!",
 		});
-		push(EProtectedPage.DASHBOARD);
+		push(Routes.Protected.DASHBOARD);
 	};
 
 	return {

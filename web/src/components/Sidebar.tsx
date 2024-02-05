@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { EProtectedPage } from "../utils/enums";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import {
 	DashboardCustomize,
@@ -11,12 +9,19 @@ import {
 	SettingsSuggest,
 	Summarize,
 } from "@mui/icons-material";
+import { useHook } from "./hooks/useSideBar";
 
 const Sidebar = () => {
-	// Url Name
-	const urlname = usePathname();
-	// Path Name
-	const pathname = urlname.replace("/", "").trim();
+	const {
+		pathname,
+		DASHBOARD,
+		ROOM,
+		TENANT,
+		BILLABLES,
+		TRANSACTIONS,
+		SETTINGS,
+		REPORTS,
+	} = useHook();
 
 	return (
 		<Box
@@ -29,66 +34,52 @@ const Sidebar = () => {
 			}}
 		>
 			<List sx={{ width: "100%", textTransform: "capitalize" }} component="nav">
-				<Link href={EProtectedPage.DASHBOARD}>
-					<ListItemButton
-						className={pathname === EProtectedPage.DASHBOARD ? "active" : ""}
-					>
+				<Link href={DASHBOARD}>
+					<ListItemButton className={pathname === DASHBOARD ? "active" : ""}>
 						<DashboardCustomize />
-						<ListItemText primary={EProtectedPage.DASHBOARD} />
+						<ListItemText primary={DASHBOARD} />
 					</ListItemButton>
 				</Link>
 
-				<Link href={EProtectedPage.ROOM}>
-					<ListItemButton
-						className={pathname === EProtectedPage.ROOM ? "active" : ""}
-					>
+				<Link href={ROOM}>
+					<ListItemButton className={pathname === ROOM ? "active" : ""}>
 						<BedroomChild />
-						<ListItemText primary={EProtectedPage.ROOM} />
+						<ListItemText primary={ROOM} />
 					</ListItemButton>
 				</Link>
 
-				<Link href={EProtectedPage.TENANT}>
-					<ListItemButton
-						className={pathname === EProtectedPage.TENANT ? "active" : ""}
-					>
+				<Link href={TENANT}>
+					<ListItemButton className={pathname === TENANT ? "active" : ""}>
 						<Person3 />
-						<ListItemText primary={EProtectedPage.TENANT} />
+						<ListItemText primary={TENANT} />
 					</ListItemButton>
 				</Link>
 
-				<Link href={EProtectedPage.BILLABLES}>
-					<ListItemButton
-						className={pathname === EProtectedPage.BILLABLES ? "active" : ""}
-					>
+				<Link href={BILLABLES}>
+					<ListItemButton className={pathname === BILLABLES ? "active" : ""}>
 						<MonetizationOnOutlined />
-						<ListItemText primary={EProtectedPage.BILLABLES} />
+						<ListItemText primary={BILLABLES} />
 					</ListItemButton>
 				</Link>
 
-				<Link href={EProtectedPage.TRANSACTIONS}>
-					<ListItemButton
-						className={pathname === EProtectedPage.TRANSACTIONS ? "active" : ""}
-					>
+				<Link href={TRANSACTIONS}>
+					<ListItemButton className={pathname === TRANSACTIONS ? "active" : ""}>
 						<AccountBalance />
-						<ListItemText primary={EProtectedPage.TRANSACTIONS} />
+						<ListItemText primary={TRANSACTIONS} />
 					</ListItemButton>
 				</Link>
 
-				<Link href={EProtectedPage.SETTINGS}>
-					<ListItemButton
-						className={pathname === EProtectedPage.SETTINGS ? "active" : ""}
-					>
+				<Link href={SETTINGS}>
+					<ListItemButton className={pathname === SETTINGS ? "active" : ""}>
 						<SettingsSuggest />
-						<ListItemText primary={EProtectedPage.SETTINGS} />
+						<ListItemText primary={SETTINGS} />
 					</ListItemButton>
 				</Link>
 
-				<Link href={EProtectedPage.REPORTS}>
-					<ListItemButton
-						className={pathname === EProtectedPage.REPORTS ? "active" : ""}
-					>
+				<Link href={REPORTS}>
+					<ListItemButton className={pathname === REPORTS ? "active" : ""}>
 						<Summarize />
-						<ListItemText primary={EProtectedPage.REPORTS} />
+						<ListItemText primary={REPORTS} />
 					</ListItemButton>
 				</Link>
 			</List>
