@@ -7,6 +7,11 @@ import { CreateRoomDto } from "@/store/api/gen/room";
  */
 export const useRoomApi = () => {
   const [create] = roomApi.useRoomControllerCreateMutation();
+  const {
+    isFetching: isFetchingRooms,
+    data: rooms,
+    isError,
+  } = roomApi.useRoomControllerGetRoomsQuery();
 
   const handleCreateRoom = async (payload: CreateRoomDto) => {
     try {
@@ -20,5 +25,8 @@ export const useRoomApi = () => {
 
   return {
     handleCreateRoom,
+    isFetchingRooms,
+    rooms,
+    isError,
   };
 };

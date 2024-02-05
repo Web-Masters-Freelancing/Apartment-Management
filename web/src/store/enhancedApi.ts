@@ -6,6 +6,9 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
     roomControllerCreate: {
       invalidatesTags: ["rooms"],
     },
+    roomControllerGetRooms: {
+      providesTags: ["rooms"],
+    },
   },
 });
 
