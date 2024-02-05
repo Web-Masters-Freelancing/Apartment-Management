@@ -5,18 +5,17 @@ import { AvailableRoomsResponseDto } from './dto/available-rooms.dto';
 import { Prisma, ROOM_STATUS } from '@prisma/client';
 import { AllRoomsResponseDto } from './dto/fetch-rooms.dto';
 
-const selectAvailableRooms = Prisma.validator<Prisma.RoomSelect>()({
+const rooms = {
   id: true,
   type: true,
   amount: true,
   description: true,
-});
+};
+
+const selectAvailableRooms = Prisma.validator<Prisma.RoomSelect>()(rooms);
 
 const selectAllRooms = Prisma.validator<Prisma.RoomSelect>()({
-  id: true,
-  type: true,
-  amount: true,
-  description: true,
+  ...rooms,
   status: true,
 });
 
@@ -38,7 +37,7 @@ export class RoomService {
     const result = await this.prisma.room.findMany({
       select: selectAllRooms,
       orderBy: {
-        status: 'asc',
+        status: Prisma.SortOrder.asc,
       },
     });
 
