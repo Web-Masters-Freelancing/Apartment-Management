@@ -1,27 +1,24 @@
-import { isBrowser } from './isBrowser'
+import { getCookie, deleteCookie, setCookie } from "cookies-next";
 
-export const tokenKey = 'token' as const
+export const tokenKey = "token" as const;
 
 /**
  * get token from local storage.
  */
-export function getToken(): string | null {
-  if (!isBrowser()) return null
-  return window.localStorage.getItem(tokenKey)
+export function getToken() {
+	return getCookie(tokenKey);
 }
 
 /**
  * save token to local storage.
  */
 export function setToken(token: string): void {
-  if (!isBrowser()) return
-  window.localStorage.setItem(tokenKey, token)
+	setCookie(tokenKey, token);
 }
 
 /**
  * remove token from local storage.
  */
 export function removeToken(): void {
-  if (!isBrowser()) return
-  window.localStorage.removeItem(tokenKey)
+	deleteCookie(tokenKey);
 }
