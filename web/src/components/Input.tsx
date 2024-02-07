@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
-import { TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useField } from "formik";
+import { ChangeEventHandler } from "react";
 
 /**
  * Error style
@@ -22,6 +23,9 @@ export interface CustomInputProps {
   margin?: "dense" | "normal" | "none";
   id?: string;
   size?: "small" | "medium";
+  onChange?:
+    | ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+    | undefined;
 }
 /**
  * Custom Input component

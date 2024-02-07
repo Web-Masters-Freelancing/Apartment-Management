@@ -1,4 +1,4 @@
-import { Box, Modal, Button, Theme, SxProps } from "@mui/material";
+import { Box, Modal, Button, Theme, SxProps, Typography } from "@mui/material";
 import { Form, Formik, FormikHelpers } from "formik";
 import { AnyObject, Maybe, ObjectSchema } from "yup";
 import Input from "./Input";
@@ -8,6 +8,7 @@ import {
   InputFieldProps,
   useHook as useModalHook,
 } from "./hooks/useModal";
+import { memo } from "react";
 
 const contentWrapperStyle: SxProps<Theme> = {
   position: "absolute",
@@ -44,6 +45,8 @@ interface ModalProps<T extends Maybe<AnyObject>> {
   validationSchema?: ObjectSchema<T>;
   handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
   fields: Field<InputFieldProps | SelectFieldProps>[];
+  title: string;
+  btnName?: string;
 }
 
 const CustomModal = ({
@@ -53,53 +56,59 @@ const CustomModal = ({
   initialValues,
   validationSchema,
   handleSubmit,
+  title,
+  btnName,
 }: ModalProps<any>) => {
   const { isInputField, isSelectField } = useModalHook();
 
   return (
     <Modal keepMounted open={open} onClose={handleClose}>
       <Box sx={contentWrapperStyle}>
+        <Typography>{title}</Typography>
         <Box sx={{ width: "100%", alignItems: "center" }}>
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
+            enableReinitialize
           >
-            {({ submitForm, isSubmitting, setFieldValue }) => (
-              <Form>
-                {fields.map((field, index) => {
-                  if (isInputField(field)) {
-                    return <Input {...field.fieldProps} key={index} />;
-                  }
+            {({ submitForm, isSubmitting, setFieldValue }) => {
+              return (
+                <Form>
+                  {fields.map((field, index) => {
+                    if (isInputField(field)) {
+                      return <Input {...field.fieldProps} key={index} />;
+                    }
 
-                  if (isSelectField(field)) {
-                    return (
-                      <Select
-                        {...field.fieldProps}
-                        onChange={(e) => {
-                          if (field.fieldProps.name) {
-                            setFieldValue(
-                              field.fieldProps.name,
-                              e.target.value
-                            );
-                          }
-                        }}
-                        key={index}
-                      />
-                    );
-                  }
-                })}
-                <Box sx={saveButtonWrapper}>
-                  <Button
-                    disabled={isSubmitting}
-                    variant="contained"
-                    onClick={submitForm}
-                  >
-                    Save
-                  </Button>
-                </Box>
-              </Form>
-            )}
+                    if (isSelectField(field)) {
+                      return (
+                        <Select
+                          {...field.fieldProps}
+                          onChange={(e) => {
+                            if (field.fieldProps.name) {
+                              setFieldValue(
+                                field.fieldProps.name,
+                                e.target.value
+                              );
+                            }
+                          }}
+                          key={index}
+                        />
+                      );
+                    }
+                  })}
+                  <Box sx={saveButtonWrapper}>
+                    <Button
+                      disabled={isSubmitting}
+                      variant="contained"
+                      onClick={submitForm}
+                    >
+                      {btnName}
+                    </Button>
+                  </Box>
+                </Form>
+              );
+            }}
           </Formik>
         </Box>
       </Box>
@@ -107,4 +116,4 @@ const CustomModal = ({
   );
 };
 
-export default CustomModal;
+export default memo(CustomModal);
