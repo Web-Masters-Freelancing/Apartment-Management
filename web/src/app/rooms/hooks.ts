@@ -187,14 +187,14 @@ export const useHooks = () => {
 	 * Handle Click event
 	 * @param element
 	 */
-	const handleEditClick = (element: RoomsFormValues) => {
+	const handleEdit = (element: RoomsFormValues) => {
 		setTitle("EDIT ROOMS");
 		setBtnName("Save changes");
 		setInitialValues({ ...element });
 		toggleModal();
 	};
 
-	const handleAddTenantClick = (element: RoomsFormValues) => {
+	const handleAddTenant = (element: RoomsFormValues) => {
 		console.log("Add tenant element", element);
 	};
 
@@ -203,12 +203,12 @@ export const useHooks = () => {
 			name: "tenant",
 			variant: "contained",
 			color: "secondary",
-			handleClick: handleAddTenantClick,
+			handleClick: handleAddTenant,
 		},
 		{
 			name: "Edit",
 			variant: "contained",
-			handleClick: handleEditClick,
+			handleClick: handleEdit,
 		},
 	];
 
