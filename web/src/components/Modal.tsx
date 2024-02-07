@@ -29,8 +29,6 @@ const saveButtonWrapper: SxProps<Theme> = {
   marginTop: 1,
 };
 
-export type ButtonName = "Save" | "Save changes";
-
 /**
  * Modal properties
  * @handleClose a function that handles the closing of the modal
@@ -48,7 +46,7 @@ interface ModalProps<T extends Maybe<AnyObject>> {
   handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
   fields: Field<InputFieldProps | SelectFieldProps>[];
   title: string;
-  btnName?: ButtonName;
+  btnName?: string;
 }
 
 const CustomModal = ({

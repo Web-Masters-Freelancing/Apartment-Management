@@ -1,11 +1,10 @@
 import { FormikHelpers } from "formik";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Field, InputFieldProps } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
-import { ButtonName } from "@/components/Modal";
 
 export type RoomsFormValues = {
   id?: number;
@@ -24,12 +23,11 @@ interface Schema extends RoomsFormValues, TableActions {}
 export const useHooks = () => {
   const { handleCreateRoom } = useRoomApi();
   const { setSnackbarProps } = useSnackbar();
-  const [btnName, setBtnName] = useState<ButtonName>("Save");
+  const [btnName, setBtnName] = useState("Save");
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("CREATE ROOMS");
 
   const [initialValues, setInitialValues] = useState<RoomsFormValues>({
-    id: undefined,
     type: "",
     description: "",
     amount: 0,
@@ -161,6 +159,7 @@ export const useHooks = () => {
 
       toggleModal();
     } catch (e: any) {
+      console.error(e);
       setSnackbarProps({
         open: true,
         message: e.message || "Something went wrong, please try again later.",
@@ -183,7 +182,7 @@ export const useHooks = () => {
    */
   const handleEdit = (values: RoomsFormValues) => {
     setTitle("EDIT ROOMS");
-    setBtnName("Save changes");
+    setBtnName("Save Changes");
     setInitialValues({ ...values });
     toggleModal();
   };
@@ -206,7 +205,11 @@ export const useHooks = () => {
     },
   ];
 
-  const handleSubmit = btnName === "Save" ? handleSave : handleSaveChanges;
+  const handleSubmit = useCallback(
+    () => (btnName === "Save" ? handleSave : handleSaveChanges),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [btnName]
+  );
 
   return {
     handleSubmit,
