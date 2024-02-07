@@ -24,7 +24,7 @@ const Room = () => {
     initialValues,
     handleSearch,
     dataSource,
-    columnSchema,
+    columns,
     tableActions,
     title,
     btnName,
@@ -51,7 +51,7 @@ const Room = () => {
       >
         <Box sx={{ width: "50%" }}>
           <Formik initialValues={{ keyword: "" }} onSubmit={handleSearch}>
-            {(props) => (
+            {() => (
               <Form>
                 <Box
                   sx={{
@@ -101,7 +101,7 @@ const Room = () => {
             Room list!
           </Typography>
           <CustomTable
-            columns={columnSchema}
+            columns={columns}
             dataSource={dataSource}
             actions={tableActions}
           />
