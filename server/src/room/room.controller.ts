@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -14,6 +22,11 @@ export class RoomController {
   @Post('create')
   async create(@Body() payload: CreateRoomDto) {
     return await this.roomService.create(payload);
+  }
+
+  @Put('edit/:id')
+  async edit(@Param('id') id: number, @Body() payload: CreateRoomDto) {
+    return await this.roomService.edit(id, { ...payload });
   }
 
   @ApiExtraModels(AvailableRoomsResponseDto)
