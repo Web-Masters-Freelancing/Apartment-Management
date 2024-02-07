@@ -29,51 +29,14 @@ export const useHooks = () => {
 	const { setSnackbarProps } = useSnackbar();
 
 	const [open, setOpen] = useState(false);
-
-	const initialValues: RoomsFormValues = {
+	const [title, setTitle] = useState("CREATE ROOMS");
+	const [initialValues, setInitialValues] = useState<RoomsFormValues>({
+		id: undefined,
 		type: "",
 		description: "",
 		amount: 0,
-	};
-
-	const handleSearch = async (
-		values: SearchRoom,
-		_: FormikHelpers<SearchRoom>
-	) => {
-		console.log("values", values);
-	};
-
-	const handleSubmit = async (
-		{ description, amount, type }: RoomsFormValues,
-		{ setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
-	) => {
-		try {
-			await handleCreateRoom({
-				amount,
-				type,
-				description,
-			});
-
-			setSnackbarProps({
-				open: true,
-				message: "Room is successfully created!",
-				severity: "success",
-			});
-
-			setSubmitting(false);
-			resetForm({ values: initialValues });
-
-			toggleModal();
-		} catch (e: any) {
-			setSnackbarProps({
-				open: true,
-				message: e.message || "Something went wrong, please try again later.",
-				severity: "success",
-			});
-
-			toggleModal();
-		}
-	};
+		status: "",
+	});
 
 	const toggleModal = () => setOpen((modalState) => !modalState);
 
@@ -124,7 +87,7 @@ export const useHooks = () => {
 	const dataSource: RoomsFormValues[] = [
 		{
 			id: 1,
-			type: "bedspacer",
+			type: "room1",
 			description:
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
 			amount: 1000,
@@ -132,7 +95,7 @@ export const useHooks = () => {
 		},
 		{
 			id: 2,
-			type: "family",
+			type: "room2",
 			description:
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
 			amount: 2000,
@@ -140,7 +103,7 @@ export const useHooks = () => {
 		},
 		{
 			id: 3,
-			type: "standard",
+			type: "room3",
 			description:
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
 			amount: 3000,
@@ -172,22 +135,70 @@ export const useHooks = () => {
 		},
 	];
 
-	const handleEditSubmit = (
-		values: RoomsFormValues,
-		helpers: FormikHelpers<RoomsFormValues>
+	const handleSearch = async (
+		values: SearchRoom,
+		_: FormikHelpers<SearchRoom>
 	) => {
-		console.log("values", values, helpers);
+		console.log("values", values);
 	};
 
-	const tableActions: ActionButtonProps[] = [
+	const handleSubmit = async (
+		{ description, amount, type }: RoomsFormValues,
+		{ setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
+	) => {
+		try {
+			await handleCreateRoom({
+				amount,
+				type,
+				description,
+			});
+
+			setSnackbarProps({
+				open: true,
+				message: "Room is successfully created!",
+				severity: "success",
+			});
+
+			setSubmitting(false);
+			resetForm({ values: initialValues });
+
+			toggleModal();
+		} catch (e: any) {
+			setSnackbarProps({
+				open: true,
+				message: e.message || "Something went wrong, please try again later.",
+				severity: "success",
+			});
+
+			toggleModal();
+		}
+	};
+
+	/**
+	 * Handle Click event
+	 * @param element
+	 */
+	const handleEditClick = (element: RoomsFormValues) => {
+		setTitle("EDIT ROOMS");
+		setInitialValues({ ...element });
+		toggleModal();
+	};
+
+	const handleAddTenantClick = (element: RoomsFormValues) => {
+		console.log("Add tenant element", element);
+	};
+
+	const tableActions: ActionButtonProps<RoomsFormValues>[] = [
 		{
 			name: "tenant",
 			variant: "contained",
 			color: "secondary",
+			handleClick: handleAddTenantClick,
 		},
 		{
 			name: "Edit",
 			variant: "contained",
+			handleClick: handleEditClick,
 		},
 	];
 
@@ -201,5 +212,6 @@ export const useHooks = () => {
 		dataSource,
 		columnSchema,
 		tableActions,
+		title,
 	};
 };

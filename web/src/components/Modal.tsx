@@ -8,6 +8,7 @@ import {
 	InputFieldProps,
 	useHook as useModalHook,
 } from "./hooks/useModal";
+import { useEffect } from "react";
 
 const contentWrapperStyle: SxProps<Theme> = {
 	position: "absolute",
@@ -68,41 +69,49 @@ const CustomModal = ({
 						validationSchema={validationSchema}
 						onSubmit={handleSubmit}
 					>
-						{({ submitForm, isSubmitting, setFieldValue }) => (
-							<Form>
-								{fields.map((field, index) => {
-									if (isInputField(field)) {
-										return <Input {...field.fieldProps} key={index} />;
-									}
+						{({
+							submitForm,
+							isSubmitting,
+							setFieldValue,
+							setValues,
+							values,
+						}) => {
+							return (
+								<Form>
+									{fields.map((field, index) => {
+										if (isInputField(field)) {
+											return <Input {...field.fieldProps} key={index} />;
+										}
 
-									if (isSelectField(field)) {
-										return (
-											<Select
-												{...field.fieldProps}
-												onChange={(e) => {
-													if (field.fieldProps.name) {
-														setFieldValue(
-															field.fieldProps.name,
-															e.target.value
-														);
-													}
-												}}
-												key={index}
-											/>
-										);
-									}
-								})}
-								<Box sx={saveButtonWrapper}>
-									<Button
-										disabled={isSubmitting}
-										variant="contained"
-										onClick={submitForm}
-									>
-										Save
-									</Button>
-								</Box>
-							</Form>
-						)}
+										if (isSelectField(field)) {
+											return (
+												<Select
+													{...field.fieldProps}
+													onChange={(e) => {
+														if (field.fieldProps.name) {
+															setFieldValue(
+																field.fieldProps.name,
+																e.target.value
+															);
+														}
+													}}
+													key={index}
+												/>
+											);
+										}
+									})}
+									<Box sx={saveButtonWrapper}>
+										<Button
+											disabled={isSubmitting}
+											variant="contained"
+											onClick={submitForm}
+										>
+											Save
+										</Button>
+									</Box>
+								</Form>
+							);
+						}}
 					</Formik>
 				</Box>
 			</Box>

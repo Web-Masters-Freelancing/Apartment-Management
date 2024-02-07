@@ -26,6 +26,7 @@ const Room = () => {
     dataSource,
     columnSchema,
     tableActions,
+    title,
   } = useHooks();
 
   return (
@@ -38,7 +39,7 @@ const Room = () => {
         validationSchema={RoomSchema}
         initialValues={initialValues}
         key={"add-room-modal"}
-        title="CREATE ROOMS"
+        title={title}
       />
       <Box
         sx={{

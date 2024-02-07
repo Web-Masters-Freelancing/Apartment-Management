@@ -14,12 +14,27 @@ import {
 import React from "react";
 import { useHook } from "./hooks/useTable";
 
-export interface ActionButtonProps extends ButtonProps {}
-
-export interface TableActions {
-	actions?: ActionButtonProps[];
+/**
+ * Button properties
+ * ActionButtonProps extend to {@link ButtonProps} mui default props
+ * @handleClick is to handle the click event and the param element is the values or object of each rows
+ * @T represent as the generic type of the param either object or array
+ */
+export interface ActionButtonProps<T> extends ButtonProps {
+	handleClick: (element: T) => void;
 }
 
+export interface TableActions {
+	actions?: ActionButtonProps<any>[];
+}
+
+/**
+ * Column properties
+ * @key is from the generic type and represent as a value to be displayed
+ * @label the label of each columns
+ * @align the alignment of each cells
+ * @format this type was able to manipulate numbers format
+ */
 export interface Column<T> extends TableActions {
 	key: keyof T;
 	label: string;
@@ -28,11 +43,21 @@ export interface Column<T> extends TableActions {
 	format?: (value: number) => string;
 }
 
+/**
+ * CustomTable properties
+ * @datasource the data array list or content in the table
+ * @columns which defined specific display in table list
+ */
 export interface CustomTableProps extends TableActions {
 	dataSource: any[];
 	columns: Column<any>[];
 }
 
+/**
+ * @Component
+ * @param {datasource columns actions}
+ * @returns Table component
+ */
 const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
 	const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage } =
 		useHook();
@@ -91,9 +116,15 @@ const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
 																		gap: 1,
 																	}}
 																>
-																	{actions.map((props, actionIndex) => {
+																	{actions.map((action, actionIndex) => {
+																		const { onClick, handleClick, ...props } =
+																			action;
 																		return (
-																			<Button key={actionIndex} {...props}>
+																			<Button
+																				key={actionIndex}
+																				{...props}
+																				onClick={() => handleClick(row)}
+																			>
 																				{props.name}
 																			</Button>
 																		);
@@ -103,8 +134,6 @@ const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
 														);
 													}
 												})}
-
-											{/* */}
 										</TableRow>
 									);
 								})}
