@@ -27,6 +27,7 @@ const Room = () => {
     columnSchema,
     tableActions,
     title,
+    btnName,
   } = useHooks();
 
   return (
@@ -40,6 +41,7 @@ const Room = () => {
         initialValues={initialValues}
         key={"add-room-modal"}
         title={title}
+        btnName={btnName}
       />
       <Box
         sx={{

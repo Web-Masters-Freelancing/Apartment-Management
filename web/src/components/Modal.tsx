@@ -4,30 +4,32 @@ import { AnyObject, Maybe, ObjectSchema } from "yup";
 import Input from "./Input";
 import Select, { SelectFieldProps } from "./Select";
 import {
-  Field,
-  InputFieldProps,
-  useHook as useModalHook,
+	Field,
+	InputFieldProps,
+	useHook as useModalHook,
 } from "./hooks/useModal";
 import { memo } from "react";
 
 const contentWrapperStyle: SxProps<Theme> = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  backgroundColor: "background.paper",
-  border: "1px solid gray",
-  boxShadow: "24",
-  p: 4,
+	position: "absolute",
+	top: "50%",
+	left: "50%",
+	transform: "translate(-50%, -50%)",
+	width: 400,
+	backgroundColor: "background.paper",
+	border: "1px solid gray",
+	boxShadow: "24",
+	p: 4,
 };
 
 const saveButtonWrapper: SxProps<Theme> = {
-  width: "100%",
-  display: "flex",
-  justifyContent: "end",
-  marginTop: 1,
+	width: "100%",
+	display: "flex",
+	justifyContent: "end",
+	marginTop: 1,
 };
+
+export type ButtonName = "Save" | "Save changes";
 
 /**
  * Modal properties
@@ -39,79 +41,81 @@ const saveButtonWrapper: SxProps<Theme> = {
  * @fields Array of {@link Field} prop
  */
 interface ModalProps<T extends Maybe<AnyObject>> {
-  handleClose: () => void;
-  open: boolean;
-  initialValues: T;
-  validationSchema?: ObjectSchema<T>;
-  handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
-  fields: Field<InputFieldProps | SelectFieldProps>[];
-  title: string;
+	handleClose: () => void;
+	open: boolean;
+	initialValues: T;
+	validationSchema?: ObjectSchema<T>;
+	handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
+	fields: Field<InputFieldProps | SelectFieldProps>[];
+	title: string;
+	btnName?: ButtonName;
 }
 
 const CustomModal = ({
-  handleClose,
-  open,
-  fields,
-  initialValues,
-  validationSchema,
-  handleSubmit,
-  title,
+	handleClose,
+	open,
+	fields,
+	initialValues,
+	validationSchema,
+	handleSubmit,
+	title,
+	btnName,
 }: ModalProps<any>) => {
-  const { isInputField, isSelectField } = useModalHook();
+	const { isInputField, isSelectField } = useModalHook();
 
-  return (
-    <Modal keepMounted open={open} onClose={handleClose}>
-      <Box sx={contentWrapperStyle}>
-        <Typography>{title}</Typography>
-        <Box sx={{ width: "100%", alignItems: "center" }}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-            enableReinitialize
-          >
-            {({ submitForm, isSubmitting, setFieldValue }) => {
-              return (
-                <Form>
-                  {fields.map((field, index) => {
-                    if (isInputField(field)) {
-                      return <Input {...field.fieldProps} key={index} />;
-                    }
+	return (
+		<Modal keepMounted open={open} onClose={handleClose}>
+			<Box sx={contentWrapperStyle}>
+				<Typography>{title}</Typography>
+				<Box sx={{ width: "100%", alignItems: "center" }}>
+					<Formik
+						initialValues={initialValues}
+						validationSchema={validationSchema}
+						onSubmit={handleSubmit}
+						enableReinitialize
+					>
+						{({ submitForm, isSubmitting, setFieldValue }) => {
+							return (
+								<Form>
+									{fields.map((field, index) => {
+										if (isInputField(field)) {
+											return <Input {...field.fieldProps} key={index} />;
+										}
 
-                    if (isSelectField(field)) {
-                      return (
-                        <Select
-                          {...field.fieldProps}
-                          onChange={(e) => {
-                            if (field.fieldProps.name) {
-                              setFieldValue(
-                                field.fieldProps.name,
-                                e.target.value
-                              );
-                            }
-                          }}
-                          key={index}
-                        />
-                      );
-                    }
-                  })}
-                  <Box sx={saveButtonWrapper}>
-                    <Button
-                      disabled={isSubmitting}
-                      variant="contained"
-                      onClick={submitForm}
-                    >
-                      Save
-                    </Button>
-                  </Box>
-                </Form>
-              );
-            }}
-          </Formik>
-        </Box>
-      </Box>
-    </Modal>
-  );
+										if (isSelectField(field)) {
+											return (
+												<Select
+													{...field.fieldProps}
+													onChange={(e) => {
+														if (field.fieldProps.name) {
+															setFieldValue(
+																field.fieldProps.name,
+																e.target.value
+															);
+														}
+													}}
+													key={index}
+												/>
+											);
+										}
+									})}
+									<Box sx={saveButtonWrapper}>
+										<Button
+											disabled={isSubmitting}
+											variant="contained"
+											onClick={submitForm}
+										>
+											{btnName}
+										</Button>
+									</Box>
+								</Form>
+							);
+						}}
+					</Formik>
+				</Box>
+			</Box>
+		</Modal>
+	);
 };
 
 export default memo(CustomModal);

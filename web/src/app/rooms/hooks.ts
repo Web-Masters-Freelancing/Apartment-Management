@@ -5,6 +5,7 @@ import { useRoomApi } from "@/hooks/api/room";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
+import { ButtonName } from "@/components/Modal";
 
 export type RoomsFormValues = {
 	id?: number;
@@ -27,9 +28,10 @@ interface Schema extends RoomsFormValues, TableActions {}
 export const useHooks = () => {
 	const { handleCreateRoom } = useRoomApi();
 	const { setSnackbarProps } = useSnackbar();
-
+	const [btnName, setBtnName] = useState<ButtonName>("Save");
 	const [open, setOpen] = useState(false);
 	const [title, setTitle] = useState("CREATE ROOMS");
+
 	const [initialValues, setInitialValues] = useState<RoomsFormValues>({
 		id: undefined,
 		type: "",
@@ -142,7 +144,7 @@ export const useHooks = () => {
 		console.log("values", values);
 	};
 
-	const handleSubmit = async (
+	const handleSave = async (
 		{ description, amount, type }: RoomsFormValues,
 		{ setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
 	) => {
@@ -174,12 +176,20 @@ export const useHooks = () => {
 		}
 	};
 
+	const handleSaveChanges = (
+		{ id, description, amount, type }: RoomsFormValues,
+		{ setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
+	) => {
+		console.log("values", id, description, amount, type);
+	};
+
 	/**
 	 * Handle Click event
 	 * @param element
 	 */
 	const handleEditClick = (element: RoomsFormValues) => {
 		setTitle("EDIT ROOMS");
+		setBtnName("Save changes");
 		setInitialValues({ ...element });
 		toggleModal();
 	};
@@ -202,8 +212,11 @@ export const useHooks = () => {
 		},
 	];
 
+	const handleSubmit = btnName === "Save" ? handleSave : handleSaveChanges;
+
 	return {
 		handleSubmit,
+		btnName,
 		fields,
 		toggleModal,
 		open,
