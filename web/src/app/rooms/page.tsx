@@ -1,12 +1,10 @@
 "use client";
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import WrapperLayout from "@/app/wrapper.layout";
-import { Form, Formik } from "formik";
-import CustomInput from "@/components/Input";
 import CustomModal from "@/components/Modal";
 import { RoomSchema } from "@/schemas";
 import { useHooks } from "./hooks";
 import CustomTable from "@/components/Table";
+import SearchBar from "@/components/SearchBar";
 
 const Room = () => {
   const {
@@ -21,6 +19,7 @@ const Room = () => {
     tableActions,
     title,
     btnName,
+    searchActions,
   } = useHooks();
 
   return (
@@ -36,70 +35,14 @@ const Room = () => {
         title={title}
         btnName={btnName}
       />
-      <Box
-        sx={{
-          display: "flex",
-          width: "100%",
-        }}
-      >
-        <Box sx={{ width: "50%" }}>
-          <Formik initialValues={{ keyword: "" }} onSubmit={handleSearch}>
-            {() => (
-              <Form>
-                <Box
-                  sx={{
-                    display: "flex",
-                  }}
-                >
-                  <CustomInput
-                    label="Search something"
-                    name="text"
-                    id="text"
-                    type="text"
-                    size="small"
-                    margin="none"
-                  />
-                  <Box>
-                    <Button
-                      style={{ marginInlineStart: 4 }}
-                      variant="contained"
-                    >
-                      Search
-                    </Button>
-                  </Box>
-                </Box>
-              </Form>
-            )}
-          </Formik>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            width: "50%",
-            justifyContent: "end",
-          }}
-        >
-          <Button variant="contained" onClick={toggleModal}>
-            Add Rooms
-          </Button>
-        </Box>
-      </Box>
-      <Card sx={{ marginTop: 1 }}>
-        <CardContent>
-          <Typography
-            style={{ fontWeight: "bold" }}
-            variant="h6"
-            component="div"
-          >
-            Room list!
-          </Typography>
-          <CustomTable
-            columns={columns}
-            dataSource={dataSource}
-            actions={tableActions}
-          />
-        </CardContent>
-      </Card>
+      <SearchBar handleSubmit={handleSearch} actions={searchActions} />
+
+      <CustomTable
+        tableName="Room list!"
+        columns={columns}
+        dataSource={dataSource}
+        actions={tableActions}
+      />
     </WrapperLayout>
   );
 };

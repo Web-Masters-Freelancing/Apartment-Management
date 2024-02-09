@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import React, { memo } from "react";
 import { useHook } from "./hooks/useTable";
+import { Typography } from "@mui/material";
 
 /**
  * extends {@link ButtonProps}
  */
 export interface ActionButtonProps<T> extends ButtonProps {
-  handleClick: (element: T) => void;
+  handleClick: (element?: T) => void;
 }
 
 export interface TableActions {
@@ -46,16 +47,33 @@ export interface Column<T> extends TableActions {
  * @columns which defined specific display in table list
  */
 export interface CustomTableProps extends TableActions {
+  tableName: string;
   dataSource: any[];
   columns: Column<any>[];
 }
 
-const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
+const CustomTable = ({
+  tableName,
+  dataSource,
+  columns,
+  actions,
+}: CustomTableProps) => {
   const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage } =
     useHook();
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", marginTop: 2 }}>
+      <Typography
+        style={{
+          fontWeight: "bold",
+          paddingLeft: 15,
+          paddingTop: 10,
+        }}
+        variant="h6"
+        component="div"
+      >
+        {tableName}
+      </Typography>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
