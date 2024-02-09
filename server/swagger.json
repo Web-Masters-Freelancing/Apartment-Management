@@ -53,6 +53,36 @@
         }
       }
     },
+    "/api/room/edit/{id}": {
+      "put": {
+        "operationId": "RoomController_edit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/room/available": {
       "get": {
         "operationId": "RoomController_getAvailableRooms",
