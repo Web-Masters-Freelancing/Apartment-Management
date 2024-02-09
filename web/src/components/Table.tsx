@@ -82,11 +82,12 @@ const CustomTable = ({
                 columns.map((column, index) => {
                   return (
                     <TableCell
+                      sx={{ background: "#e8e1e3" }}
                       key={index}
                       align={column.align}
                       style={{
                         minWidth: column.minWidth ?? 80,
-                        textTransform: "capitalize",
+                        textTransform: "uppercase",
                         fontWeight: "bold",
                       }}
                     >
