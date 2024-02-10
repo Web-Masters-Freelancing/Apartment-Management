@@ -23,10 +23,9 @@ interface Schema extends RoomsFormValues, TableActions {}
 export const useHooks = () => {
   const { handleCreateRoom } = useRoomApi();
   const { setSnackbarProps } = useSnackbar();
-  const [btnName, setBtnName] = useState("Save");
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("CREATE ROOMS");
-
+  const [btnName, setBtnName] = useState("Save");
   const [initialValues, setInitialValues] = useState<RoomsFormValues>({
     type: "",
     description: "",
@@ -125,7 +124,7 @@ export const useHooks = () => {
       label: "status",
     },
     {
-      key: "actions",
+      key: "cellActions",
       label: "actions",
     },
   ];
@@ -180,18 +179,20 @@ export const useHooks = () => {
   /**
    * @values an object of type {@link RoomsFormValues}
    */
-  const handleEdit = (values: RoomsFormValues) => {
-    setTitle("EDIT ROOMS");
-    setBtnName("Save Changes");
-    setInitialValues({ ...values });
-    toggleModal();
+  const handleEdit = (values: RoomsFormValues | undefined) => {
+    if (values) {
+      setTitle("EDIT ROOMS");
+      setBtnName("Save Changes");
+      setInitialValues(values);
+      toggleModal();
+    }
   };
 
-  const handleAddTenant = (values: RoomsFormValues) => {
+  const handleAddTenant = (values: RoomsFormValues | undefined) => {
     console.log("Add tenant values", values);
   };
 
-  const tableActions: ActionButtonProps<RoomsFormValues>[] = [
+  const tableCellActions: ActionButtonProps<RoomsFormValues>[] = [
     {
       name: "tenant",
       variant: "contained",
@@ -202,6 +203,14 @@ export const useHooks = () => {
       name: "Edit",
       variant: "contained",
       handleClick: handleEdit,
+    },
+  ];
+
+  const tableHeaderActions: ActionButtonProps<any>[] = [
+    {
+      name: "Add Rooms",
+      variant: "contained",
+      handleClick: toggleModal,
     },
   ];
 
@@ -221,7 +230,8 @@ export const useHooks = () => {
     handleSearch,
     dataSource,
     columns,
-    tableActions,
     title,
+    tableHeaderActions,
+    tableCellActions,
   };
 };

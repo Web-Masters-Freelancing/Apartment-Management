@@ -10,19 +10,36 @@ import {
   ButtonProps,
   Button,
   TableCellProps,
+  Box,
+  Theme,
 } from "@mui/material";
 import React, { memo } from "react";
 import { useHook } from "./hooks/useTable";
+import { Typography, SxProps } from "@mui/material";
+
+const container: SxProps<Theme> = {
+  width: "100%",
+  overflow: "hidden",
+  marginTop: 2,
+};
+
+const tableHeaderWrapper: SxProps<Theme> = {
+  display: "flex",
+  width: "100%",
+  justifyContent: "space-between",
+  padding: 1,
+};
 
 /**
  * extends {@link ButtonProps}
  */
 export interface ActionButtonProps<T> extends ButtonProps {
-  handleClick: (element: T) => void;
+  handleClick: (element?: T) => void;
 }
 
 export interface TableActions {
-  actions?: ActionButtonProps<any>[];
+  cellActions?: ActionButtonProps<any>[];
+  headerActions?: ActionButtonProps<any>[];
 }
 
 /**
@@ -46,16 +63,56 @@ export interface Column<T> extends TableActions {
  * @columns which defined specific display in table list
  */
 export interface CustomTableProps extends TableActions {
+  tableHeader: string;
   dataSource: any[];
   columns: Column<any>[];
 }
 
-const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
+const CustomTable = ({
+  tableHeader,
+  dataSource,
+  columns,
+  cellActions,
+  headerActions,
+}: CustomTableProps) => {
   const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage } =
     useHook();
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    <Paper sx={container}>
+      <Box sx={tableHeaderWrapper}>
+        <Typography
+          style={{
+            fontWeight: "bold",
+          }}
+          variant="h6"
+          component="div"
+        >
+          {tableHeader}
+        </Typography>
+        <Box sx={{ gap: 2 }}>
+          {headerActions?.length &&
+            headerActions.map((action, key) => {
+              const {
+                onClick,
+                handleClick,
+                variant = "contained",
+                ...props
+              } = action;
+
+              return (
+                <Button
+                  key={key}
+                  variant={variant}
+                  {...props}
+                  onClick={() => handleClick()}
+                >
+                  {props.name}
+                </Button>
+              );
+            })}
+        </Box>
+      </Box>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -64,11 +121,12 @@ const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
                 columns.map((column, index) => {
                   return (
                     <TableCell
+                      sx={{ background: "#e8e1e3" }}
                       key={index}
                       align={column.align}
                       style={{
                         minWidth: column.minWidth ?? 80,
-                        textTransform: "capitalize",
+                        textTransform: "uppercase",
                         fontWeight: "bold",
                       }}
                     >
@@ -87,7 +145,7 @@ const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns?.length &&
                         columns.map((column, cellIndex) => {
-                          if (column.key !== "actions") {
+                          if (column.key !== "cellActions") {
                             return (
                               <TableCell key={cellIndex} align={column.align}>
                                 {column?.format &&
@@ -98,7 +156,7 @@ const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
                             );
                           } else {
                             return (
-                              actions?.length && (
+                              cellActions?.length && (
                                 <TableCell
                                   key={cellIndex}
                                   align="center"
@@ -108,7 +166,7 @@ const CustomTable = ({ dataSource, columns, actions }: CustomTableProps) => {
                                     gap: 1,
                                   }}
                                 >
-                                  {actions.map((action, actionIndex) => {
+                                  {cellActions.map((action, actionIndex) => {
                                     const { onClick, handleClick, ...props } =
                                       action;
                                     return (

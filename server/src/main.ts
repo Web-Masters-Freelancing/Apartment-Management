@@ -1,4 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
+import { ValidationPipe, type INestApplication } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 import { writeFile } from 'fs/promises';
 
@@ -12,6 +12,15 @@ async function bootstrap() {
   await writeFile('./swagger.json', JSON.stringify(document, null, '  '));
 
   SwaggerModule.setup('api/swagger', app, document);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+      whitelist: true,
+      disableErrorMessages: false,
+    }),
+  );
 
   const port = Number(process.env.PORT) || 3031;
   await app.listen(port);
