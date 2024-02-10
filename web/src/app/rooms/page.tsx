@@ -16,10 +16,10 @@ const Room = () => {
     handleSearch,
     dataSource,
     columns,
-    tableActions,
     title,
     btnName,
-    searchActions,
+    tableHeaderActions,
+    tableCellActions,
   } = useHooks();
 
   return (
@@ -35,13 +35,14 @@ const Room = () => {
         title={title}
         btnName={btnName}
       />
-      <SearchBar handleSubmit={handleSearch} actions={searchActions} />
+      <SearchBar handleSubmit={handleSearch} />
 
       <CustomTable
-        tableName="Room list!"
+        tableHeader="Room list!"
         columns={columns}
         dataSource={dataSource}
-        actions={tableActions}
+        headerActions={tableHeaderActions}
+        cellActions={tableCellActions}
       />
     </WrapperLayout>
   );

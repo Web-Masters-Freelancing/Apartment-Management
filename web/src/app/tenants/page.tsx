@@ -2,14 +2,13 @@
 import WrapperLayout from "@/app/wrapper.layout";
 import SearchBar from "@/components/SearchBar";
 import { useHook } from "./hooks";
-import { TenantSchema } from "@/schemas";
+import { TenantFormSchema } from "@/schemas";
 import CustomModal from "@/components/Modal";
 import CustomTable from "@/components/Table";
 
 const TenantPage = () => {
   const {
     handleSearch,
-    searchActions,
     fields,
     open,
     toggleModal,
@@ -18,7 +17,8 @@ const TenantPage = () => {
     title,
     handleSubmit,
     columns,
-    tableActions,
+    tableHeaderActions,
+    tableCellActions,
     dataSource,
   } = useHook();
 
@@ -29,18 +29,19 @@ const TenantPage = () => {
         fields={fields}
         handleSubmit={handleSubmit}
         handleClose={toggleModal}
-        validationSchema={TenantSchema}
+        validationSchema={TenantFormSchema}
         initialValues={initialValues}
         key={"add-room-modal"}
         title={title}
         btnName={btnName}
       />
-      <SearchBar handleSubmit={handleSearch} actions={searchActions} />
+      <SearchBar handleSubmit={handleSearch} />
       <CustomTable
-        tableName="Tenant list!"
+        tableHeader="Tenant list!"
         columns={columns}
         dataSource={dataSource}
-        actions={tableActions}
+        headerActions={tableHeaderActions}
+        cellActions={tableCellActions}
       />
     </WrapperLayout>
   );

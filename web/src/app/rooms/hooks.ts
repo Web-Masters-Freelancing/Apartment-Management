@@ -25,8 +25,7 @@ export const useHooks = () => {
   const { setSnackbarProps } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("CREATE ROOMS");
-  
-   const [btnName, setBtnName] = useState("Save");
+  const [btnName, setBtnName] = useState("Save");
   const [initialValues, setInitialValues] = useState<RoomsFormValues>({
     type: "",
     description: "",
@@ -125,7 +124,7 @@ export const useHooks = () => {
       label: "status",
     },
     {
-      key: "actions",
+      key: "cellActions",
       label: "actions",
     },
   ];
@@ -184,7 +183,7 @@ export const useHooks = () => {
     if (values) {
       setTitle("EDIT ROOMS");
       setBtnName("Save Changes");
-      setInitialValues({ ...values });
+      setInitialValues(values);
       toggleModal();
     }
   };
@@ -193,7 +192,7 @@ export const useHooks = () => {
     console.log("Add tenant values", values);
   };
 
-  const tableActions: ActionButtonProps<RoomsFormValues>[] = [
+  const tableCellActions: ActionButtonProps<RoomsFormValues>[] = [
     {
       name: "tenant",
       variant: "contained",
@@ -207,7 +206,7 @@ export const useHooks = () => {
     },
   ];
 
-  const searchActions: ActionButtonProps<any>[] = [
+  const tableHeaderActions: ActionButtonProps<any>[] = [
     {
       name: "Add Rooms",
       variant: "contained",
@@ -231,8 +230,8 @@ export const useHooks = () => {
     handleSearch,
     dataSource,
     columns,
-    tableActions,
     title,
-    searchActions,
+    tableHeaderActions,
+    tableCellActions,
   };
 };

@@ -13,7 +13,7 @@ export const RoomSchema = yup.object().shape({
   status: yup.string().optional(),
 });
 
-export const TenantSchema = yup.object().shape({
+export const TenantFormSchema = yup.object().shape({
   id: yup.number().optional(),
   name: yup.string().required("This field is required"),
   contact: yup.string().required("This field is required"),

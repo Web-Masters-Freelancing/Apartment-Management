@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import { SelectFieldProps } from "@/components/Select";
 import { InputFieldProps, Field } from "@/components/hooks/useModal";
 
-interface TenantValues {
+interface TenantFormValues {
   id?: number;
   name: string;
   contact: string;
@@ -14,16 +14,16 @@ interface TenantValues {
 
 /**
  * Schema properties
- * extend {@link TenantValues} {@link TableActions}
+ * extend {@link TenantFormValues} {@link TableActions}
  */
-interface Schema extends TenantValues, TableActions {}
+interface Schema extends TenantFormValues, TableActions {}
 
 export const useHook = () => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("CREATE TENANT");
 
   const [btnName, setBtnName] = useState("Save");
-  const [initialValues, setInitialValues] = useState<TenantValues>({
+  const [initialValues, setInitialValues] = useState<TenantFormValues>({
     name: "",
     contact: "",
     address: "",
@@ -82,13 +82,13 @@ export const useHook = () => {
   ];
 
   const handleSave = (
-    { name, contact, address }: TenantValues,
-    { resetForm, setSubmitting }: FormikHelpers<TenantValues>
+    { name, contact, address }: TenantFormValues,
+    { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {};
 
   const handleChanges = (
-    { id, name, contact, address }: TenantValues,
-    { resetForm, setSubmitting }: FormikHelpers<TenantValues>
+    { id, name, contact, address }: TenantFormValues,
+    { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {};
 
   const handleSubmit = useCallback(
@@ -111,12 +111,12 @@ export const useHook = () => {
     },
 
     {
-      key: "actions",
+      key: "cellActions",
       label: "actions",
     },
   ];
 
-  const dataSource: TenantValues[] = [
+  const dataSource: TenantFormValues[] = [
     {
       name: "Dexter Louie Aniez",
       contact: "0926 3919 834",
@@ -129,7 +129,7 @@ export const useHook = () => {
     },
   ];
 
-  const handleEdit = (values: TenantValues | undefined) => {
+  const handleEdit = (values: TenantFormValues | undefined) => {
     if (values) {
       setTitle("EDIT ROOMS");
       setBtnName("Save Changes");
@@ -138,7 +138,15 @@ export const useHook = () => {
     }
   };
 
-  const tableActions: ActionButtonProps<TenantValues>[] = [
+  const tableHeaderActions: ActionButtonProps<any>[] = [
+    {
+      name: "Add Tenant",
+      variant: "contained",
+      handleClick: toggleModal,
+    },
+  ];
+
+  const tableCellActions: ActionButtonProps<TenantFormValues>[] = [
     {
       name: "edit",
       variant: "contained",
@@ -158,6 +166,7 @@ export const useHook = () => {
     handleSubmit,
     columns,
     dataSource,
-    tableActions,
+    tableHeaderActions,
+    tableCellActions,
   };
 };
