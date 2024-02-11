@@ -11,6 +11,16 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.createRoomDto,
       }),
     }),
+    roomControllerEdit: build.mutation<
+      RoomControllerEditResponse,
+      RoomControllerEditArgs
+    >({
+      query: (queryArg) => ({
+        url: `/api/room/edit/${queryArg.id}`,
+        method: "PUT",
+        body: queryArg.createRoomDto,
+      }),
+    }),
     roomControllerGetAvailableRooms: build.query<
       RoomControllerGetAvailableRoomsResponse,
       RoomControllerGetAvailableRoomsArgs
@@ -29,6 +39,11 @@ const injectedRtkApi = api.injectEndpoints({
 export { injectedRtkApi as enhancedApi };
 export type RoomControllerCreateResponse = unknown;
 export type RoomControllerCreateArgs = {
+  createRoomDto: CreateRoomDto;
+};
+export type RoomControllerEditResponse = unknown;
+export type RoomControllerEditArgs = {
+  id: number;
   createRoomDto: CreateRoomDto;
 };
 export type RoomControllerGetAvailableRoomsResponse =
@@ -58,6 +73,7 @@ export type AllRoomsResponseDto = {
 };
 export const {
   useRoomControllerCreateMutation,
+  useRoomControllerEditMutation,
   useRoomControllerGetAvailableRoomsQuery,
   useRoomControllerGetRoomsQuery,
 } = injectedRtkApi;

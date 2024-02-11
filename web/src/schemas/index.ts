@@ -20,3 +20,10 @@ export const SecurityFormSchema = yup.object().shape({
     .oneOf([yup.ref("currentPassword"), ""], "Password must match")
     .required("This field is required"),
 });
+
+export const TenantFormSchema = yup.object().shape({
+  id: yup.number().optional(),
+  name: yup.string().required("This field is required"),
+  contact: yup.string().required("This field is required"),
+  address: yup.string().required("This field is required"),
+});

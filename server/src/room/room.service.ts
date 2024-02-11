@@ -23,6 +23,19 @@ const selectAllRooms = Prisma.validator<Prisma.RoomSelect>()({
 export class RoomService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async edit(id: number, { amount, type, description }: CreateRoomDto) {
+    await this.prisma.room.update({
+      where: {
+        id,
+      },
+      data: {
+        amount: parseFloat(amount as unknown as string),
+        description,
+        type,
+      },
+    });
+  }
+
   async create({ amount, type, description }: CreateRoomDto) {
     await this.prisma.room.create({
       data: {
