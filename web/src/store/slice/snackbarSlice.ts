@@ -1,35 +1,35 @@
-import type { AlertColor } from '@mui/material/Alert'
-import type { SnackbarProps } from '@mui/material/Snackbar'
-import { createSlice } from '@reduxjs/toolkit'
+import type { AlertColor } from "@mui/material/Alert";
+import type { SnackbarProps } from "@mui/material/Snackbar";
+import { createSlice } from "@reduxjs/toolkit";
 
-import { RootState } from '@/store/store'
+import { RootState } from "@/store/store";
 
 export type SnackProps = Pick<
   SnackbarProps,
-  'open' | 'message' | 'autoHideDuration' | 'action' | 'anchorOrigin'
+  "open" | "message" | "autoHideDuration" | "action" | "anchorOrigin"
 > & {
-  severity?: AlertColor
-}
+  severity?: AlertColor;
+};
 
 const initialState: {
-  snackbarProps: SnackProps
+  snackbarProps: SnackProps;
 } = {
   snackbarProps: {},
-}
+};
 
 export const snackbarSlice = createSlice({
-  name: 'snackbar',
+  name: "snackbar",
   initialState,
   reducers: {
     setSnackbarProps: (state, { payload }: { payload: SnackProps }) => {
-      state.snackbarProps = payload
+      state.snackbarProps = payload;
     },
   },
-})
+});
 
 export const selectSnackbarProps = (state: RootState) =>
-  state.snackbar.snackbarProps
+  state.snackbar.snackbarProps;
 
-export const { setSnackbarProps } = snackbarSlice.actions
+export const { setSnackbarProps } = snackbarSlice.actions;
 
-export default snackbarSlice.reducer
+export default snackbarSlice.reducer;

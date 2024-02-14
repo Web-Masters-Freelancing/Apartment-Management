@@ -13,6 +13,14 @@ export const RoomSchema = yup.object().shape({
   status: yup.string().optional(),
 });
 
+export const SecurityFormSchema = yup.object().shape({
+  currentPassword: yup.string().required("This field is required"),
+  newPassword: yup
+    .string()
+    .oneOf([yup.ref("currentPassword"), ""], "Password must match")
+    .required("This field is required"),
+});
+
 export const TenantFormSchema = yup.object().shape({
   id: yup.number().optional(),
   name: yup.string().required("This field is required"),

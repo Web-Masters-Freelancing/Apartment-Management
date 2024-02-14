@@ -162,7 +162,7 @@ export const useHooks = () => {
       setSnackbarProps({
         open: true,
         message: e.message || "Something went wrong, please try again later.",
-        severity: "success",
+        severity: "error",
       });
 
       toggleModal();
@@ -188,17 +188,7 @@ export const useHooks = () => {
     }
   };
 
-  const handleAddTenant = (values: RoomsFormValues | undefined) => {
-    console.log("Add tenant values", values);
-  };
-
   const tableCellActions: ActionButtonProps<RoomsFormValues>[] = [
-    {
-      name: "tenant",
-      variant: "contained",
-      color: "secondary",
-      handleClick: handleAddTenant,
-    },
     {
       name: "Edit",
       variant: "contained",

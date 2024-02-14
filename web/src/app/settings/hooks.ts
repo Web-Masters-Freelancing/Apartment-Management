@@ -1,20 +1,20 @@
-"use client";
-import { useState } from "react";
-import { LoginFormValues } from "../login/hooks";
 import { FormikHelpers } from "formik";
+import { useState } from "react";
 
-interface PasswordSettingsValues extends Pick<LoginFormValues, "password"> {
+interface SecurityValues {
+  currentPassword: string;
   newPassword: string;
 }
 
 export const useHook = () => {
   const [open, setOpen] = useState(false);
+
   const handleClick = () => setOpen(!open);
 
   const handleSubmit = (
-    values: PasswordSettingsValues,
-    {}: FormikHelpers<PasswordSettingsValues>
+    { currentPassword, newPassword }: SecurityValues,
+    { resetForm, setSubmitting }: FormikHelpers<SecurityValues>
   ) => {};
 
-  return { handleSubmit, handleClick, open };
+  return { open, handleClick, handleSubmit };
 };
