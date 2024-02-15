@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker/locale/en';
 import { USER_ROLE } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { hashPassword } from '../../src/lib/password';
+import { RoomService } from '../../src/room/room.service';
 
 export interface SeedUsersProps {
   app: INestApplicationContext;
@@ -16,6 +17,7 @@ export const seedUsers = async (props: SeedUsersProps) => {
   const [userPart] = adminEmail.split('@');
 
   const userService = app.get(UserService);
+  const roomService = app.get(RoomService);
 
   const adminPassword = await hashPassword('admin');
 
@@ -33,19 +35,24 @@ export const seedUsers = async (props: SeedUsersProps) => {
     `Done seeding admin user, created admin token: ${adminToken}, reset your admin password here - http://localhost:3000/reset-password/${adminToken}\n\nNow seeding ${count} tenants...`,
   );
 
-  for (let i = 0; i < count; i++) {
-    const email = `${userPart.replace(/\+.+/, '')}+${uuidv4()}@gmail.com`;
+  const availableRooms = await roomService.fetchAvailableRooms();
 
-    const userPassword = await hashPassword(`${userPart}${i}`);
+  if (availableRooms.length) {
+    for (let i = 0; i < count; i++) {
+      const email = `${userPart.replace(/\+.+/, '')}+${uuidv4()}@gmail.com`;
 
-    await userService.create({
-      address: faker.location.city(),
-      contact: faker.phone.number(),
-      email,
-      name: faker.person.fullName(),
-      password: userPassword,
-      role: USER_ROLE.TENANT,
-    });
+      const userPassword = await hashPassword(`${userPart}${i}`);
+
+      await userService.create({
+        address: faker.location.city(),
+        contact: faker.phone.number(),
+        email,
+        name: faker.person.fullName(),
+        password: userPassword,
+        role: USER_ROLE.TENANT,
+        roomId: availableRooms[0].id,
+      });
+    }
   }
 
   console.log(`Successfully seeded ${count} tenants`);

@@ -52,14 +52,13 @@ const main = async () => {
   const app = await createStandaloneApplication({ logger: ['error'] });
   const answers: Answers = await getAnswers();
 
-  await Promise.all([
-    seedRooms({ app, count: answers.roomCount }),
-    seedUsers({
-      app,
-      count: answers.tenantCount,
-      adminEmail: answers.email,
-    }),
-  ]);
+  // Dili na ni necessary na iparallel query kay need macreate daan ang room before ang user
+  await seedRooms({ app, count: answers.roomCount });
+  await seedUsers({
+    app,
+    count: answers.tenantCount,
+    adminEmail: answers.email,
+  });
 
   console.log('Creating seed data is successfully done.');
 };
