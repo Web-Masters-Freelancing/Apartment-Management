@@ -9,7 +9,7 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(payload: CreateUserDto) {
-    const { name, email, password, address, contact, role } = payload;
+    const { name, email, password, address, contact, role, roomId } = payload;
 
     const createdUser = await this.prisma.user.create({
       data: {
@@ -27,6 +27,11 @@ export class UserService {
                 },
               }
             : undefined,
+        billable: {
+          create: {
+            roomId: parseInt(roomId as unknown as string),
+          },
+        },
       },
       select: {
         id: true,

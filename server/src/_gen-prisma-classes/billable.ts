@@ -17,9 +17,6 @@ export class Billable {
   @ApiProperty({ type: Date })
   dueDate: Date;
 
-  @ApiProperty({ type: Number })
-  amount: number;
-
   @ApiProperty({ enum: BILLABLE_STATUS, enumName: 'BILLABLE_STATUS' })
   status: BILLABLE_STATUS = BILLABLE_STATUS.ACTIVE;
 

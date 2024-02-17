@@ -32,6 +32,27 @@
         }
       }
     },
+    "/api/user/create": {
+      "post": {
+        "operationId": "UserController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/room/create": {
       "post": {
         "operationId": "RoomController_create",
@@ -136,6 +157,45 @@
   "servers": [],
   "components": {
     "schemas": {
+      "USER_ROLE": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "TENANT"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/USER_ROLE"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "contact",
+          "address",
+          "role"
+        ]
+      },
       "CreateRoomDto": {
         "type": "object",
         "properties": {

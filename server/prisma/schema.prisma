@@ -28,8 +28,7 @@ model Billable {
   id       Int             @id @default(autoincrement())
   userId   Int             @unique(map: "Billable_userId_key")
   roomId   Int
-  dueDate  DateTime        @db.Date
-  amount   Float
+  dueDate  DateTime        @default(now()) @db.Timestamp(0)
   status   BILLABLE_STATUS @default(ACTIVE)
   room     Room            @relation(fields: [roomId], references: [id], map: "Billable_roomId_fkey")
   user     User            @relation(fields: [userId], references: [id], map: "Billable_userId_fkey")

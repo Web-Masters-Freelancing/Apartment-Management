@@ -11,6 +11,9 @@ const config: ConfigFile = {
     "./src/store/api/gen/room.ts": {
       filterEndpoints: [/roomController/],
     },
+    "./src/store/api/gen/user.ts": {
+      filterEndpoints: [/userController/],
+    },
   },
 };
 
