@@ -12,6 +12,9 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
     roomControllerGetAvailableRooms: {
       providesTags: ["available-rooms"],
     },
+    roomControllerEdit: {
+      invalidatesTags: ["rooms"],
+    },
   },
 });
 

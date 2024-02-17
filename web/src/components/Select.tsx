@@ -5,6 +5,7 @@ import {
   Select,
   SelectProps,
 } from "@mui/material";
+import styled from "@emotion/styled";
 import { useField } from "formik";
 
 export type OptionSelect = {
@@ -17,12 +18,17 @@ export interface SelectFieldProps extends SelectProps {
   inputLabelId: string;
 }
 
+const ErrorWrapper = styled("div")({
+  color: "#fc8181",
+  fontSize: 10,
+});
+
 const CustomSelect = ({
   options,
   inputLabelId,
   ...props
 }: SelectFieldProps) => {
-  const [field] = useField({ name: props.name! });
+  const [field, meta] = useField({ name: props.name! });
 
   return (
     <FormControl
@@ -44,6 +50,7 @@ const CustomSelect = ({
             );
           })}
       </Select>
+      {meta.touched && meta.error && <ErrorWrapper>*{meta.error}</ErrorWrapper>}
     </FormControl>
   );
 };
