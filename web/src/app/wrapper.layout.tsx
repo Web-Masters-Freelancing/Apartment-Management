@@ -10,12 +10,20 @@ const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
     <Provider store={store}>
       <Box sx={{ overflow: "hidden", height: "100vh" }}>
         <Navbar />
-        <Box sx={{ display: "flex", justifyContent: "start" }}>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            width: "100%",
+            height: "90%",
+          }}
+        >
           <Sidebar />
           <Box
             sx={{
               display: "flex",
-              width: "100%",
+              width: "88%",
               backgroundColor: "ButtonHighlight",
             }}
           >
@@ -23,8 +31,9 @@ const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
               sx={{
                 padding: "10px",
                 width: "100%",
-                height: "90%",
-                overflowY: "scroll",
+                height: "100vh",
+                // overflowY: "scroll",
+                overflowY: "auto",
               }}
             >
               {children}

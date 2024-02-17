@@ -20,7 +20,6 @@ import { useHook } from "./hooks";
 import CustomInput from "@/components/Input";
 import { Form, Formik } from "formik";
 import { SecurityFormSchema } from "@/schemas";
-import SecurityImage from "./../../assets/security.jpg";
 import { Theme } from "@emotion/react";
 
 const formWrapper: SxProps<Theme> = {
@@ -31,16 +30,10 @@ const formWrapper: SxProps<Theme> = {
 };
 
 const SettingsPage = () => {
-  const { handleSubmit, handleClick, open } = useHook();
+  const { handleSubmit, handleClick, open, initialValues } = useHook();
   return (
     <WrapperLayout>
       <Card variant="outlined">
-        <CardMedia
-          sx={{ height: 240 }}
-          component="img"
-          image={SecurityImage.src}
-        />
-
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             Account Security
@@ -65,9 +58,9 @@ const SettingsPage = () => {
                   }}
                 >
                   <Formik
-                    initialValues={{ currentPassword: "", newPassword: "" }}
-                    onSubmit={handleSubmit}
+                    initialValues={initialValues}
                     validationSchema={SecurityFormSchema}
+                    onSubmit={handleSubmit}
                   >
                     {({ submitForm, isSubmitting }) => (
                       <Form>
@@ -78,10 +71,19 @@ const SettingsPage = () => {
                           type="password"
                           margin="dense"
                         />
+
                         <CustomInput
                           label="New password"
                           name="newPassword"
                           id="newPassword"
+                          type="password"
+                          margin="dense"
+                        />
+
+                        <CustomInput
+                          label="Confirm password"
+                          name="confirmPassword"
+                          id="confirmPassword"
                           type="password"
                           margin="dense"
                         />
@@ -97,6 +99,7 @@ const SettingsPage = () => {
                             variant="contained"
                             onSubmit={submitForm}
                             disabled={isSubmitting}
+                            type="submit"
                           >
                             Save changes
                           </Button>

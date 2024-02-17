@@ -49,7 +49,7 @@ const CustomInput = ({
         className={meta.touched && meta.error ? "input-error" : ""}
         sx={{ width: "100%" }}
       />
-      {meta.touched && meta.error && <ErrorStyle> *{meta.error} </ErrorStyle>}
+      {meta.touched && meta.error && <ErrorStyle>*{meta.error}</ErrorStyle>}
     </>
   );
 };
