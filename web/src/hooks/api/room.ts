@@ -13,6 +13,12 @@ export const useRoomApi = () => {
     isError,
   } = roomApi.useRoomControllerGetRoomsQuery();
 
+  const {
+    isFetching: isFetchingAvailableRooms,
+    data: availableRooms,
+    isError: isAvailableRoomsError,
+  } = roomApi.useRoomControllerGetAvailableRoomsQuery();
+
   const handleCreateRoom = async (payload: CreateRoomDto) => {
     try {
       await create({
@@ -28,5 +34,8 @@ export const useRoomApi = () => {
     isFetchingRooms,
     rooms,
     isError,
+    isFetchingAvailableRooms,
+    availableRooms,
+    isAvailableRoomsError,
   };
 };

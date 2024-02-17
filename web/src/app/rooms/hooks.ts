@@ -30,7 +30,6 @@ export const useHooks = () => {
     type: "",
     description: "",
     amount: 0,
-    status: "",
   });
 
   const toggleModal = () => setOpen((modalState) => !modalState);
