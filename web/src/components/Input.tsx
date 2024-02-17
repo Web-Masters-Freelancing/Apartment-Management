@@ -1,12 +1,9 @@
 import styled from "@emotion/styled";
-import { TextField, TextFieldProps } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useField } from "formik";
 import { ChangeEventHandler } from "react";
 
-/**
- * Error style
- */
-const ErrorStyle = styled("div")({
+const ErrorWrapper = styled("div")({
   color: "#fc8181",
   fontSize: 10,
 });
@@ -49,7 +46,7 @@ const CustomInput = ({
         className={meta.touched && meta.error ? "input-error" : ""}
         sx={{ width: "100%" }}
       />
-      {meta.touched && meta.error && <ErrorStyle>*{meta.error}</ErrorStyle>}
+      {meta.touched && meta.error && <ErrorWrapper>*{meta.error}</ErrorWrapper>}
     </>
   );
 };

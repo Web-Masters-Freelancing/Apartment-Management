@@ -7,6 +7,7 @@ import { CreateRoomDto } from "@/store/api/gen/room";
  */
 export const useRoomApi = () => {
   const [create] = roomApi.useRoomControllerCreateMutation();
+  const [edit] = roomApi.useRoomControllerEditMutation();
   const {
     isFetching: isFetchingRooms,
     data: rooms,
@@ -29,8 +30,20 @@ export const useRoomApi = () => {
     }
   };
 
+  const handleEditRoom = async (id: number, payload: CreateRoomDto) => {
+    try {
+      await edit({
+        id,
+        createRoomDto: payload,
+      });
+    } catch (e) {
+      throw e;
+    }
+  };
+
   return {
     handleCreateRoom,
+    handleEditRoom,
     isFetchingRooms,
     rooms,
     isError,

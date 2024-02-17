@@ -6,14 +6,7 @@ import { LoggerErrorInterceptor } from 'nestjs-pino';
 
 export const setGlobalSetting = (app: INestApplication) => {
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-      whitelist: true,
-      disableErrorMessages: false,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   app.use(json({ limit: '50mb' }));
