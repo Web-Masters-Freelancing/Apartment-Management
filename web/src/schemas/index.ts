@@ -26,4 +26,6 @@ export const TenantFormSchema = yup.object().shape({
   name: yup.string().required("This field is required"),
   contact: yup.string().required("This field is required"),
   address: yup.string().required("This field is required"),
+  roomId: yup.number().optional(),
+  amount: yup.number().optional(),
 });

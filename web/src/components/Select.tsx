@@ -9,7 +9,7 @@ import { useField } from "formik";
 
 export type OptionSelect = {
   value?: string | number;
-  key?: string;
+  key?: string | number;
 };
 
 export interface SelectFieldProps extends SelectProps {
