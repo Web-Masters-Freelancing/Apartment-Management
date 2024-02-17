@@ -4,6 +4,7 @@ import { useState } from "react";
 interface SecurityValues {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 export const useHook = () => {
@@ -11,10 +12,20 @@ export const useHook = () => {
 
   const handleClick = () => setOpen(!open);
 
-  const handleSubmit = (
-    { currentPassword, newPassword }: SecurityValues,
+  const handleSubmit = async (
+    { currentPassword, newPassword, confirmPassword }: SecurityValues,
     { resetForm, setSubmitting }: FormikHelpers<SecurityValues>
-  ) => {};
+  ) => {
+    console.log("====================================");
+    console.log("values", currentPassword);
+    console.log("====================================");
+  };
 
-  return { open, handleClick, handleSubmit };
+  const initialValues: SecurityValues = {
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  };
+
+  return { open, handleClick, handleSubmit, initialValues };
 };
