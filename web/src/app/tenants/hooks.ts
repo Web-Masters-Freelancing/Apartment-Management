@@ -188,7 +188,7 @@ export const useHook = () => {
 
   const handleEdit = (values: TenantFormValues | undefined) => {
     if (values) {
-      setTitle("EDIT ROOMS");
+      setTitle("EDIT TENANT");
       setBtnName("Save Changes");
       setInitialValues({ ...values });
       toggleModal();
