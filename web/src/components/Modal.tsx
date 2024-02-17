@@ -77,7 +77,20 @@ const CustomModal = ({
                 <Form>
                   {fields.map((field, index) => {
                     if (isInputField(field)) {
-                      return <Input {...field.fieldProps} key={index} />;
+                      return (
+                        <Input
+                          {...field.fieldProps}
+                          onChange={(e) => {
+                            if (field.fieldProps.name) {
+                              setFieldValue(
+                                field.fieldProps.name,
+                                e.target.value
+                              );
+                            }
+                          }}
+                          key={index}
+                        />
+                      );
                     }
 
                     if (isSelectField(field)) {

@@ -1,9 +1,10 @@
 import { FormikHelpers } from "formik";
 import { RoomsFormValues, SearchRoom } from "../rooms/hooks";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { InputFieldProps, Field } from "@/components/hooks/useModal";
+import { useRoomApi } from "@/hooks/api/room";
 
 interface RoomHistoryValues {
   id: number;
@@ -29,18 +30,15 @@ const inititialFormValues: TenantFormValues = {
   name: "",
   contact: "",
   address: "",
-  roomId: undefined,
-  amount: undefined,
+  roomId: 0,
+  amount: 0,
 };
 
 /**
  * Schema properties
  * extend {@link TenantFormValues} {@link TableActions}
  */
-interface Schema
-  extends TenantFormValues,
-    TableActions,
-    Pick<RoomsFormValues, "type"> {}
+interface Schema extends TenantFormValues, TableActions {}
 
 export const useHook = () => {
   const [open, setOpen] = useState(false);
@@ -52,12 +50,19 @@ export const useHook = () => {
 
   const toggleModal = () => setOpen((modalState) => !modalState);
 
-  const roomsAvailable: OptionSelect[] = [
-    {
-      key: 1,
-      value: "Bedspacer Abutor viridis defendo consuasor ambulo supra apto",
-    },
-  ];
+  const { availableRooms } = useRoomApi();
+
+  const roomsAvailable = useMemo(
+    (): OptionSelect[] | undefined =>
+      availableRooms?.map((value) => {
+        const { id, type, description } = value;
+        return {
+          key: id,
+          value: `${type} ${description}`,
+        };
+      }),
+    [availableRooms]
+  );
 
   const fields: Field<InputFieldProps | SelectFieldProps>[] = [
     {
@@ -110,9 +115,8 @@ export const useHook = () => {
         label: "Amount",
         name: "amount",
         id: "amount",
-        type: "text",
+        type: "number",
         margin: "dense",
-        disabled: true,
       },
     },
   ];
@@ -161,8 +165,14 @@ export const useHook = () => {
       label: "address",
     },
     {
-      key: "type", // base of roomId
+      key: "roomId", // base of roomId
       label: "Assigned room",
+    },
+
+    {
+      key: "amount",
+      label: "amount",
+      format: (value: number) => value.toLocaleString("en-US"),
     },
 
     {
@@ -176,13 +186,15 @@ export const useHook = () => {
       name: "Dexter Louie Aniez",
       contact: "0926 3919 834",
       address: "Tawagan Zamboang del sur",
-      roomId: 1,
+      roomId: 2,
+      amount: 10000,
     },
     {
       name: "Al Olitres",
       contact: "000 000 000",
       address: "Tukuran Zamboanga del sur",
-      roomId: 1,
+      roomId: 2,
+      amount: 9000,
     },
   ];
 
