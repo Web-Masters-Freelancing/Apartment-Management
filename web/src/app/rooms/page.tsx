@@ -1,6 +1,7 @@
 "use client";
 import WrapperLayout from "@/app/wrapper.layout";
 import CustomModal from "@/components/Modal";
+import { LinearProgress } from "@mui/material";
 import { RoomSchema } from "@/schemas";
 import { useHooks } from "./hooks";
 import CustomTable from "@/components/Table";
@@ -20,6 +21,7 @@ const Room = () => {
     btnName,
     tableHeaderActions,
     tableCellActions,
+    isFetchingRooms,
   } = useHooks();
 
   return (
@@ -37,13 +39,17 @@ const Room = () => {
       />
       <SearchBar handleSubmit={handleSearch} />
 
-      <CustomTable
-        tableHeader="Room list!"
-        columns={columns}
-        dataSource={dataSource}
-        headerActions={tableHeaderActions}
-        cellActions={tableCellActions}
-      />
+      {isFetchingRooms ? (
+        <LinearProgress color="primary" />
+      ) : (
+        <CustomTable
+          tableHeader="Room list!"
+          columns={columns}
+          dataSource={dataSource}
+          headerActions={tableHeaderActions}
+          cellActions={tableCellActions}
+        />
+      )}
     </WrapperLayout>
   );
 };

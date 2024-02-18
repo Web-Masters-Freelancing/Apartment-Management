@@ -1,5 +1,5 @@
 import { FormikHelpers } from "formik";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Field, InputFieldProps } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useSnackbar } from "@/hooks/useSnackbar";
@@ -21,8 +21,12 @@ export type SearchRoom = {
 interface Schema extends RoomsFormValues, TableActions {}
 
 export const useHooks = () => {
-  const { handleCreateRoom: createRoom, handleEditRoom: editRoom } =
-    useRoomApi();
+  const {
+    handleCreateRoom: createRoom,
+    handleEditRoom: editRoom,
+    rooms,
+    isFetchingRooms,
+  } = useRoomApi();
   const { setSnackbarProps } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("CREATE ROOMS");
@@ -39,10 +43,10 @@ export const useHooks = () => {
     useState<RoomsFormValues>(initialFormValues);
 
   const roomTypes: OptionSelect[] = [
-    { key: "room1", value: "Family" },
-    { key: "room2", value: "Deluxe" },
-    { key: "room3", value: "Standard" },
-    { key: "room4", value: "Barkada" },
+    { key: "family", value: "Family" },
+    { key: "deluxe", value: "Deluxe" },
+    { key: "standard", value: "Standard" },
+    { key: "barkada", value: "Barkada" },
   ];
 
   const fields: Field<InputFieldProps | SelectFieldProps>[] = [
@@ -81,32 +85,9 @@ export const useHooks = () => {
     },
   ];
 
-  const dataSource: RoomsFormValues[] = [
-    {
-      id: 1,
-      type: "room1",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      amount: 1000,
-      status: "Available",
-    },
-    {
-      id: 2,
-      type: "room2",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      amount: 2000,
-      status: "Available",
-    },
-    {
-      id: 3,
-      type: "room3",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      amount: 3000,
-      status: "Available",
-    },
-  ];
+  const dataSource: RoomsFormValues[] = useMemo(() => {
+    return rooms?.length ? (rooms as RoomsFormValues[]) : [];
+  }, [rooms]);
 
   const columns: Column<Schema>[] = [
     {
@@ -234,6 +215,7 @@ export const useHooks = () => {
   );
 
   return {
+    isFetchingRooms,
     handleSubmit,
     btnName,
     fields,
