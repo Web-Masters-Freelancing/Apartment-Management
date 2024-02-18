@@ -20,10 +20,10 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
 });
 
 const enhancedUserApi = userApi.enhanceEndpoints({
-  addTagTypes: ["user"],
+  addTagTypes: ["users"],
   endpoints: {
     userControllerCreate: {
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
     },
   },
 });
