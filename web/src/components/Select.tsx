@@ -5,8 +5,9 @@ import {
   Select,
   SelectProps,
 } from "@mui/material";
+import styled from "@emotion/styled";
 import { useField } from "formik";
-import { ErrorStyle } from "./Input";
+import { ErrorWrapper } from "./Input";
 
 export type OptionSelect = {
   value?: string | number;
@@ -45,7 +46,7 @@ const CustomSelect = ({
             );
           })}
       </Select>
-      {meta.touched && meta.error && <ErrorStyle>*{meta.error}</ErrorStyle>}
+      {meta.touched && meta.error && <ErrorWrapper>*{meta.error}</ErrorWrapper>}
     </FormControl>
   );
 };

@@ -21,18 +21,22 @@ export type SearchRoom = {
 interface Schema extends RoomsFormValues, TableActions {}
 
 export const useHooks = () => {
-  const { handleCreateRoom } = useRoomApi();
+  const { handleCreateRoom: createRoom, handleEditRoom: editRoom } =
+    useRoomApi();
   const { setSnackbarProps } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("CREATE ROOMS");
   const [btnName, setBtnName] = useState("Save");
-  const [initialValues, setInitialValues] = useState<RoomsFormValues>({
+
+  const initialFormValues: RoomsFormValues = {
     type: "",
     description: "",
     amount: 0,
-  });
+    status: "",
+  };
 
-  const toggleModal = () => setOpen((modalState) => !modalState);
+  const [initialValues, setInitialValues] =
+    useState<RoomsFormValues>(initialFormValues);
 
   const roomTypes: OptionSelect[] = [
     { key: "room1", value: "Family" },
@@ -135,63 +139,76 @@ export const useHooks = () => {
     console.log("values", values);
   };
 
-  const handleSave = async (
-    { description, amount, type }: RoomsFormValues,
+  const handleCatchError = (e: any) => {
+    console.error(e);
+    setSnackbarProps({
+      open: true,
+      message: e.message || "Something went wrong, please try again later.",
+      severity: "error",
+    });
+
+    toggleModal();
+  };
+
+  const showSnackbar = (message: string) => {
+    setSnackbarProps({
+      open: true,
+      message,
+      severity: "success",
+    });
+  };
+
+  const handleCreateRoom = async (
+    payload: RoomsFormValues,
     { setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
   ) => {
     try {
-      await handleCreateRoom({
-        amount,
-        type,
-        description,
-      });
+      await createRoom(payload);
 
-      setSnackbarProps({
-        open: true,
-        message: "Room is successfully created!",
-        severity: "success",
-      });
+      showSnackbar("Room is successfully created!");
 
       setSubmitting(false);
-      resetForm({ values: initialValues });
+      resetForm({ values: initialFormValues });
 
       toggleModal();
     } catch (e: any) {
-      console.error(e);
-      setSnackbarProps({
-        open: true,
-        message: e.message || "Something went wrong, please try again later.",
-        severity: "error",
-      });
-
-      toggleModal();
+      handleCatchError(e);
     }
   };
 
-  const handleSaveChanges = (
-    { id, description, amount, type }: RoomsFormValues,
-    _: FormikHelpers<RoomsFormValues>
+  const handleEditRoom = async (
+    { id, ...payload }: RoomsFormValues,
+    { setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
   ) => {
-    console.log("values", id, description, amount, type);
+    try {
+      id && (await editRoom(id, payload));
+
+      showSnackbar("Room is successfully updated!");
+
+      setSubmitting(false);
+      resetForm({ values: initialFormValues });
+
+      toggleModal();
+    } catch (e) {
+      handleCatchError(e);
+    }
   };
 
-  /**
-   * @values an object of type {@link RoomsFormValues}
-   */
-  const handleEdit = (values: RoomsFormValues | undefined) => {
+  const toggleModal = (values?: RoomsFormValues | undefined) => {
     if (values) {
-      setTitle("EDIT ROOMS");
-      setBtnName("Save Changes");
-      setInitialValues(values);
-      toggleModal();
+      setTitle(values.id ? "EDIT ROOMS" : "CREATE ROOMS");
+      setBtnName(values.id ? "Save Changes" : "Save");
+      setInitialValues(values.id ? values : initialFormValues);
     }
+
+    setOpen((modalState) => !modalState);
   };
 
   const tableCellActions: ActionButtonProps<RoomsFormValues>[] = [
     {
       name: "Edit",
       variant: "contained",
-      handleClick: handleEdit,
+      handleClick: toggleModal,
     },
   ];
 
@@ -204,7 +221,14 @@ export const useHooks = () => {
   ];
 
   const handleSubmit = useCallback(
-    () => (btnName === "Save" ? handleSave : handleSaveChanges),
+    function (
+      formValues: RoomsFormValues,
+      formActions: FormikHelpers<RoomsFormValues>
+    ) {
+      btnName === "Save"
+        ? handleCreateRoom(formValues, formActions)
+        : handleEditRoom(formValues, formActions);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [btnName]
   );
