@@ -8,6 +8,7 @@ import { CreateRoomDto } from "@/store/api/gen/room";
 export const useRoomApi = () => {
   const [create] = roomApi.useRoomControllerCreateMutation();
   const [edit] = roomApi.useRoomControllerEditMutation();
+  const [deleteRoom] = roomApi.useRoomControllerDeleteRoomMutation();
   const {
     isFetching: isFetchingRooms,
     data: rooms,
@@ -22,7 +23,7 @@ export const useRoomApi = () => {
 
   const handleCreateRoom = async (payload: CreateRoomDto) => {
     try {
-      await create({
+      return await create({
         createRoomDto: payload,
       });
     } catch (e) {
@@ -32,10 +33,18 @@ export const useRoomApi = () => {
 
   const handleEditRoom = async (id: number, payload: CreateRoomDto) => {
     try {
-      await edit({
+      return await edit({
         id,
         createRoomDto: payload,
       });
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  const handleDeleteRoom = async (id: number) => {
+    try {
+      return await deleteRoom({ id });
     } catch (e) {
       throw e;
     }
@@ -50,5 +59,6 @@ export const useRoomApi = () => {
     isFetchingAvailableRooms,
     availableRooms,
     isAvailableRoomsError,
+    handleDeleteRoom,
   };
 };

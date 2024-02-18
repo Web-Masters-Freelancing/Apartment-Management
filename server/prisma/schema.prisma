@@ -55,6 +55,7 @@ model Room {
   description String?       @db.Text
   amount      Float
   status      ROOM_STATUS   @default(AVAILABLE)
+  isArchived  Boolean       @default(false)
   billable    Billable[]
   roomhistory RoomHistory[]
 }

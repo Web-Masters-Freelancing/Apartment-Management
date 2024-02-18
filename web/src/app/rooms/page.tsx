@@ -6,6 +6,7 @@ import { RoomSchema } from "@/schemas";
 import { useHooks } from "./hooks";
 import CustomTable from "@/components/Table";
 import SearchBar from "@/components/SearchBar";
+import Dialog from "@/components/Dialog";
 
 const Room = () => {
   const {
@@ -22,6 +23,9 @@ const Room = () => {
     tableHeaderActions,
     tableCellActions,
     isFetchingRooms,
+    handleToggleDialog,
+    openDialog,
+    handleDeleteRoom,
   } = useHooks();
 
   return (
@@ -50,6 +54,14 @@ const Room = () => {
           cellActions={tableCellActions}
         />
       )}
+
+      <Dialog
+        contentText="This action is irreversible."
+        handleSubmit={handleDeleteRoom}
+        open={openDialog}
+        title="Are you sure you want you delete this room?"
+        toggleDialog={handleToggleDialog}
+      />
     </WrapperLayout>
   );
 };

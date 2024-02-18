@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -51,5 +52,10 @@ export class RoomController {
   ) /** <-- We can create a separate GET /api/rooms endpoint for this, but we'll just do it this way instead */
   async getRooms(): Promise<AllRoomsResponseDto[]> {
     return await this.roomService.fetchRooms();
+  }
+
+  @Delete('/:id')
+  async deleteRoom(@Param('id') id: number) {
+    await this.roomService.deleteRoom(id);
   }
 }
