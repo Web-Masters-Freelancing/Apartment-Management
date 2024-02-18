@@ -6,6 +6,7 @@ import {
   SelectProps,
 } from "@mui/material";
 import { useField } from "formik";
+import { ErrorStyle } from "./Input";
 
 export type OptionSelect = {
   value?: string | number;
@@ -22,7 +23,7 @@ const CustomSelect = ({
   inputLabelId,
   ...props
 }: SelectFieldProps) => {
-  const [field] = useField({ name: props.name! });
+  const [field, meta] = useField({ name: props.name! });
 
   return (
     <FormControl
@@ -44,6 +45,7 @@ const CustomSelect = ({
             );
           })}
       </Select>
+      {meta.touched && meta.error && <ErrorStyle>*{meta.error}</ErrorStyle>}
     </FormControl>
   );
 };

@@ -6,7 +6,7 @@ import { ChangeEventHandler } from "react";
 /**
  * Error style
  */
-const ErrorStyle = styled("div")({
+export const ErrorStyle = styled("div")({
   color: "#fc8181",
   fontSize: 10,
 });

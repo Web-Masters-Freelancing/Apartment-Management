@@ -10,7 +10,6 @@ export const setGlobalSetting = (app: INestApplication) => {
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-      whitelist: true,
       disableErrorMessages: false,
     }),
   );
