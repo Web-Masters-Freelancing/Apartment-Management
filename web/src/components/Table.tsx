@@ -137,7 +137,7 @@ const CustomTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {dataSource?.length &&
+            {dataSource?.length ? (
               dataSource
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
@@ -186,7 +186,17 @@ const CustomTable = ({
                         })}
                     </TableRow>
                   );
-                })}
+                })
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  sx={{ textAlign: "center" }}
+                >
+                  No data available.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         <TablePagination
