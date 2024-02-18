@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { AvailableRoomsResponseDto } from './dto/available-rooms.dto';
-import { Prisma, ROOM_STATUS } from '@prisma/client';
+import { Prisma, ROOM_STATUS, BILLABLE_STATUS } from '@prisma/client';
 import { AllRoomsResponseDto } from './dto/fetch-rooms.dto';
 
 const rooms = {
@@ -22,6 +22,36 @@ const selectAllRooms = Prisma.validator<Prisma.RoomSelect>()({
 @Injectable()
 export class RoomService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async deleteRoom(id: number) {
+    try {
+      const isRoomOccupied = await this.prisma.billable.findFirst({
+        where: {
+          roomId: id,
+          AND: {
+            status: BILLABLE_STATUS.ACTIVE,
+          },
+        },
+      });
+
+      if (isRoomOccupied) {
+        throw new BadRequestException(
+          'Room cannot be deleted as it is currently occupied by a tenant.',
+        );
+      }
+
+      await this.prisma.room.update({
+        where: {
+          id,
+        },
+        data: {
+          isArchived: true,
+        },
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
 
   async edit(id: number, { amount, type, description }: CreateRoomDto) {
     await this.prisma.room.update({
@@ -48,6 +78,7 @@ export class RoomService {
 
   async fetchRooms(): Promise<AllRoomsResponseDto[]> {
     const result = await this.prisma.room.findMany({
+      where: { isArchived: false },
       select: selectAllRooms,
       orderBy: {
         status: Prisma.SortOrder.asc,
@@ -62,6 +93,7 @@ export class RoomService {
       const result = await this.prisma.room.findMany({
         where: {
           status: ROOM_STATUS.AVAILABLE,
+          isArchived: false,
         },
         select: selectAvailableRooms,
       });

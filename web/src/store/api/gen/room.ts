@@ -33,6 +33,15 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/api/room/all` }),
     }),
+    roomControllerDeleteRoom: build.mutation<
+      RoomControllerDeleteRoomResponse,
+      RoomControllerDeleteRoomArgs
+    >({
+      query: (queryArg) => ({
+        url: `/api/room/${queryArg.id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -52,6 +61,10 @@ export type RoomControllerGetAvailableRoomsArgs = void;
 export type RoomControllerGetRoomsResponse =
   /** status 200  */ AllRoomsResponseDto[];
 export type RoomControllerGetRoomsArgs = void;
+export type RoomControllerDeleteRoomResponse = unknown;
+export type RoomControllerDeleteRoomArgs = {
+  id: number;
+};
 export type CreateRoomDto = {
   type: string;
   description?: string;
@@ -76,4 +89,5 @@ export const {
   useRoomControllerEditMutation,
   useRoomControllerGetAvailableRoomsQuery,
   useRoomControllerGetRoomsQuery,
+  useRoomControllerDeleteRoomMutation,
 } = injectedRtkApi;

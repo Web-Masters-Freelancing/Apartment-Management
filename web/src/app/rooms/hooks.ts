@@ -5,6 +5,7 @@ import { useRoomApi } from "@/hooks/api/room";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
+import { red } from "@mui/material/colors";
 
 export type RoomsFormValues = {
   id?: number;
@@ -26,11 +27,16 @@ export const useHooks = () => {
     handleEditRoom: editRoom,
     rooms,
     isFetchingRooms,
+    handleDeleteRoom: deleteRoom,
   } = useRoomApi();
   const { setSnackbarProps } = useSnackbar();
   const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [title, setTitle] = useState("CREATE ROOMS");
   const [btnName, setBtnName] = useState("Save");
+  const [roomToDelete, setRoomToDelete] = useState<number | undefined>(
+    undefined
+  );
 
   const initialFormValues: RoomsFormValues = {
     type: "",
@@ -175,6 +181,31 @@ export const useHooks = () => {
     }
   };
 
+  const handleDeleteRoom = useCallback(async () => {
+    if (roomToDelete) {
+      try {
+        await deleteRoom(roomToDelete);
+
+        setSnackbarProps({
+          open: true,
+          severity: "success",
+          message: "Room is deleted.",
+        });
+
+        setOpenDialog(false);
+      } catch (e: any) {
+        setSnackbarProps({
+          open: true,
+          severity: "error",
+          message: e.message || "Something went wrong, please try again later.",
+        });
+
+        setOpenDialog(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomToDelete]);
+
   const toggleModal = (values?: RoomsFormValues | undefined) => {
     if (values) {
       setTitle(values.id ? "EDIT ROOMS" : "CREATE ROOMS");
@@ -185,11 +216,30 @@ export const useHooks = () => {
     setOpen((modalState) => !modalState);
   };
 
+  const handleToggleDialog = (values?: RoomsFormValues | undefined) => {
+    if (values && values.id) {
+      setRoomToDelete(values.id);
+    }
+
+    setOpenDialog((state) => !state);
+  };
+
   const tableCellActions: ActionButtonProps<RoomsFormValues>[] = [
     {
       name: "Edit",
       variant: "contained",
       handleClick: toggleModal,
+    },
+    {
+      name: "Delete",
+      variant: "contained",
+      handleClick: handleToggleDialog,
+      sx: {
+        backgroundColor: red[300],
+        ":hover": {
+          backgroundColor: red[400],
+        },
+      },
     },
   ];
 
@@ -228,5 +278,8 @@ export const useHooks = () => {
     title,
     tableHeaderActions,
     tableCellActions,
+    openDialog,
+    handleToggleDialog,
+    handleDeleteRoom,
   };
 };
