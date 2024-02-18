@@ -112,7 +112,7 @@ export const useHook = () => {
         labelId: "roomId",
         margin: "dense",
         name: "roomId",
-        defaultValue: "",
+        defaultValue: 0,
       },
     },
   ];
