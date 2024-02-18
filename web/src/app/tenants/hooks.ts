@@ -5,6 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
+import { useUserApi } from "@/hooks/api/user";
+import { useSnackbar } from "@/hooks/useSnackbar";
+import { CreateUserDto } from "@/store/api/gen/user";
 
 interface RoomHistoryValues {
   id: number;
@@ -18,8 +21,9 @@ interface RoomHistoryValues {
  * extends of {@link RoomsFormValues} pick only property amount
  */
 interface TenantFormValues
-  extends Partial<Pick<RoomHistoryValues, "roomId">>,
-    Partial<Pick<RoomsFormValues, "amount">> {
+  extends Pick<RoomHistoryValues, "roomId">,
+    Partial<Pick<RoomsFormValues, "amount">>,
+    Partial<Pick<CreateUserDto, "role">> {
   id?: number;
   name: string;
   contact: string;
@@ -31,7 +35,6 @@ const inititialFormValues: TenantFormValues = {
   contact: "",
   address: "",
   roomId: 0,
-  amount: 0,
 };
 
 /**
@@ -51,6 +54,9 @@ export const useHook = () => {
   const toggleModal = () => setOpen((modalState) => !modalState);
 
   const { availableRooms } = useRoomApi();
+
+  const { handleCreateUser: createUser } = useUserApi();
+  const { setSnackbarProps } = useSnackbar();
 
   const roomsAvailable = useMemo(
     (): OptionSelect[] | undefined =>
@@ -106,17 +112,7 @@ export const useHook = () => {
         labelId: "roomId",
         margin: "dense",
         name: "roomId",
-        defaultValue: "",
-      },
-    },
-    {
-      fieldType: "text",
-      fieldProps: <InputFieldProps>{
-        label: "Amount",
-        name: "amount",
-        id: "amount",
-        type: "number",
-        margin: "dense",
+        defaultValue: 0,
       },
     },
   ];
@@ -136,18 +132,54 @@ export const useHook = () => {
     },
   ];
 
-  const handleSave = (
+  const handleCreateUser = async (
     { name, contact, address, roomId }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
-  ) => {};
+  ) => {
+    try {
+      await createUser({
+        name,
+        contact,
+        address,
+        roomId,
+        role: "TENANT",
+      });
+      setSnackbarProps({
+        open: true,
+        message: "Tenant is successfully created!",
+        severity: "success",
+      });
+      setSubmitting(false);
+      resetForm();
 
-  const handleChanges = (
+      toggleModal();
+    } catch (e: any) {
+      console.error(e);
+      setSnackbarProps({
+        open: true,
+        message: e.message || "Something went wrong, please try again later.",
+        severity: "error",
+      });
+
+      toggleModal();
+    }
+  };
+
+  const handleEditUser = (
     { id, name, contact, address, roomId }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {};
 
   const handleSubmit = useCallback(
-    () => (btnName === "Save" ? handleSave : handleChanges),
+    function (
+      formValues: TenantFormValues,
+      formActions: FormikHelpers<TenantFormValues>
+    ) {
+      btnName === "Save"
+        ? handleCreateUser(formValues, formActions)
+        : handleEditUser(formValues, formActions);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [btnName]
   );
 

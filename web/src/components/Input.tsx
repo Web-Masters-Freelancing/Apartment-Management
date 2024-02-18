@@ -3,7 +3,7 @@ import { TextField } from "@mui/material";
 import { useField } from "formik";
 import { ChangeEventHandler } from "react";
 
-const ErrorWrapper = styled("div")({
+export const ErrorWrapper = styled("div")({
   color: "#fc8181",
   fontSize: 10,
 });

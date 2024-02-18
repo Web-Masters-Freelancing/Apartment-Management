@@ -1,4 +1,5 @@
 import { enhancedApi as roomApi } from "./api/gen/room";
+import { enhancedApi as userApi } from "./api/gen/user";
 
 const enhancedRoomApi = roomApi.enhanceEndpoints({
   addTagTypes: ["rooms", "available-rooms"],
@@ -18,4 +19,13 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
   },
 });
 
-export { enhancedRoomApi as roomApi };
+const enhancedUserApi = userApi.enhanceEndpoints({
+  addTagTypes: ["users"],
+  endpoints: {
+    userControllerCreate: {
+      invalidatesTags: ["users"],
+    },
+  },
+});
+
+export { enhancedRoomApi as roomApi, enhancedUserApi as userApi };

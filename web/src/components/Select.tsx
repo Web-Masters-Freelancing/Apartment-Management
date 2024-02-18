@@ -5,8 +5,8 @@ import {
   Select,
   SelectProps,
 } from "@mui/material";
-import styled from "@emotion/styled";
 import { useField } from "formik";
+import { ErrorWrapper } from "./Input";
 
 export type OptionSelect = {
   value?: string | number;
@@ -17,11 +17,6 @@ export interface SelectFieldProps extends SelectProps {
   options?: OptionSelect[];
   inputLabelId: string;
 }
-
-const ErrorWrapper = styled("div")({
-  color: "#fc8181",
-  fontSize: 10,
-});
 
 const CustomSelect = ({
   options,
