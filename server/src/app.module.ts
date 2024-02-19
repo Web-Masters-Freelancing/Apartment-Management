@@ -10,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CronjobService } from './cronjob/cronjob.service';
 import { TwilioService } from './twilio/twilio.service';
 import { BillableService } from './billable/billable.service';
+import { BillableModule } from './billable/billable.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BillableService } from './billable/billable.service';
     ConfigModule.forRoot(),
     RoomModule,
     ScheduleModule.forRoot(),
+    BillableModule,
   ],
   controllers: [AppController],
   providers: [AppService, CronjobService, TwilioService, BillableService],

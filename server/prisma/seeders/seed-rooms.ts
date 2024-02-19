@@ -19,7 +19,7 @@ const rooms = [
     amount: 3000,
   },
   {
-    type: 'bedspacer',
+    type: 'standard',
     description: faker.lorem.paragraph(),
     amount: 1500,
   },

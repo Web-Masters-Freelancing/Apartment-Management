@@ -165,6 +165,27 @@
           }
         }
       }
+    },
+    "/api/billable": {
+      "get": {
+        "operationId": "BillableController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FindAllBillableResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "info": {
@@ -299,6 +320,37 @@
           "amount",
           "status",
           "roomNumber"
+        ]
+      },
+      "BILLABLE_STATUS": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "INACTIVE"
+        ]
+      },
+      "FindAllBillableResponseDto": {
+        "type": "object",
+        "properties": {
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BILLABLE_STATUS"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "dueDate",
+          "status",
+          "userName",
+          "amount"
         ]
       }
     }

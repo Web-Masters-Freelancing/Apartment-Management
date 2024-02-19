@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BILLABLE_STATUS } from '@prisma/client';
+import { FindAllBillableResponseDto } from './dto/find-all.dto';
 
 type BillableDueType = {
   type: 'AfterDue' | 'BeforeDue';
@@ -9,6 +10,41 @@ type BillableDueType = {
 @Injectable()
 export class BillableService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async findAll(): Promise<FindAllBillableResponseDto[]> {
+    try {
+      const result = await this.prismaService.billable.findMany({
+        where: {
+          status: BILLABLE_STATUS.ACTIVE,
+        },
+        select: {
+          dueDate: true,
+          status: true,
+          room: {
+            select: {
+              amount: true,
+            },
+          },
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      return result.map((res) => {
+        return {
+          amount: res.room.amount,
+          dueDate: res.dueDate,
+          status: res.status,
+          userName: res.user.name,
+        };
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
 
   async findDue({ type }: BillableDueType) {
     const currentDate = new Date();
