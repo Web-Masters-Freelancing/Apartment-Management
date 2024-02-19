@@ -22,7 +22,7 @@ export class RoomController {
 
   @Post('create')
   async create(@Body() payload: CreateRoomDto) {
-    return await this.roomService.create(payload);
+    await this.roomService.create(payload);
   }
 
   @Put('edit/:id')

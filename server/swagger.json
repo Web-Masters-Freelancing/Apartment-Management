@@ -227,11 +227,15 @@
           },
           "amount": {
             "type": "number"
+          },
+          "roomNumber": {
+            "type": "number"
           }
         },
         "required": [
           "type",
-          "amount"
+          "amount",
+          "roomNumber"
         ]
       },
       "AvailableRoomsResponseDto": {
@@ -248,12 +252,16 @@
           },
           "amount": {
             "type": "number"
+          },
+          "roomNumber": {
+            "type": "number"
           }
         },
         "required": [
           "id",
           "type",
-          "amount"
+          "amount",
+          "roomNumber"
         ]
       },
       "ROOM_STATUS": {
@@ -280,13 +288,17 @@
           },
           "status": {
             "$ref": "#/components/schemas/ROOM_STATUS"
+          },
+          "roomNumber": {
+            "type": "number"
           }
         },
         "required": [
           "id",
           "type",
           "amount",
-          "status"
+          "status",
+          "roomNumber"
         ]
       }
     }

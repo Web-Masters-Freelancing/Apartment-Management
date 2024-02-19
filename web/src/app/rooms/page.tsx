@@ -47,7 +47,7 @@ const Room = () => {
         <LinearProgress color="primary" />
       ) : (
         <CustomTable
-          tableHeader="Room list!"
+          tableHeader="Room List"
           columns={columns}
           dataSource={dataSource}
           headerActions={tableHeaderActions}

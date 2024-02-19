@@ -14,6 +14,11 @@ export const RoomSchema = yup.object().shape({
     .required("This field is required and should not be equal to 0.")
     .min(1),
   status: yup.string().optional(),
+  roomNumber: yup
+    .number()
+    .min(0, "Value should be greater than 0.")
+    .required("This field is required.")
+    .nonNullable(),
 });
 
 export const SecurityFormSchema = yup.object().shape({

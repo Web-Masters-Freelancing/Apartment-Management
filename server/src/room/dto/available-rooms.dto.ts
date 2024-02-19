@@ -6,4 +6,5 @@ export class AvailableRoomsResponseDto extends PickType(RoomEntity, [
   'type',
   'amount',
   'description',
+  'roomNumber',
 ]) {}

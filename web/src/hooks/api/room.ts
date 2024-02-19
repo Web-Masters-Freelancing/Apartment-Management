@@ -1,5 +1,6 @@
 import { roomApi } from "@/store/enhancedApi";
 import { CreateRoomDto } from "@/store/api/gen/room";
+import { handleErrors } from "@/utils/error";
 
 /**
  * This hook is dedicated to calling room endpoints via RTK query
@@ -23,9 +24,11 @@ export const useRoomApi = () => {
 
   const handleCreateRoom = async (payload: CreateRoomDto) => {
     try {
-      return await create({
+      const result: any = await create({
         createRoomDto: payload,
       });
+
+      handleErrors(result);
     } catch (e) {
       throw e;
     }
@@ -33,10 +36,12 @@ export const useRoomApi = () => {
 
   const handleEditRoom = async (id: number, payload: CreateRoomDto) => {
     try {
-      return await edit({
+      const result: any = await edit({
         id,
         createRoomDto: payload,
       });
+
+      handleErrors(result);
     } catch (e) {
       throw e;
     }
@@ -44,7 +49,7 @@ export const useRoomApi = () => {
 
   const handleDeleteRoom = async (id: number) => {
     try {
-      return await deleteRoom({ id });
+      await deleteRoom({ id });
     } catch (e) {
       throw e;
     }
