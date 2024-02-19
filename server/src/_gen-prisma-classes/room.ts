@@ -2,6 +2,7 @@ import { Billable } from './billable';
 import { RoomHistory } from './room_history';
 import { ROOM_STATUS } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class Room {
   @ApiProperty({ type: Number })
@@ -14,6 +15,8 @@ export class Room {
   description?: string;
 
   @ApiProperty({ type: Number })
+  @IsNotEmpty()
+  @IsNumber()
   amount: number;
 
   @ApiProperty({ enum: ROOM_STATUS, enumName: 'ROOM_STATUS' })

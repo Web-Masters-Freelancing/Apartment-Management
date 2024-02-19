@@ -11,6 +11,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.createUserDto,
       }),
     }),
+    userControllerGetUsers: build.query<
+      UserControllerGetUsersResponse,
+      UserControllerGetUsersArgs
+    >({
+      query: () => ({ url: `/api/user/all` }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -19,6 +25,9 @@ export type UserControllerCreateResponse = unknown;
 export type UserControllerCreateArgs = {
   createUserDto: CreateUserDto;
 };
+export type UserControllerGetUsersResponse =
+  /** status 200  */ AllUsersResponseDto[];
+export type UserControllerGetUsersArgs = void;
 export type UserRole = "ADMIN" | "TENANT";
 export type CreateUserDto = {
   name: string;
@@ -29,4 +38,14 @@ export type CreateUserDto = {
   password?: string;
   roomId?: number;
 };
-export const { useUserControllerCreateMutation } = injectedRtkApi;
+export type AllUsersResponseDto = {
+  id: number;
+  name: string;
+  contact: string;
+  address: string;
+  role: UserRole;
+};
+export const {
+  useUserControllerCreateMutation,
+  useUserControllerGetUsersQuery,
+} = injectedRtkApi;

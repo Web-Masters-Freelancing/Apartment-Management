@@ -15,6 +15,19 @@ interface RoomHistoryValues {
   userId: number;
 }
 
+interface BillableValues {
+  roomId: number;
+  room: Pick<RoomsFormValues, "type">;
+}
+
+interface TenantValues extends Partial<Pick<CreateUserDto, "role">> {
+  id?: number;
+  name: string;
+  contact: string;
+  address: string;
+  billable?: BillableValues;
+}
+
 /**
  * TenantFormValues properties
  * extends of {@link RoomHistoryValues}  pick only property roomId
@@ -23,12 +36,7 @@ interface RoomHistoryValues {
 interface TenantFormValues
   extends Pick<RoomHistoryValues, "roomId">,
     Partial<Pick<RoomsFormValues, "amount">>,
-    Partial<Pick<CreateUserDto, "role">> {
-  id?: number;
-  name: string;
-  contact: string;
-  address: string;
-}
+    Pick<TenantValues, "id" | "name" | "address" | "contact" | "role"> {}
 
 const inititialFormValues: TenantFormValues = {
   name: "",
@@ -39,9 +47,9 @@ const inititialFormValues: TenantFormValues = {
 
 /**
  * Schema properties
- * extend {@link TenantFormValues} {@link TableActions}
+ * extend {@link TenantValues} {@link TableActions}
  */
-interface Schema extends TenantFormValues, TableActions {}
+interface Schema extends TenantValues, TableActions {}
 
 export const useHook = () => {
   const [open, setOpen] = useState(false);
@@ -55,7 +63,7 @@ export const useHook = () => {
 
   const { availableRooms } = useRoomApi();
 
-  const { handleCreateUser: createUser } = useUserApi();
+  const { handleCreateUser: createUser, users, isFetchingUsers } = useUserApi();
   const { setSnackbarProps } = useSnackbar();
 
   const roomsAvailable = useMemo(
@@ -183,7 +191,7 @@ export const useHook = () => {
     [btnName]
   );
 
-  const columns: Column<Schema>[] = [
+  const columns: Column<any>[] = [
     {
       key: "name",
       label: "name",
@@ -197,14 +205,8 @@ export const useHook = () => {
       label: "address",
     },
     {
-      key: "roomId", // base of roomId
+      key: "billable.room.type", // base of roomId
       label: "Assigned room",
-    },
-
-    {
-      key: "amount",
-      label: "amount",
-      format: (value: number) => value.toLocaleString("en-US"),
     },
 
     {
@@ -213,28 +215,36 @@ export const useHook = () => {
     },
   ];
 
-  const dataSource: TenantFormValues[] = [
-    {
-      name: "Dexter Louie Aniez",
-      contact: "0926 3919 834",
-      address: "Tawagan Zamboang del sur",
-      roomId: 2,
-      amount: 10000,
-    },
-    {
-      name: "Al Olitres",
-      contact: "000 000 000",
-      address: "Tukuran Zamboanga del sur",
-      roomId: 2,
-      amount: 9000,
-    },
-  ];
+  const dataSource: TenantValues[] = useMemo(() => {
+    if (users?.length) {
+      const usersData = users as TenantValues[];
+      usersData.map((value) => {
+        if (value.billable) {
+          const rooms = value.billable.room;
+          value = { ...value, ...rooms };
+        }
 
-  const handleEdit = (values: TenantFormValues | undefined) => {
+        return value;
+      });
+
+      console.log("usersData", usersData);
+    }
+    return users?.length ? (users as TenantValues[]) : [];
+  }, [users]);
+
+  const handleEdit = (values: TenantValues | undefined) => {
     if (values) {
+      const { id, name, contact, address, billable } = values;
+
       setTitle("EDIT TENANT");
       setBtnName("Save Changes");
-      setInitialValues({ ...values });
+      setInitialValues({
+        id,
+        name,
+        contact,
+        address,
+        roomId: billable?.roomId ?? 0,
+      });
       toggleModal();
     }
   };
@@ -278,5 +288,6 @@ export const useHook = () => {
     dataSource,
     tableHeaderActions,
     tableCellActions,
+    isFetchingUsers,
   };
 };
