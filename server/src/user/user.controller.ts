@@ -23,6 +23,9 @@ export class UserController {
   })
   @Get('/all')
   async getUsers(): Promise<AllUsersResponseDto[]> {
-    return await this.userService.fetchUsers();
+    const users = await this.userService.fetchUsers();
+    console.log('users', users);
+
+    return users;
   }
 }

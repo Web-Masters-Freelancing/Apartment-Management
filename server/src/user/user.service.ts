@@ -90,6 +90,13 @@ export class UserService {
       },
     });
 
-    return result;
+    return result.map((res) => {
+      const { billable, ...values } = res;
+      return {
+        ...values,
+        roomId: billable?.roomId,
+        type: billable?.room.type,
+      };
+    });
   }
 }

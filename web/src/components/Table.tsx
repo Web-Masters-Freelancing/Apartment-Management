@@ -142,25 +142,16 @@ const CustomTable = ({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                    <TableRow
+                      sx={{ textTransform: "capitalize" }}
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={index}
+                    >
                       {columns?.length &&
                         columns.map((column, cellIndex) => {
                           if (column.key !== "cellActions") {
-                            const splitColumn = column.key
-                              .toString()
-                              .split(".");
-
-                            if (splitColumn.length > 1) {
-                              /**
-                               * Sample Format {row["billable"]["room"]["type"]}
-                               */
-                              const keys = splitColumn.map(
-                                (columnKeys, columnIndex) => [columnKeys]
-                              );
-
-                              console.log("split keys", splitColumn);
-                            }
-
                             return (
                               <TableCell key={cellIndex} align={column.align}>
                                 {column?.format &&
