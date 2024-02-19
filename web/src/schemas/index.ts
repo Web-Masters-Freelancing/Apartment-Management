@@ -17,6 +17,7 @@ export const RoomSchema = yup.object().shape({
   roomNumber: yup
     .number()
     .min(0, "Value should be greater than 0.")
+    .required("This field is required.")
     .nonNullable(),
 });
 
