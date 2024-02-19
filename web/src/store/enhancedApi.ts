@@ -1,5 +1,6 @@
 import { enhancedApi as roomApi } from "./api/gen/room";
 import { enhancedApi as userApi } from "./api/gen/user";
+import { enhancedApi as billableApi } from "./api/gen/billable";
 
 const enhancedRoomApi = roomApi.enhanceEndpoints({
   addTagTypes: ["rooms", "available-rooms"],
@@ -23,12 +24,25 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
 });
 
 const enhancedUserApi = userApi.enhanceEndpoints({
-  addTagTypes: ["users"],
+  addTagTypes: ["users", "billables"],
   endpoints: {
     userControllerCreate: {
-      invalidatesTags: ["users"],
+      invalidatesTags: ["users", "billables"],
     },
   },
 });
 
-export { enhancedRoomApi as roomApi, enhancedUserApi as userApi };
+const enhancedBillableApi = billableApi.enhanceEndpoints({
+  addTagTypes: ["billables"],
+  endpoints: {
+    billableControllerFindAll: {
+      providesTags: ["billables"],
+    },
+  },
+});
+
+export {
+  enhancedRoomApi as roomApi,
+  enhancedUserApi as userApi,
+  enhancedBillableApi as billableApi,
+};

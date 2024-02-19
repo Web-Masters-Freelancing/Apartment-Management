@@ -27,11 +27,14 @@ export class UserService {
                 },
               }
             : undefined,
-        billable: {
-          create: {
-            roomId: parseInt(roomId as unknown as string),
-          },
-        },
+        billable:
+          role === USER_ROLE.ADMIN
+            ? undefined
+            : {
+                create: {
+                  roomId: parseInt(roomId as unknown as string),
+                },
+              },
       },
       select: {
         id: true,
