@@ -6,9 +6,9 @@ export const useUserApi = () => {
 
   const {
     isFetching: isFetchingUsers,
-    isError: isUsersError,
+    isError: isErrorFetchingUsers,
     data: users,
-  } = userApi.useUserControllerGetUsersQuery();
+  } = userApi.useUserControllerFindAllQuery();
 
   const handleCreateUser = async (payload: CreateUserDto) => {
     try {
@@ -20,5 +20,5 @@ export const useUserApi = () => {
     }
   };
 
-  return { handleCreateUser, isFetchingUsers, isUsersError, users };
+  return { handleCreateUser, isFetchingUsers, isErrorFetchingUsers, users };
 };

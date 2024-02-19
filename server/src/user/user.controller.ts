@@ -2,7 +2,7 @@ import { Controller, Post, UseGuards, Body, Get } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AllUsersResponseDto } from './dto/fetch-users.dto';
+import { FindAllUsersResponseDto } from './dto/fetch-users.dto';
 import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard)
@@ -15,17 +15,14 @@ export class UserController {
     await this.userService.create(payload);
   }
 
-  @ApiExtraModels(AllUsersResponseDto)
+  @ApiExtraModels(FindAllUsersResponseDto)
   @ApiResponse({
     status: 200,
-    type: AllUsersResponseDto,
+    type: FindAllUsersResponseDto,
     isArray: true,
   })
-  @Get('/all')
-  async getUsers(): Promise<AllUsersResponseDto[]> {
-    const users = await this.userService.fetchUsers();
-    console.log('users', users);
-
-    return users;
+  @Get('/')
+  async findAll(): Promise<FindAllUsersResponseDto[]> {
+    return await this.userService.findAll();
   }
 }

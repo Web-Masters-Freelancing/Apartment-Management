@@ -53,9 +53,9 @@
         }
       }
     },
-    "/api/user/all": {
+    "/api/user": {
       "get": {
-        "operationId": "UserController_getUsers",
+        "operationId": "UserController_findAll",
         "parameters": [],
         "responses": {
           "200": {
@@ -65,7 +65,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AllUsersResponseDto"
+                    "$ref": "#/components/schemas/FindAllUsersResponseDto"
                   }
                 }
               }
@@ -217,7 +217,7 @@
           "role"
         ]
       },
-      "AllUsersResponseDto": {
+      "FindAllUsersResponseDto": {
         "type": "object",
         "properties": {
           "id": {
