@@ -53,9 +53,9 @@
         }
       }
     },
-    "/api/user/all": {
+    "/api/user": {
       "get": {
-        "operationId": "UserController_getUsers",
+        "operationId": "UserController_findAll",
         "parameters": [],
         "responses": {
           "200": {

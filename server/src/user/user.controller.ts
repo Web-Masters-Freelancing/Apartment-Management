@@ -21,8 +21,8 @@ export class UserController {
     type: FindAllUsersResponseDto,
     isArray: true,
   })
-  @Get('/all')
-  async getUsers(): Promise<FindAllUsersResponseDto[]> {
-    return await this.userService.fetchUsers();
+  @Get('/')
+  async findAll(): Promise<FindAllUsersResponseDto[]> {
+    return await this.userService.findAll();
   }
 }

@@ -13,5 +13,10 @@ export const useHook = () => {
     setPage(0);
   };
 
-  return { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage };
+  return {
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
+  };
 };

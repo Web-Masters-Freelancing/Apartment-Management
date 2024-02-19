@@ -20,12 +20,13 @@ interface BillableValues {
   room: Pick<RoomsFormValues, "type">;
 }
 
-interface TenantValues extends Partial<Pick<CreateUserDto, "role">> {
+interface TenantValues
+  extends Partial<Pick<CreateUserDto, "role">>,
+    BillableValues {
   id?: number;
   name: string;
   contact: string;
   address: string;
-  billable?: BillableValues;
 }
 
 /**
@@ -205,7 +206,7 @@ export const useHook = () => {
       label: "address",
     },
     {
-      key: "billable.room.type", // base of roomId
+      key: "type", // base of roomId
       label: "Assigned room",
     },
 
@@ -219,8 +220,8 @@ export const useHook = () => {
     if (users?.length) {
       const usersData = users as TenantValues[];
       usersData.map((value) => {
-        if (value.billable) {
-          const rooms = value.billable.room;
+        if (value.room) {
+          const rooms = value.room;
           value = { ...value, ...rooms };
         }
 
@@ -234,7 +235,7 @@ export const useHook = () => {
 
   const handleEdit = (values: TenantValues | undefined) => {
     if (values) {
-      const { id, name, contact, address, billable } = values;
+      const { id, name, contact, address, roomId } = values;
 
       setTitle("EDIT TENANT");
       setBtnName("Save Changes");
@@ -243,7 +244,7 @@ export const useHook = () => {
         name,
         contact,
         address,
-        roomId: billable?.roomId ?? 0,
+        roomId: roomId ?? 0,
       });
       toggleModal();
     }
@@ -257,7 +258,7 @@ export const useHook = () => {
     },
   ];
 
-  const tableCellActions: ActionButtonProps<TenantFormValues>[] = [
+  const tableCellActions: ActionButtonProps<TenantValues>[] = [
     {
       name: "edit",
       variant: "contained",

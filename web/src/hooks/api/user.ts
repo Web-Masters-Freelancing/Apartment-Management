@@ -8,7 +8,7 @@ export const useUserApi = () => {
     isFetching: isFetchingUsers,
     isError: isUsersError,
     data: users,
-  } = userApi.useUserControllerGetUsersQuery();
+  } = userApi.useUserControllerFindAllQuery();
 
   const handleCreateUser = async (payload: CreateUserDto) => {
     try {

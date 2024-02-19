@@ -72,7 +72,7 @@ export class UserService {
     return user;
   }
 
-  async fetchUsers(): Promise<FindAllUsersResponseDto[]> {
+  async findAll(): Promise<FindAllUsersResponseDto[]> {
     const result = await this.prisma.user.findMany({
       select: {
         id: true,
@@ -93,6 +93,13 @@ export class UserService {
       },
     });
 
-    return result;
+    return result.map((res) => {
+      const { billable, ...values } = res;
+      return {
+        ...values,
+        roomId: billable?.roomId,
+        type: billable?.room.type,
+      };
+    });
   }
 }
