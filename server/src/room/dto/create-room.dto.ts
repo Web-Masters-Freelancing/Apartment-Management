@@ -5,4 +5,5 @@ export class CreateRoomDto extends PickType(RoomEntity, [
   'type',
   'description',
   'amount',
+  'roomNumber',
 ]) {}

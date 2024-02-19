@@ -22,6 +22,9 @@ export class Room {
   @ApiProperty({ type: Boolean })
   isArchived: boolean;
 
+  @ApiProperty({ type: Number })
+  roomNumber: number;
+
   @ApiProperty({ isArray: true, type: () => Billable })
   billable: Billable[];
 

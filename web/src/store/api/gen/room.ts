@@ -69,12 +69,14 @@ export type CreateRoomDto = {
   type: string;
   description?: string;
   amount: number;
+  roomNumber: number;
 };
 export type AvailableRoomsResponseDto = {
   id: number;
   type: string;
   description?: string;
   amount: number;
+  roomNumber: number;
 };
 export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE";
 export type AllRoomsResponseDto = {
@@ -83,6 +85,7 @@ export type AllRoomsResponseDto = {
   description?: string;
   amount: number;
   status: RoomStatus;
+  roomNumber: number;
 };
 export const {
   useRoomControllerCreateMutation,

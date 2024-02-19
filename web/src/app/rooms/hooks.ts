@@ -13,6 +13,7 @@ export type RoomsFormValues = {
   description?: string;
   amount: number;
   status?: string;
+  roomNumber: number;
 };
 
 export type SearchRoom = {
@@ -43,6 +44,7 @@ export const useHooks = () => {
     description: "",
     amount: 0,
     status: "",
+    roomNumber: 0,
   };
 
   const [initialValues, setInitialValues] =
@@ -89,6 +91,16 @@ export const useHooks = () => {
         margin: "dense",
       },
     },
+    {
+      fieldType: "text",
+      fieldProps: <InputFieldProps>{
+        label: "Room number",
+        name: "roomNumber",
+        id: "roomNumber",
+        type: "number",
+        margin: "dense",
+      },
+    },
   ];
 
   const dataSource: RoomsFormValues[] = useMemo(() => {
@@ -108,6 +120,11 @@ export const useHooks = () => {
       key: "amount",
       label: "amount",
       format: (value: number) => value.toLocaleString("en-US"),
+    },
+    {
+      key: "roomNumber",
+      label: "room number",
+      format: (value) => `Door ${value}`,
     },
     {
       key: "status",
@@ -160,12 +177,15 @@ export const useHooks = () => {
       toggleModal();
     } catch (e: any) {
       handleCatchError(e);
+
+      setSubmitting(false);
+      resetForm({ values: initialFormValues });
     }
   };
 
   const handleEditRoom = async (
     { id, ...payload }: RoomsFormValues,
-    { setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
+    { setSubmitting }: FormikHelpers<RoomsFormValues>
   ) => {
     try {
       id && (await editRoom(id, payload));
@@ -173,11 +193,14 @@ export const useHooks = () => {
       showSnackbar("Room is successfully updated!");
 
       setSubmitting(false);
-      resetForm({ values: initialFormValues });
+      setInitialValues(initialFormValues);
 
       toggleModal();
     } catch (e) {
       handleCatchError(e);
+
+      setSubmitting(false);
+      setInitialValues(initialFormValues);
     }
   };
 

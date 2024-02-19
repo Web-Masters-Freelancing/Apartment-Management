@@ -56,8 +56,11 @@ model Room {
   amount      Float
   status      ROOM_STATUS   @default(AVAILABLE)
   isArchived  Boolean       @default(false)
+  roomNumber  Int
   billable    Billable[]
   roomhistory RoomHistory[]
+
+  @@unique([roomNumber])
 }
 
 model RoomHistory {
