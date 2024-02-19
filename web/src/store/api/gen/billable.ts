@@ -11,7 +11,8 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as enhancedApi };
-export type BillableControllerFindAllResponse = unknown;
+export type BillableControllerFindAllResponse =
+  /** status 200  */ FindAllBillableResponseDto[];
 export type BillableControllerFindAllArgs = void;
 export type BillableStatus = "ACTIVE" | "INACTIVE";
 export type FindAllBillableResponseDto = {

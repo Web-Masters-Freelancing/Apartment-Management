@@ -11,11 +11,12 @@ export class BillableController {
 
   @ApiExtraModels(FindAllBillableResponseDto)
   @ApiResponse({
+    status: 200,
     type: FindAllBillableResponseDto,
     isArray: true,
   })
   @Get('/')
-  findAll(): Promise<FindAllBillableResponseDto[]> {
-    return this.billableService.findAll();
+  async findAll(): Promise<FindAllBillableResponseDto[]> {
+    return await this.billableService.findAll();
   }
 }

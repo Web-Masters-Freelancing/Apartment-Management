@@ -171,7 +171,7 @@
         "operationId": "BillableController_findAll",
         "parameters": [],
         "responses": {
-          "default": {
+          "200": {
             "description": "",
             "content": {
               "application/json": {
