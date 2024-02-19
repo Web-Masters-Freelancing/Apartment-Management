@@ -7,7 +7,8 @@ import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useUserApi } from "@/hooks/api/user";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { CreateUserDto } from "@/store/api/gen/user";
+import { FindAllUsersResponseDto } from "@/store/api/gen/user";
+import { PartialPick } from "@/types/generic";
 
 interface RoomHistoryValues {
   id: number;
@@ -15,13 +16,12 @@ interface RoomHistoryValues {
   userId: number;
 }
 
-interface BillableValues {
+interface BillableValues extends Pick<RoomsFormValues, "type"> {
   roomId: number;
-  room: Pick<RoomsFormValues, "type">;
 }
 
 interface TenantValues
-  extends Partial<Pick<CreateUserDto, "role">>,
+  extends Partial<Pick<FindAllUsersResponseDto, "role">>,
     BillableValues {
   id?: number;
   name: string;
@@ -36,8 +36,7 @@ interface TenantValues
  */
 interface TenantFormValues
   extends Pick<RoomHistoryValues, "roomId">,
-    Partial<Pick<RoomsFormValues, "amount">>,
-    Pick<TenantValues, "id" | "name" | "address" | "contact" | "role"> {}
+    PartialPick<FindAllUsersResponseDto, "role" | "id"> {}
 
 const inititialFormValues: TenantFormValues = {
   name: "",
@@ -192,7 +191,7 @@ export const useHook = () => {
     [btnName]
   );
 
-  const columns: Column<any>[] = [
+  const columns: Column<Schema>[] = [
     {
       key: "name",
       label: "name",
@@ -216,22 +215,10 @@ export const useHook = () => {
     },
   ];
 
-  const dataSource: TenantValues[] = useMemo(() => {
-    if (users?.length) {
-      const usersData = users as TenantValues[];
-      usersData.map((value) => {
-        if (value.room) {
-          const rooms = value.room;
-          value = { ...value, ...rooms };
-        }
-
-        return value;
-      });
-
-      console.log("usersData", usersData);
-    }
-    return users?.length ? (users as TenantValues[]) : [];
-  }, [users]);
+  const dataSource: TenantValues[] = useMemo(
+    () => (users?.length ? (users as TenantValues[]) : []),
+    [users]
+  );
 
   const handleEdit = (values: TenantValues | undefined) => {
     if (values) {
@@ -244,7 +231,7 @@ export const useHook = () => {
         name,
         contact,
         address,
-        roomId: roomId ?? 0,
+        roomId,
       });
       toggleModal();
     }
