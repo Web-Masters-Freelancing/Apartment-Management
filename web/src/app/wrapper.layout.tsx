@@ -31,8 +31,7 @@ const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
               sx={{
                 padding: "10px",
                 width: "100%",
-                height: "100vh",
-                // overflowY: "scroll",
+                height: "98%",
                 overflowY: "auto",
               }}
             >

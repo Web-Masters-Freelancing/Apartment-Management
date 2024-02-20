@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { USER_ROLE } from '@prisma/client';
 import { signData } from '../lib/token';
+import { FindAllUsersResponseDto } from './dto/find-all-users.dto';
 
 @Injectable()
 export class UserService {
@@ -69,5 +70,29 @@ export class UserService {
     });
 
     return user;
+  }
+
+  async fetchUsers(): Promise<FindAllUsersResponseDto[]> {
+    const result = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        contact: true,
+        address: true,
+        role: true,
+        billable: {
+          select: {
+            roomId: true,
+            room: {
+              select: {
+                type: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return result;
   }
 }

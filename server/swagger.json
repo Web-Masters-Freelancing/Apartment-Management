@@ -53,6 +53,27 @@
         }
       }
     },
+    "/api/user/all": {
+      "get": {
+        "operationId": "UserController_getUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FindAllUsersResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/room/create": {
       "post": {
         "operationId": "RoomController_create",
@@ -231,6 +252,33 @@
           }
         },
         "required": [
+          "name",
+          "contact",
+          "address",
+          "role"
+        ]
+      },
+      "FindAllUsersResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/USER_ROLE"
+          }
+        },
+        "required": [
+          "id",
           "name",
           "contact",
           "address",
