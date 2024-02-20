@@ -32,6 +32,9 @@ const enhancedUserApi = userApi.enhanceEndpoints({
     userControllerFindAll: {
       invalidatesTags: ["users"],
     },
+    userControllerGetUsers: {
+      providesTags: ["users"],
+    },
   },
 });
 

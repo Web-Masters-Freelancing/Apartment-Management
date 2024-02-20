@@ -25,6 +25,7 @@ const selectAllRooms = Prisma.validator<Prisma.RoomSelect>()({
 export class RoomService {
   constructor(private readonly prisma: PrismaService) {}
 
+<<<<<<< HEAD
   async deleteRoom(id: number) {
     try {
       const isRoomOccupied = await this.prisma.billable.findFirst({
@@ -89,6 +90,29 @@ export class RoomService {
     } catch (e: any) {
       catchError(e);
     }
+=======
+  async edit(id: number, { amount, type, description }: CreateRoomDto) {
+    await this.prisma.room.update({
+      where: {
+        id,
+      },
+      data: {
+        amount,
+        description,
+        type,
+      },
+    });
+  }
+
+  async create({ amount, type, description }: CreateRoomDto) {
+    await this.prisma.room.create({
+      data: {
+        amount,
+        type,
+        description,
+      },
+    });
+>>>>>>> 7c19cc9449b500e3c54f5abed64695a5789e1f78
   }
 
   async fetchRooms(): Promise<AllRoomsResponseDto[]> {
