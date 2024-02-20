@@ -5,6 +5,7 @@ import { useHook } from "./hooks";
 import { TenantFormSchema } from "@/schemas";
 import CustomModal from "@/components/Modal";
 import CustomTable from "@/components/Table";
+import { LinearProgress } from "@mui/material";
 
 const TenantPage = () => {
   const {
@@ -20,6 +21,7 @@ const TenantPage = () => {
     tableHeaderActions,
     tableCellActions,
     dataSource,
+    isFetchingUsers,
   } = useHook();
 
   return (
@@ -36,13 +38,17 @@ const TenantPage = () => {
         btnName={btnName}
       />
       <SearchBar handleSubmit={handleSearch} />
-      <CustomTable
-        tableHeader="Tenant list!"
-        columns={columns}
-        dataSource={dataSource}
-        headerActions={tableHeaderActions}
-        cellActions={tableCellActions}
-      />
+      {isFetchingUsers ? (
+        <LinearProgress color="primary" />
+      ) : (
+        <CustomTable
+          tableHeader="Tenant list!"
+          columns={columns}
+          dataSource={dataSource}
+          headerActions={tableHeaderActions}
+          cellActions={tableCellActions}
+        />
+      )}
     </WrapperLayout>
   );
 };

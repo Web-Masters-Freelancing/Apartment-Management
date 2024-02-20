@@ -142,7 +142,13 @@ const CustomTable = ({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                    <TableRow
+                      sx={{ textTransform: "capitalize" }}
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={index}
+                    >
                       {columns?.length &&
                         columns.map((column, cellIndex) => {
                           if (column.key !== "cellActions") {
