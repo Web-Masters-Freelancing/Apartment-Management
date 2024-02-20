@@ -158,7 +158,7 @@ export const useHook = () => {
         severity: "success",
       });
       setSubmitting(false);
-      resetForm();
+      resetForm({ values: initialValues });
 
       toggleModal();
     } catch (e: any) {
@@ -215,10 +215,9 @@ export const useHook = () => {
     },
   ];
 
-  const dataSource: TenantValues[] = useMemo(
-    () => (users?.length ? (users as TenantValues[]) : []),
-    [users]
-  );
+  const dataSource: TenantValues[] = useMemo(() => {
+    return users?.length ? (users as TenantValues[]) : [];
+  }, [users]);
 
   const handleEdit = (values: TenantValues | undefined) => {
     if (values) {
