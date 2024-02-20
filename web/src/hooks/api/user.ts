@@ -4,6 +4,12 @@ import { CreateUserDto } from "@/store/api/gen/user";
 export const useUserApi = () => {
   const [create] = userApi.useUserControllerCreateMutation();
 
+  const {
+    isFetching: isFetchingUsers,
+    isError: isErrorFetchingUsers,
+    data: users,
+  } = userApi.useUserControllerFindAllQuery();
+
   const handleCreateUser = async (payload: CreateUserDto) => {
     try {
       await create({
@@ -14,5 +20,5 @@ export const useUserApi = () => {
     }
   };
 
-  return { handleCreateUser };
+  return { handleCreateUser, isFetchingUsers, isErrorFetchingUsers, users };
 };

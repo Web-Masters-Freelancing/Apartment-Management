@@ -7,12 +7,26 @@ import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useUserApi } from "@/hooks/api/user";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { CreateUserDto } from "@/store/api/gen/user";
+import { FindAllUsersResponseDto } from "@/store/api/gen/user";
+import { PartialPick } from "@/types/generic";
 
 interface RoomHistoryValues {
   id: number;
   roomId: number;
   userId: number;
+}
+
+interface BillableValues extends Pick<RoomsFormValues, "type"> {
+  roomId: number;
+}
+
+interface TenantValues
+  extends Partial<Pick<FindAllUsersResponseDto, "role">>,
+    BillableValues {
+  id?: number;
+  name: string;
+  contact: string;
+  address: string;
 }
 
 /**
@@ -22,13 +36,7 @@ interface RoomHistoryValues {
  */
 interface TenantFormValues
   extends Pick<RoomHistoryValues, "roomId">,
-    Partial<Pick<RoomsFormValues, "amount">>,
-    Partial<Pick<CreateUserDto, "role">> {
-  id?: number;
-  name: string;
-  contact: string;
-  address: string;
-}
+    PartialPick<FindAllUsersResponseDto, "role" | "id"> {}
 
 const inititialFormValues: TenantFormValues = {
   name: "",
@@ -39,9 +47,9 @@ const inititialFormValues: TenantFormValues = {
 
 /**
  * Schema properties
- * extend {@link TenantFormValues} {@link TableActions}
+ * extend {@link TenantValues} {@link TableActions}
  */
-interface Schema extends TenantFormValues, TableActions {}
+interface Schema extends TenantValues, TableActions {}
 
 export const useHook = () => {
   const [open, setOpen] = useState(false);
@@ -55,7 +63,7 @@ export const useHook = () => {
 
   const { availableRooms } = useRoomApi();
 
-  const { handleCreateUser: createUser } = useUserApi();
+  const { handleCreateUser: createUser, users, isFetchingUsers } = useUserApi();
   const { setSnackbarProps } = useSnackbar();
 
   const roomsAvailable = useMemo(
@@ -150,7 +158,7 @@ export const useHook = () => {
         severity: "success",
       });
       setSubmitting(false);
-      resetForm();
+      resetForm({ values: initialValues });
 
       toggleModal();
     } catch (e: any) {
@@ -197,14 +205,8 @@ export const useHook = () => {
       label: "address",
     },
     {
-      key: "roomId", // base of roomId
+      key: "type", // base of roomId
       label: "Assigned room",
-    },
-
-    {
-      key: "amount",
-      label: "amount",
-      format: (value: number) => value.toLocaleString("en-US"),
     },
 
     {
@@ -213,28 +215,24 @@ export const useHook = () => {
     },
   ];
 
-  const dataSource: TenantFormValues[] = [
-    {
-      name: "Dexter Louie Aniez",
-      contact: "0926 3919 834",
-      address: "Tawagan Zamboang del sur",
-      roomId: 2,
-      amount: 10000,
-    },
-    {
-      name: "Al Olitres",
-      contact: "000 000 000",
-      address: "Tukuran Zamboanga del sur",
-      roomId: 2,
-      amount: 9000,
-    },
-  ];
+  const dataSource: TenantValues[] = useMemo(
+    () => (users?.length ? (users as TenantValues[]) : []),
+    [users]
+  );
 
-  const handleEdit = (values: TenantFormValues | undefined) => {
+  const handleEdit = (values: TenantValues | undefined) => {
     if (values) {
+      const { id, name, contact, address, roomId } = values;
+
       setTitle("EDIT TENANT");
       setBtnName("Save Changes");
-      setInitialValues({ ...values });
+      setInitialValues({
+        id,
+        name,
+        contact,
+        address,
+        roomId,
+      });
       toggleModal();
     }
   };
@@ -247,7 +245,7 @@ export const useHook = () => {
     },
   ];
 
-  const tableCellActions: ActionButtonProps<TenantFormValues>[] = [
+  const tableCellActions: ActionButtonProps<TenantValues>[] = [
     {
       name: "edit",
       variant: "contained",
@@ -278,5 +276,6 @@ export const useHook = () => {
     dataSource,
     tableHeaderActions,
     tableCellActions,
+    isFetchingUsers,
   };
 };
