@@ -91,6 +91,9 @@ export class UserService {
           },
         },
       },
+      where: {
+        role: USER_ROLE.TENANT,
+      },
     });
 
     return result.map((res) => {
