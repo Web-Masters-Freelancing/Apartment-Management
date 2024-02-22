@@ -63,7 +63,12 @@ export const useHook = () => {
 
   const { availableRooms } = useRoomApi();
 
-  const { handleCreateUser: createUser, users, isFetchingUsers } = useUserApi();
+  const {
+    handleCreateUser: createUser,
+    users,
+    isFetchingUsers,
+    handleEditUser: editUser,
+  } = useUserApi();
   const { setSnackbarProps } = useSnackbar();
 
   const roomsAvailable = useMemo(
@@ -173,10 +178,35 @@ export const useHook = () => {
     }
   };
 
-  const handleEditUser = (
-    { id, name, contact, address, roomId }: TenantFormValues,
+  const handleEditUser = async (
+    { id, ...payload }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
-  ) => {};
+  ) => {
+    console.log("handle edit user", id, payload);
+
+    try {
+      id && (await editUser(id, { ...payload, role: "TENANT" }));
+
+      setSnackbarProps({
+        open: true,
+        message: "Tenant is successfully updated!",
+        severity: "success",
+      });
+
+      setSubmitting(false);
+      resetForm();
+      toggleModal();
+    } catch (e: any) {
+      console.error(e);
+      setSnackbarProps({
+        open: true,
+        message: e.message || "Something went wrong, please try again later.",
+        severity: "error",
+      });
+
+      toggleModal();
+    }
+  };
 
   const handleSubmit = useCallback(
     function (

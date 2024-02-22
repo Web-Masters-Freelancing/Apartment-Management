@@ -105,4 +105,18 @@ export class UserService {
       };
     });
   }
+
+  async edit(id: number, { name, contact, address, roomId }: CreateUserDto) {
+    const editUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        name,
+        contact,
+        address,
+        billable: { update: { data: { roomId } } },
+      },
+    });
+
+    return editUser;
+  }
 }

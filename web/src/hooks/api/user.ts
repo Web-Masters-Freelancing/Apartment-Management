@@ -3,6 +3,7 @@ import { CreateUserDto } from "@/store/api/gen/user";
 
 export const useUserApi = () => {
   const [create] = userApi.useUserControllerCreateMutation();
+  const [edit] = userApi.useUserControllerEditMutation();
 
   const {
     isFetching: isFetchingUsers,
@@ -20,5 +21,22 @@ export const useUserApi = () => {
     }
   };
 
-  return { handleCreateUser, isFetchingUsers, isErrorFetchingUsers, users };
+  const handleEditUser = async (id: number, payload: CreateUserDto) => {
+    try {
+      await edit({
+        id,
+        createUserDto: payload,
+      });
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  return {
+    handleCreateUser,
+    handleEditUser,
+    isFetchingUsers,
+    isErrorFetchingUsers,
+    users,
+  };
 };
