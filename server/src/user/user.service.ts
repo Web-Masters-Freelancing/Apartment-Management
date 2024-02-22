@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { USER_ROLE } from '@prisma/client';
 import { signData } from '../lib/token';
-import { FindAllUsersResponseDto } from './dto/fetch-users.dto';
+import { FindAllUsersResponseDto } from './dto/find-all-users.dto';
 
 @Injectable()
 export class UserService {
