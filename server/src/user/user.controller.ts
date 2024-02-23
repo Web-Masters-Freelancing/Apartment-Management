@@ -1,4 +1,13 @@
-import { Controller, Post, UseGuards, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Get,
+  Put,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -24,5 +33,13 @@ export class UserController {
   @Get('/')
   async findAll(): Promise<FindAllUsersResponseDto[]> {
     return await this.userService.findAll();
+  }
+
+  @Put('edit/:id')
+  async edit(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() payload: CreateUserDto,
+  ) {
+    return await this.userService.edit(id, { ...payload });
   }
 }
