@@ -182,8 +182,6 @@ export const useHook = () => {
     { id, ...payload }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {
-    console.log("handle edit user", id, payload);
-
     try {
       id && (await editUser(id, { ...payload, role: "TENANT" }));
 
