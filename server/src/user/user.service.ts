@@ -3,7 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { USER_ROLE } from '@prisma/client';
 import { signData } from '../lib/token';
-import { FindAllUsersResponseDto } from './dto/fetch-users.dto';
+import { FindAllUsersResponseDto } from './dto/find-all-users.dto';
+import { catchError } from 'src/lib/error';
 
 @Injectable()
 export class UserService {
@@ -104,5 +105,21 @@ export class UserService {
         type: billable?.room.type,
       };
     });
+  }
+
+  async edit(id: number, { name, contact, address, roomId }: CreateUserDto) {
+    try {
+      await this.prisma.user.update({
+        where: { id },
+        data: {
+          name,
+          contact,
+          address,
+          billable: { update: { data: { roomId } } },
+        },
+      });
+    } catch (e) {
+      catchError(e);
+    }
   }
 }
