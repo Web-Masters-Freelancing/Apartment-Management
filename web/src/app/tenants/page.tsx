@@ -6,6 +6,7 @@ import { TenantFormSchema } from "@/schemas";
 import CustomModal from "@/components/Modal";
 import CustomTable from "@/components/Table";
 import { LinearProgress } from "@mui/material";
+import Dialog from "@/components/Dialog";
 
 const TenantPage = () => {
   const {
@@ -22,6 +23,9 @@ const TenantPage = () => {
     tableCellActions,
     dataSource,
     isFetchingUsers,
+    handleRemoveUser,
+    handleToggleDialog,
+    openDialog,
   } = useHook();
 
   return (
@@ -42,13 +46,21 @@ const TenantPage = () => {
         <LinearProgress color="primary" />
       ) : (
         <CustomTable
-          tableHeader="Tenant list!"
+          tableHeader="Tenant list"
           columns={columns}
           dataSource={dataSource}
           headerActions={tableHeaderActions}
           cellActions={tableCellActions}
         />
       )}
+
+      <Dialog
+        contentText="This action is irreversible."
+        handleSubmit={handleRemoveUser}
+        open={openDialog}
+        title="Are you sure you want to remove this tenant?"
+        toggleDialog={handleToggleDialog}
+      />
     </WrapperLayout>
   );
 };

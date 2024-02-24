@@ -8,4 +8,5 @@ export class AllRoomsResponseDto extends PickType(RoomEntity, [
   'description',
   'status',
   'roomNumber',
+  'roomNumber',
 ]) {}
