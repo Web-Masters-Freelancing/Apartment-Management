@@ -49,7 +49,9 @@ export const useRoomApi = () => {
 
   const handleDeleteRoom = async (id: number) => {
     try {
-      await deleteRoom({ id });
+      const result: any = await deleteRoom({ id });
+
+      handleErrors(result);
     } catch (e) {
       throw e;
     }

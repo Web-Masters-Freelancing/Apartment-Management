@@ -1,5 +1,5 @@
 import { FormikHelpers } from "formik";
-import { RoomsFormValues, SearchRoom } from "../rooms/hooks";
+import { SearchRoom } from "../rooms/hooks";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
@@ -7,54 +7,29 @@ import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useUserApi } from "@/hooks/api/user";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { FindAllUsersResponseDto } from "@/store/api/gen/user";
-import { PartialPick } from "@/types/generic";
+import { CreateUserDto, FindAllUsersResponseDto } from "@/store/api/gen/user";
+import { red } from "@mui/material/colors";
 
-interface RoomHistoryValues {
-  id: number;
-  roomId: number;
-  userId: number;
-}
-
-interface BillableValues extends Pick<RoomsFormValues, "type"> {
-  roomId: number;
-}
-
-interface TenantValues
-  extends Partial<Pick<FindAllUsersResponseDto, "role">>,
-    BillableValues {
+interface TenantFormValues extends CreateUserDto {
   id?: number;
-  name: string;
-  contact: string;
-  address: string;
 }
-
-/**
- * TenantFormValues properties
- * extends of {@link RoomHistoryValues}  pick only property roomId
- * extends of {@link RoomsFormValues} pick only property amount
- */
-interface TenantFormValues
-  extends Pick<RoomHistoryValues, "roomId">,
-    PartialPick<FindAllUsersResponseDto, "role" | "id"> {}
 
 const inititialFormValues: TenantFormValues = {
   name: "",
   contact: "",
   address: "",
   roomId: 0,
+  role: "TENANT",
 };
-
-/**
- * Schema properties
- * extend {@link TenantValues} {@link TableActions}
- */
-interface Schema extends TenantValues, TableActions {}
 
 export const useHook = () => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [btnName, setBtnName] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | undefined>(
+    undefined
+  );
 
   const [initialValues, setInitialValues] =
     useState<TenantFormValues>(inititialFormValues);
@@ -68,6 +43,7 @@ export const useHook = () => {
     users,
     isFetchingUsers,
     handleEditUser: editUser,
+    handleRemoveUser: removeUser,
   } = useUserApi();
   const { setSnackbarProps } = useSnackbar();
 
@@ -145,6 +121,25 @@ export const useHook = () => {
     },
   ];
 
+  const handleCatchError = (e: any) => {
+    console.error(e);
+    setSnackbarProps({
+      open: true,
+      message: e.message || "Something went wrong, please try again later.",
+      severity: "error",
+    });
+
+    toggleModal();
+  };
+
+  const showSnackbar = (message: string) => {
+    setSnackbarProps({
+      open: true,
+      message,
+      severity: "success",
+    });
+  };
+
   const handleCreateUser = async (
     { name, contact, address, roomId }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
@@ -157,24 +152,13 @@ export const useHook = () => {
         roomId,
         role: "TENANT",
       });
-      setSnackbarProps({
-        open: true,
-        message: "Tenant is successfully created!",
-        severity: "success",
-      });
+      showSnackbar("Tenant is successfully created!");
       setSubmitting(false);
       resetForm({ values: initialValues });
 
       toggleModal();
     } catch (e: any) {
-      console.error(e);
-      setSnackbarProps({
-        open: true,
-        message: e.message || "Something went wrong, please try again later.",
-        severity: "error",
-      });
-
-      toggleModal();
+      handleCatchError(e);
     }
   };
 
@@ -185,26 +169,36 @@ export const useHook = () => {
     try {
       id && (await editUser(id, { ...payload, role: "TENANT" }));
 
-      setSnackbarProps({
-        open: true,
-        message: "Tenant is successfully updated!",
-        severity: "success",
-      });
+      showSnackbar("Tenant is successfully updated.");
 
       setSubmitting(false);
       resetForm();
       toggleModal();
     } catch (e: any) {
-      console.error(e);
-      setSnackbarProps({
-        open: true,
-        message: e.message || "Something went wrong, please try again later.",
-        severity: "error",
-      });
-
-      toggleModal();
+      handleCatchError(e);
     }
   };
+
+  const handleRemoveUser = useCallback(async () => {
+    if (userToDelete) {
+      try {
+        await removeUser(userToDelete);
+
+        showSnackbar("User is removed.");
+
+        setOpenDialog(false);
+      } catch (e: any) {
+        setSnackbarProps({
+          open: true,
+          severity: "error",
+          message: e.message || "Something went wrong, please try again later.",
+        });
+
+        setOpenDialog(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userToDelete]);
 
   const handleSubmit = useCallback(
     function (
@@ -219,7 +213,7 @@ export const useHook = () => {
     [btnName]
   );
 
-  const columns: Column<Schema>[] = [
+  const columns: Column<FindAllUsersResponseDto & TableActions>[] = [
     {
       key: "name",
       label: "name",
@@ -236,19 +230,23 @@ export const useHook = () => {
       key: "type", // base of roomId
       label: "Assigned room",
     },
-
+    {
+      key: "roomNumber",
+      label: "Door Number",
+      format: (value) => `Door ${value}`,
+    },
     {
       key: "cellActions",
       label: "actions",
     },
   ];
 
-  const dataSource: TenantValues[] = useMemo(
-    () => (users?.length ? (users as TenantValues[]) : []),
+  const dataSource: TenantFormValues[] = useMemo(
+    () => (users?.length ? (users as TenantFormValues[]) : []),
     [users]
   );
 
-  const handleEdit = (values: TenantValues | undefined) => {
+  const handleEdit = (values: TenantFormValues | undefined) => {
     if (values) {
       const { id, name, contact, address, roomId } = values;
 
@@ -260,6 +258,7 @@ export const useHook = () => {
         contact,
         address,
         roomId,
+        role: "TENANT",
       });
       toggleModal();
     }
@@ -273,11 +272,30 @@ export const useHook = () => {
     },
   ];
 
-  const tableCellActions: ActionButtonProps<TenantValues>[] = [
+  const handleToggleDialog = (values?: TenantFormValues) => {
+    if (values && values.id) {
+      setUserToDelete(values.id);
+    }
+
+    setOpenDialog((state) => !state);
+  };
+
+  const tableCellActions: ActionButtonProps<TenantFormValues>[] = [
     {
       name: "edit",
       variant: "contained",
       handleClick: handleEdit,
+    },
+    {
+      name: "remove",
+      variant: "contained",
+      handleClick: handleToggleDialog,
+      sx: {
+        backgroundColor: red[300],
+        ":hover": {
+          backgroundColor: red[400],
+        },
+      },
     },
   ];
 
@@ -305,5 +323,8 @@ export const useHook = () => {
     tableHeaderActions,
     tableCellActions,
     isFetchingUsers,
+    openDialog,
+    handleRemoveUser,
+    handleToggleDialog,
   };
 };

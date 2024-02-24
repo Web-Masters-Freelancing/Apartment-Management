@@ -7,6 +7,7 @@ import {
   Put,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
@@ -41,5 +42,10 @@ export class UserController {
     @Body() payload: CreateUserDto,
   ) {
     return await this.userService.edit(id, { ...payload });
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.userService.remove(id);
   }
 }

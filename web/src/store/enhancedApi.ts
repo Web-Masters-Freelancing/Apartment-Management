@@ -35,6 +35,9 @@ const enhancedUserApi = userApi.enhanceEndpoints({
     userControllerEdit: {
       invalidatesTags: ["users"],
     },
+    userControllerRemove: {
+      invalidatesTags: ["users"],
+    },
   },
 });
 

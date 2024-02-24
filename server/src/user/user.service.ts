@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { USER_ROLE } from '@prisma/client';
+import { BILLABLE_STATUS, USER_ROLE } from '@prisma/client';
 import { signData } from '../lib/token';
 import { FindAllUsersResponseDto } from './dto/find-all-users.dto';
 import { catchError } from 'src/lib/error';
@@ -87,6 +87,7 @@ export class UserService {
             room: {
               select: {
                 type: true,
+                roomNumber: true,
               },
             },
           },
@@ -94,6 +95,7 @@ export class UserService {
       },
       where: {
         role: USER_ROLE.TENANT,
+        isArchived: false,
       },
     });
 
@@ -103,6 +105,7 @@ export class UserService {
         ...values,
         roomId: billable?.roomId,
         type: billable?.room.type,
+        roomNumber: billable.room.roomNumber,
       };
     });
   }
@@ -120,6 +123,30 @@ export class UserService {
       });
     } catch (e) {
       catchError(e);
+    }
+  }
+
+  async remove(id: number) {
+    const result = await this.prisma.user.updateMany({
+      where: {
+        AND: [
+          { id },
+          {
+            OR: [
+              { billable: { is: null } },
+              { billable: { status: BILLABLE_STATUS.INACTIVE } },
+            ],
+          },
+        ],
+      },
+      data: {
+        isArchived: true,
+      },
+    });
+    if (result.count === 0) {
+      throw new BadRequestException(
+        'Unable to remove this user as it has an existing billable record.',
+      );
     }
   }
 }
