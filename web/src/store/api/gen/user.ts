@@ -27,6 +27,15 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.createUserDto,
       }),
     }),
+    userControllerRemove: build.mutation<
+      UserControllerRemoveResponse,
+      UserControllerRemoveArgs
+    >({
+      query: (queryArg) => ({
+        url: `/api/user/${queryArg.id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -42,6 +51,10 @@ export type UserControllerEditResponse = unknown;
 export type UserControllerEditArgs = {
   id: number;
   createUserDto: CreateUserDto;
+};
+export type UserControllerRemoveResponse = unknown;
+export type UserControllerRemoveArgs = {
+  id: number;
 };
 export type UserRole = "ADMIN" | "TENANT";
 export type CreateUserDto = {
@@ -59,9 +72,13 @@ export type FindAllUsersResponseDto = {
   contact: string;
   address: string;
   role: UserRole;
+  roomId: number;
+  type: string;
+  roomNumber: number;
 };
 export const {
   useUserControllerCreateMutation,
   useUserControllerFindAllQuery,
   useUserControllerEditMutation,
+  useUserControllerRemoveMutation,
 } = injectedRtkApi;

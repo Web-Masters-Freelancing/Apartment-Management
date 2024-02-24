@@ -20,6 +20,9 @@ export class User {
   @ApiProperty({ enum: USER_ROLE, enumName: 'USER_ROLE' })
   role: USER_ROLE = USER_ROLE.TENANT;
 
+  @ApiProperty({ type: Boolean })
+  isArchived: boolean;
+
   @ApiProperty({ type: Date })
   createdAt: Date;
 
