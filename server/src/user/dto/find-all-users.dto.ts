@@ -28,4 +28,8 @@ export class FindAllUsersResponseDto extends PickType(UserEntity, [
   })
   @IsNumber()
   roomNumber: RoomEntity['roomNumber'];
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  amount: RoomEntity['amount'];
 }

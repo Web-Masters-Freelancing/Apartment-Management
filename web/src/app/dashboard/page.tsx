@@ -1,5 +1,5 @@
 "use client";
-import { Box, Typography, Card, styled, SxProps } from "@mui/material";
+import { Box, SxProps } from "@mui/material";
 import WrapperLayout from "@/app/wrapper.layout";
 import {
   BedroomChildTwoTone,
@@ -10,25 +10,7 @@ import React from "react";
 import CustomChart from "@/components/Chart";
 import { useHook } from "./hooks";
 import { Theme } from "@emotion/react";
-
-type SummaryCardProps = {
-  icon: React.ReactNode;
-  title: string;
-  value: string | number;
-};
-const SummaryCard = (props: SummaryCardProps) => {
-  return (
-    <Card sx={{ padding: "8px", width: "30%", boxShadow: 9 }}>
-      <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
-        {props.icon}
-        <Box>
-          <Typography> {props.title} </Typography>
-          <Typography variant="subtitle1"> {props.value} </Typography>
-        </Box>
-      </Box>
-    </Card>
-  );
-};
+import SummaryCard from "@/components/Card";
 
 const CardStyle: SxProps<Theme> = {
   width: "100%",
@@ -39,7 +21,16 @@ const CardStyle: SxProps<Theme> = {
 };
 
 const DashBoard = () => {
-  const { availableRoomsDatasets, labels, availableRooms } = useHook();
+  const {
+    availableRoomsDatasets,
+    labels,
+    availableRooms,
+    occupiedUsersDatasets,
+    billablesCardTitle,
+    monthlyReceivables,
+    users,
+    totalBillables,
+  } = useHook();
 
   return (
     <WrapperLayout>
@@ -53,32 +44,32 @@ const DashBoard = () => {
           <SummaryCard
             icon={<Person3 fontSize="large" color="disabled" />}
             title="Total Tenant"
-            value={456.0}
+            value={users?.length ?? 0}
           />
           <SummaryCard
             icon={<MonetizationOnOutlined fontSize="large" color="warning" />}
             title="Total Billable"
-            value={456.0}
+            value={totalBillables}
           />
         </Box>
 
         <Box sx={CardStyle}>
           <CustomChart
-            title="Availables Statistic"
+            title="Availables Rooms Statistics"
             type="bar"
             datasets={availableRoomsDatasets}
             labels={labels}
           />
           <CustomChart
             title="Occupied Rooms"
-            type="scatter"
-            datasets={availableRoomsDatasets}
+            type="line"
+            datasets={occupiedUsersDatasets}
             labels={labels}
           />
           <CustomChart
-            title=""
-            type="pie"
-            datasets={availableRoomsDatasets}
+            title={billablesCardTitle}
+            type="doughnut"
+            datasets={monthlyReceivables}
             labels={labels}
           />
         </Box>

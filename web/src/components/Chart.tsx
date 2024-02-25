@@ -8,8 +8,11 @@ import {
   ArcElement,
   BarElement,
   PointElement,
+  LineElement,
   ChartData,
   RadialLinearScale,
+  Tooltip,
+  Legend,
 } from "chart.js";
 import { useHook } from "./hooks/useChart";
 import { Card, Typography } from "@mui/material";
@@ -18,9 +21,12 @@ Chart.register(
   ArcElement,
   BarElement,
   PointElement,
+  LineElement,
   CategoryScale,
   LinearScale,
-  RadialLinearScale
+  RadialLinearScale,
+  Tooltip,
+  Legend
 );
 
 interface ChartType extends Pick<ChartProps, "type"> {}
@@ -30,7 +36,7 @@ export interface CustomChartProps extends ChartType, ChartData {
 }
 
 const CustomChart = ({ title, type, labels, datasets }: CustomChartProps) => {
-  const { data } = useHook({ datasets, labels } as CustomChartProps);
+  const { data, label } = useHook({ datasets, labels } as CustomChartProps);
   return (
     <>
       <Card style={{ height: "fit-content", padding: 10 }}>
@@ -47,30 +53,7 @@ const CustomChart = ({ title, type, labels, datasets }: CustomChartProps) => {
             },
             plugins: {
               legend: {
-                display: false,
-              },
-              tooltip: {
-                mode: "index",
-                intersect: false,
-                enabled: true,
-                position: "average",
-                backgroundColor: "rgba(0, 0, 0, 0.8)",
-                titleColor: "#fff",
-                titleFont: { weight: "bold" },
-                callbacks: {
-                  labelColor: function (context) {
-                    return {
-                      borderColor: "rgb(0, 0, 255)",
-                      backgroundColor: "rgb(255, 0, 0)",
-                      borderWidth: 2,
-                      borderDash: [2, 2],
-                      borderRadius: 2,
-                    };
-                  },
-                  labelTextColor: function (context) {
-                    return "#543453";
-                  },
-                },
+                display: !!label,
               },
             },
           }}

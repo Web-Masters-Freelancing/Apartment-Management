@@ -334,6 +334,9 @@
           },
           "roomNumber": {
             "type": "number"
+          },
+          "amount": {
+            "type": "number"
           }
         },
         "required": [
@@ -344,7 +347,8 @@
           "role",
           "roomId",
           "type",
-          "roomNumber"
+          "roomNumber",
+          "amount"
         ]
       },
       "CreateRoomDto": {

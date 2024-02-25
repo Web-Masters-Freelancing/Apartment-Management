@@ -3,6 +3,7 @@ import { ChartData } from "chart.js";
 
 export const useHook = ({ labels, datasets }: CustomChartProps) => {
   const [dataset] = datasets;
+  const label = dataset?.label;
   const data: ChartData = {
     datasets: [
       {
@@ -29,5 +30,5 @@ export const useHook = ({ labels, datasets }: CustomChartProps) => {
     labels,
   };
 
-  return { data };
+  return { data, label };
 };

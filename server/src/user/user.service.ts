@@ -88,6 +88,7 @@ export class UserService {
               select: {
                 type: true,
                 roomNumber: true,
+                amount: true,
               },
             },
           },
@@ -103,9 +104,10 @@ export class UserService {
       const { billable, ...values } = res;
       return {
         ...values,
-        roomId: billable?.roomId,
-        type: billable?.room.type,
+        roomId: billable.roomId,
+        type: billable.room.type,
         roomNumber: billable.room.roomNumber,
+        amount: billable.room.amount,
       };
     });
   }
