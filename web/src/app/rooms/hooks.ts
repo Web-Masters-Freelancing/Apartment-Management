@@ -7,6 +7,13 @@ import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
 import { red } from "@mui/material/colors";
 
+export enum ERoomType {
+  FAMILY = "family",
+  DELUXE = "deluxe",
+  STANDARD = "standard",
+  BARKADA = "barkada",
+}
+
 export type RoomsFormValues = {
   id?: number;
   type: string;
@@ -51,10 +58,10 @@ export const useHooks = () => {
     useState<RoomsFormValues>(initialFormValues);
 
   const roomTypes: OptionSelect[] = [
-    { key: "family", value: "Family" },
-    { key: "deluxe", value: "Deluxe" },
-    { key: "standard", value: "Standard" },
-    { key: "barkada", value: "Barkada" },
+    { key: ERoomType.FAMILY, value: "Family" },
+    { key: ERoomType.DELUXE, value: "Deluxe" },
+    { key: ERoomType.STANDARD, value: "Standard" },
+    { key: ERoomType.BARKADA, value: "Barkada" },
   ];
 
   const fields: Field<InputFieldProps | SelectFieldProps>[] = [
