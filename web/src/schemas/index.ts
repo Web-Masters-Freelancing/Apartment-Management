@@ -1,5 +1,9 @@
 import * as yup from "yup";
 
+// Must contain at least 12 Characters, 1 Uppercase, 1 Lowercase, 1 Special Character, and 1 Number
+const passwordPattern =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*[\]{}()?"\\,><':;|_~`=+-])[a-zA-Z\d!@#$%^&*[\]{}()?"\\,><':;|_~`=+-]{12,99}$/;
+
 export const LoginSchema = yup.object().shape({
   username: yup.string().required("This field is required"),
   password: yup.string().required("This field is required"),
@@ -23,7 +27,14 @@ export const RoomSchema = yup.object().shape({
 
 export const SecurityFormSchema = yup.object().shape({
   currentPassword: yup.string().required("This field is required"),
-  newPassword: yup.string().required("This field is required"),
+  newPassword: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .matches(
+      passwordPattern,
+      "Must contain at least 12 Characters, 1 Uppercase, 1 Lowercase, 1 Special Character, and 1 Number"
+    )
+    .required("This field is required"),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref("newPassword"), ""], "Password must match")
