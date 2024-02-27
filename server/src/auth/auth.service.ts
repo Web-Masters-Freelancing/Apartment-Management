@@ -58,7 +58,7 @@ export class AuthService {
      */
     const verifiedToken = verifyResetPasswordToken(token) as {
       email: string;
-      users: User;
+      user: User;
     };
 
     if (!verifiedToken) throw new ForbiddenException();
