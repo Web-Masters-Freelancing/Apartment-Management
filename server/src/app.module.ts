@@ -11,6 +11,7 @@ import { CronjobService } from './cronjob/cronjob.service';
 import { TwilioService } from './twilio/twilio.service';
 import { BillableService } from './billable/billable.service';
 import { BillableModule } from './billable/billable.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BillableModule } from './billable/billable.module';
     RoomModule,
     ScheduleModule.forRoot(),
     BillableModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [AppController],
   providers: [AppService, CronjobService, TwilioService, BillableService],

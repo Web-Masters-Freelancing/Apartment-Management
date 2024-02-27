@@ -30,7 +30,7 @@ const formWrapper: SxProps<Theme> = {
 };
 
 const SettingsPage = () => {
-  const { handleSubmit, handleClick, open, initialValues } = useHook();
+  const { handleResetPassword, handleClick, open, initialValues } = useHook();
   return (
     <WrapperLayout>
       <Card variant="outlined">
@@ -60,7 +60,7 @@ const SettingsPage = () => {
                   <Formik
                     initialValues={initialValues}
                     validationSchema={SecurityFormSchema}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleResetPassword}
                   >
                     {({ submitForm, isSubmitting }) => (
                       <Form>

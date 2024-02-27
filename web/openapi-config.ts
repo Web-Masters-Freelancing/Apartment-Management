@@ -17,6 +17,9 @@ const config: ConfigFile = {
     "./src/store/api/gen/billable.ts": {
       filterEndpoints: [/billableController/],
     },
+    "./src/store/api/gen/auth.ts": {
+      filterEndpoints: [/appController/],
+    },
   },
 };
 

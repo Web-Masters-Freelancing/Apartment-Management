@@ -10,6 +10,7 @@ import {
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { Response } from 'express';
+import { ResetPasswordDto } from './auth/dto/reset-password.dto';
 
 @Controller()
 export class AppController {
@@ -25,9 +26,12 @@ export class AppController {
 
   @Post('reset-password/:token')
   async resetPassword(
-    @Body() body: { password: string },
+    @Body() body: ResetPasswordDto,
     @Param('token') token: string,
   ) {
-    await this.authService.resetPassword({ password: body.password, token });
+    return await this.authService.resetPassword({
+      ...body,
+      token,
+    });
   }
 }
