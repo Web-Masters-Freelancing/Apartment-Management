@@ -9,16 +9,16 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     UserModule,
     JwtModule.register({
-      secret: process.env.ACCESS_TOKEN_SECRET,
+      secret: process.env.AUTH_TOKEN_SECRET,
       signOptions: {
         expiresIn: '1d',
       },
     }),
   ],
   providers: [LocalStrategy, AuthService, JwtStrategy, PrismaService],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule, PassportModule],
 })
 export class AuthModule {}

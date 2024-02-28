@@ -1,6 +1,7 @@
 import { enhancedApi as roomApi } from "./api/gen/room";
 import { enhancedApi as userApi } from "./api/gen/user";
 import { enhancedApi as billableApi } from "./api/gen/billable";
+import { enhancedApi as authApi } from "./api/gen/auth";
 
 const enhancedRoomApi = roomApi.enhanceEndpoints({
   addTagTypes: ["rooms", "available-rooms"],
@@ -50,8 +51,18 @@ const enhancedBillableApi = billableApi.enhanceEndpoints({
   },
 });
 
+const enchancedAuthApi = authApi.enhanceEndpoints({
+  addTagTypes: ["auth"],
+  endpoints: {
+    appControllerResetPassword: {
+      invalidatesTags: ["auth"],
+    },
+  },
+});
+
 export {
   enhancedRoomApi as roomApi,
   enhancedUserApi as userApi,
   enhancedBillableApi as billableApi,
+  enchancedAuthApi as authApi,
 };

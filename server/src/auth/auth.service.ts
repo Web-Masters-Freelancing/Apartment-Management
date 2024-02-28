@@ -1,11 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { verifyResetPasswordToken } from '../lib/token';
-import { hashPassword } from '../lib/password';
+import { comparePassword, hashPassword } from '../lib/password';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,43 +35,49 @@ export class AuthService {
   }
 
   async login(user: Exclude<User, 'password' | 'createdAt' | 'updatedAt'>) {
+    const access_token = this.jwtService.sign(user, {
+      secret: process.env.AUTH_TOKEN_SECRET,
+      expiresIn: '1d',
+    });
+
     return {
-      access_token: this.jwtService.sign(user),
+      access_token,
     };
   }
 
   async resetPassword({
-    password,
+    currentPassword,
+    newPassword,
     token,
-  }: {
+  }: ResetPasswordDto & {
     token: string;
-    password: string;
   }) {
     /**
-     * Verified token contains id and email
+     * Verified token contain user object and email
      * See user.service.ts file
      */
-    const verifyToken = verifyResetPasswordToken(token) as unknown as {
-      id: number;
+    const verifiedToken = verifyResetPasswordToken(token) as {
+      email: string;
+      user: User;
     };
 
-    if (!verifyToken) throw new ForbiddenException();
+    if (!verifiedToken) throw new ForbiddenException();
 
-    const { id } = verifyToken;
+    const { email } = verifiedToken;
+    const { password: hashPass } = await this.prismaService.auth.findFirst({
+      where: { email },
+    });
 
-    const hash = await hashPassword(password);
+    const isComparePassword = await comparePassword(currentPassword, hashPass);
 
-    return await this.prismaService.user.update({
-      where: {
-        id,
-      },
-      data: {
-        auth: {
-          update: {
-            password: hash,
-          },
-        },
-      },
+    if (!isComparePassword)
+      throw new BadRequestException('Current Password is incorrect!');
+
+    const hash = await hashPassword(newPassword);
+
+    return await this.prismaService.auth.update({
+      where: { email },
+      data: { password: hash },
     });
   }
 }

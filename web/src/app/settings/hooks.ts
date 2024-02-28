@@ -1,9 +1,11 @@
+import { useAuthApi } from "@/hooks/api/auth";
+import { useSnackbar } from "@/hooks/useSnackbar";
+import { getToken } from "@/lib/tokenStorage";
+import { ResetPasswordDto } from "@/store/api/gen/auth";
 import { FormikHelpers } from "formik";
 import { useState } from "react";
 
-interface SecurityValues {
-  currentPassword: string;
-  newPassword: string;
+interface SecurityValues extends ResetPasswordDto {
   confirmPassword: string;
 }
 
@@ -11,14 +13,37 @@ export const useHook = () => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => setOpen(!open);
+  const { setSnackbarProps } = useSnackbar();
 
-  const handleSubmit = async (
-    { currentPassword, newPassword, confirmPassword }: SecurityValues,
+  const { handleResetPassword: resetPassword } = useAuthApi();
+
+  const handleResetPassword = async (
+    { currentPassword, newPassword }: SecurityValues,
     { resetForm, setSubmitting }: FormikHelpers<SecurityValues>
   ) => {
-    console.log("====================================");
-    console.log("values", currentPassword);
-    console.log("====================================");
+    try {
+      const token = getToken();
+
+      await resetPassword(token as string, {
+        currentPassword,
+        newPassword,
+      });
+
+      setSubmitting(false);
+      resetForm();
+
+      setSnackbarProps({
+        open: true,
+        message: "Password successfully changed!",
+        severity: "success",
+      });
+    } catch (err: any) {
+      setSnackbarProps({
+        open: true,
+        message: err.message || "Something went wrong, please try again later.",
+        severity: "error",
+      });
+    }
   };
 
   const initialValues: SecurityValues = {
@@ -27,5 +52,5 @@ export const useHook = () => {
     confirmPassword: "",
   };
 
-  return { open, handleClick, handleSubmit, initialValues };
+  return { open, handleClick, handleResetPassword, initialValues };
 };
