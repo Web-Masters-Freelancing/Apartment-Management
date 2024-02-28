@@ -23,7 +23,7 @@ export type RoomsFormValues = {
   roomNumber: number;
 };
 
-export type SearchRoom = {
+export type SearchKey = {
   keyword: string;
 };
 
@@ -144,8 +144,8 @@ export const useHooks = () => {
   ];
 
   const handleSearch = async (
-    values: SearchRoom,
-    _: FormikHelpers<SearchRoom>
+    values: SearchKey,
+    _: FormikHelpers<SearchKey>
   ) => {
     console.log("values", values);
   };

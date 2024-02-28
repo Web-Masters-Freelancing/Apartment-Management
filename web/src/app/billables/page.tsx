@@ -1,12 +1,19 @@
-import { Box, Typography } from "@mui/material";
+"use client";
 import WrapperLayout from "@/app/wrapper.layout";
+import { useHook } from "./hooks";
+import SearchBar from "@/components/SearchBar";
+import CustomTable from "@/components/Table";
 
 const BillablesPage = () => {
+  const { handleSearch, columns, dataSource } = useHook();
   return (
     <WrapperLayout>
-      <Box>
-        <Typography variant="h6">Billables works </Typography>
-      </Box>
+      <SearchBar handleSubmit={handleSearch} />
+      <CustomTable
+        tableHeader="Billables List"
+        columns={columns}
+        dataSource={dataSource}
+      />
     </WrapperLayout>
   );
 };
