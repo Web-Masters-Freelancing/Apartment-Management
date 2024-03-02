@@ -471,6 +471,9 @@
       "FindAllBillableResponseDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "number"
+          },
           "dueDate": {
             "format": "date-time",
             "type": "string"
@@ -486,6 +489,7 @@
           }
         },
         "required": [
+          "id",
           "dueDate",
           "status",
           "userName",

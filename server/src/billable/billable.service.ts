@@ -18,6 +18,7 @@ export class BillableService {
           status: BILLABLE_STATUS.ACTIVE,
         },
         select: {
+          id: true,
           dueDate: true,
           status: true,
           room: {
@@ -39,6 +40,7 @@ export class BillableService {
           dueDate: res.dueDate,
           status: res.status,
           userName: res.user.name,
+          id: res.id,
         };
       });
     } catch (e) {

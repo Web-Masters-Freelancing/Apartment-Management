@@ -62,9 +62,9 @@ export interface Column<T> extends TableActions {
  * @datasource the data array list or content in the table
  * @columns which defined specific display in table list
  */
-export interface CustomTableProps extends TableActions {
+export interface CustomTableProps<T = any> extends TableActions {
   tableHeader: string;
-  dataSource: any[];
+  dataSource: T[];
   columns: Column<any>[];
 }
 

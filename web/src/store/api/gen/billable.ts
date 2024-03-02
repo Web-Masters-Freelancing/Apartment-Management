@@ -16,6 +16,7 @@ export type BillableControllerFindAllResponse =
 export type BillableControllerFindAllArgs = void;
 export type BillableStatus = "ACTIVE" | "INACTIVE";
 export type FindAllBillableResponseDto = {
+  id: number;
   dueDate: string;
   status: BillableStatus;
   userName: string;
