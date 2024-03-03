@@ -43,6 +43,8 @@ export const seedUsers = async (props: SeedUsersProps) => {
 
       const userPassword = await hashPassword(`${userPart}${i}`);
 
+      const { id } = availableRooms[0];
+
       await userService.create({
         address: faker.location.city(),
         contact: faker.phone.number(),
@@ -50,7 +52,7 @@ export const seedUsers = async (props: SeedUsersProps) => {
         name: faker.person.fullName(),
         password: userPassword,
         role: USER_ROLE.TENANT,
-        roomId: availableRooms[0].id,
+        roomId: id,
       });
     }
   }

@@ -48,6 +48,9 @@ const enhancedBillableApi = billableApi.enhanceEndpoints({
     billableControllerFindAll: {
       providesTags: ["billables"],
     },
+    billableControllerProcessPayment: {
+      invalidatesTags: ["billables"],
+    },
   },
 });
 
