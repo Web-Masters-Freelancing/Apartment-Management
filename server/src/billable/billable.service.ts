@@ -65,13 +65,18 @@ export class BillableService {
           dueDate: true,
           status: true,
           amount: true,
+          room: {
+            select: {
+              amount: true,
+            },
+          },
           payments: {
             select: {
               amount: true,
               paidOn: true,
             },
             orderBy: {
-              paidOn: Prisma.SortOrder.desc,
+              paidOn: Prisma.SortOrder.asc,
             },
           },
           user: {
@@ -85,6 +90,7 @@ export class BillableService {
       return result.map((res) => {
         return {
           ...res,
+          amountToPay: res.room.amount,
           userName: res.user.name,
         };
       });

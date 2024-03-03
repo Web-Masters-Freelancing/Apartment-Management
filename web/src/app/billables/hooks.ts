@@ -5,11 +5,13 @@ import { Column } from "@/components/Table";
 import {
   FindAllBillableResponseDto,
   ProcessPaymentDto,
+  FindAllPaymentsForFindAllBillableResponseDto,
 } from "@/store/api/gen/billable";
 import { ActionButtonProps, TableActions } from "@/components/Table";
 import { useBillableApi } from "@/hooks/api/billable";
 import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import moment from "moment";
 
 export interface BillableValues extends FindAllBillableResponseDto {
   userId: number;
@@ -31,8 +33,14 @@ export const useHook = () => {
 
   const [initialValues, setInitialValues] =
     useState<ModalFormValues>(initialFormValues);
+
   const [openModal, setOpenDialog] = useState(false);
+  const [openPaymentListModal, setOpenPaymentListModal] = useState(false);
+
   const [payeeData, setPayeeData] = useState<ProcessPaymentDto | undefined>();
+  const [listOfPayments, setListOfPayments] = useState<
+    FindAllPaymentsForFindAllBillableResponseDto[]
+  >([]);
 
   const { setSnackbarProps } = useSnackbar();
 
@@ -46,19 +54,39 @@ export const useHook = () => {
     console.log("values", values);
   };
 
+  const paymentListColumns: Column<FindAllPaymentsForFindAllBillableResponseDto>[] =
+    [
+      {
+        key: "paidOn",
+        label: "Date paid",
+        format: (value) => moment(value).format("DD/MM/YYYY hh:MM:ss"),
+      },
+      {
+        key: "amount",
+        label: "Amount",
+        format: (value) => value.toLocaleString("en-US"),
+      },
+    ];
+
   const columns: Column<TableCellValues>[] = [
     {
       key: "userName",
       label: "Names",
     },
     {
+      key: "amountToPay",
+      label: "amount due",
+      format: (value: number) => value.toLocaleString("en-US"),
+    },
+    {
       key: "amount",
-      label: "amount",
+      label: "balance",
       format: (value: number) => value.toLocaleString("en-US"),
     },
     {
       key: "dueDate",
       label: "due date",
+      format: (value) => moment(value).format("DD/MM/YYYY"),
     },
     {
       key: "status",
@@ -145,15 +173,15 @@ export const useHook = () => {
   const handleToggleModal = (values?: BillableValues) => {
     if (values) {
       if (isBillableValues(values)) {
-        const { id, amount } = values;
+        const { id, amountToPay } = values;
         setPayeeData({
           id,
-          amount,
+          amount: amountToPay,
         });
 
         setInitialValues({
           ...initialFormValues,
-          amountDue: amount,
+          amountDue: amountToPay,
         });
       } else {
         setInitialValues(initialFormValues);
@@ -164,7 +192,13 @@ export const useHook = () => {
   };
 
   const handleTogglePaymentsModal = (values?: BillableValues) => {
-    console.log(values?.payments);
+    if (values) {
+      if (isBillableValues(values)) {
+        setListOfPayments(values.payments);
+      }
+    }
+
+    setOpenPaymentListModal((state) => !state);
   };
 
   const tableCellActions: ActionButtonProps<BillableValues>[] = [
@@ -191,5 +225,9 @@ export const useHook = () => {
     handlePayment,
     fields,
     initialValues,
+    paymentListColumns,
+    listOfPayments,
+    handleTogglePaymentsModal,
+    openPaymentListModal,
   };
 };

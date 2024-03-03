@@ -19,20 +19,37 @@ const BillablesPage = () => {
     handlePayment,
     handleToggleModal,
     initialValues,
+    handleTogglePaymentsModal,
+    listOfPayments,
+    openPaymentListModal,
+    paymentListColumns,
   } = useHook();
 
   return (
     <WrapperLayout>
       <Modal
         open={open}
-        fields={fields}
-        handleSubmit={handlePayment}
+        formProps={{
+          fields,
+          handleSubmit: handlePayment,
+          initialValues,
+          validationSchema: ProcessPaymentSchema,
+        }}
         handleClose={handleToggleModal}
-        validationSchema={ProcessPaymentSchema}
-        initialValues={initialValues}
         key={"add-room-modal"}
         title={"Process payment"}
         btnName={"Submit"}
+      />
+      <Modal
+        handleClose={handleTogglePaymentsModal}
+        open={openPaymentListModal}
+        title="List of payments made"
+        modalFor="list"
+        width={1000}
+        listProps={{
+          columns: paymentListColumns,
+          dataSource: listOfPayments,
+        }}
       />
       <SearchBar handleSubmit={handleSearch} />
       {isFetching ? (

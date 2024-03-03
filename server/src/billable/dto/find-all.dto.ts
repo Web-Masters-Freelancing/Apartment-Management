@@ -2,7 +2,8 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Billable } from './../../_gen-prisma-classes/billable';
 import { User as UserEntity } from './../../_gen-prisma-classes/user';
 import { Payments as PaymentsEntity } from './../../_gen-prisma-classes/payments';
-import { IsArray, IsString } from 'class-validator';
+import { Room as RoomEntity } from './../../_gen-prisma-classes/room';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 class FindAllPaymentsForFindAllBillableResponseDto extends PickType(
   PaymentsEntity,
@@ -27,4 +28,10 @@ export class FindAllBillableResponseDto extends PickType(Billable, [
   })
   @IsArray({ each: true })
   payments: FindAllPaymentsForFindAllBillableResponseDto[];
+
+  @ApiProperty({
+    type: Number,
+  })
+  @IsNumber()
+  amountToPay: RoomEntity['amount'];
 }

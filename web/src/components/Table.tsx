@@ -63,7 +63,7 @@ export interface Column<T> extends TableActions {
  * @columns which defined specific display in table list
  */
 export interface CustomTableProps<T = any> extends TableActions {
-  tableHeader: string;
+  tableHeader?: string;
   dataSource: T[];
   columns: Column<any>[];
 }
@@ -80,39 +80,45 @@ const CustomTable = ({
 
   return (
     <Paper sx={container}>
-      <Box sx={tableHeaderWrapper}>
-        <Typography
-          style={{
-            fontWeight: "bold",
-          }}
-          variant="h6"
-          component="div"
-        >
-          {tableHeader}
-        </Typography>
-        <Box sx={{ gap: 2 }}>
-          {headerActions?.length &&
-            headerActions.map((action, key) => {
-              const {
-                onClick,
-                handleClick,
-                variant = "contained",
-                ...props
-              } = action;
+      {!!tableHeader || (headerActions && headerActions.length) ? (
+        <Box sx={tableHeaderWrapper}>
+          {!!tableHeader && (
+            <Typography
+              style={{
+                fontWeight: "bold",
+              }}
+              variant="h6"
+              component="div"
+            >
+              {tableHeader}
+            </Typography>
+          )}
+          {headerActions && headerActions.length && (
+            <Box sx={{ gap: 2 }}>
+              {headerActions.map((action, key) => {
+                const {
+                  onClick,
+                  handleClick,
+                  variant = "contained",
+                  ...props
+                } = action;
 
-              return (
-                <Button
-                  key={key}
-                  variant={variant}
-                  {...props}
-                  onClick={() => handleClick()}
-                >
-                  {props.name}
-                </Button>
-              );
-            })}
+                return (
+                  <Button
+                    key={key}
+                    variant={variant}
+                    {...props}
+                    onClick={() => handleClick()}
+                  >
+                    {props.name}
+                  </Button>
+                );
+              })}
+            </Box>
+          )}
         </Box>
-      </Box>
+      ) : null}
+
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -154,8 +160,7 @@ const CustomTable = ({
                           if (column.key !== "cellActions") {
                             return (
                               <TableCell key={cellIndex} align={column.align}>
-                                {column?.format &&
-                                typeof row[column.key] === "number"
+                                {column?.format
                                   ? column.format(row[column.key])
                                   : row[column.key]}
                               </TableCell>

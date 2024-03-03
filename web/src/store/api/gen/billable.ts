@@ -40,6 +40,7 @@ export type FindAllBillableResponseDto = {
   status: BillableStatus;
   userName: string;
   payments: FindAllPaymentsForFindAllBillableResponseDto[];
+  amountToPay: number;
 };
 export type ProcessPaymentDto = {
   id: number;
