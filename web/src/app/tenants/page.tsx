@@ -32,11 +32,13 @@ const TenantPage = () => {
     <WrapperLayout>
       <CustomModal
         open={open}
-        fields={fields}
-        handleSubmit={handleSubmit}
+        formProps={{
+          fields,
+          handleSubmit,
+          initialValues,
+          validationSchema: TenantFormSchema,
+        }}
         handleClose={toggleModal}
-        validationSchema={TenantFormSchema}
-        initialValues={initialValues}
         key={"add-room-modal"}
         title={title}
         btnName={btnName}

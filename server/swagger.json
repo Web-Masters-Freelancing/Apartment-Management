@@ -267,6 +267,27 @@
           }
         }
       }
+    },
+    "/api/billable/pay": {
+      "post": {
+        "operationId": "BillableController_processPayment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {
@@ -468,17 +489,11 @@
           "INACTIVE"
         ]
       },
-      "FindAllBillableResponseDto": {
+      "FindAllPaymentsForFindAllBillableResponseDto": {
         "type": "object",
         "properties": {
-          "dueDate": {
+          "paidOn": {
             "format": "date-time",
-            "type": "string"
-          },
-          "status": {
-            "$ref": "#/components/schemas/BILLABLE_STATUS"
-          },
-          "userName": {
             "type": "string"
           },
           "amount": {
@@ -486,9 +501,61 @@
           }
         },
         "required": [
+          "paidOn",
+          "amount"
+        ]
+      },
+      "FindAllBillableResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BILLABLE_STATUS"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "payments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FindAllPaymentsForFindAllBillableResponseDto"
+            }
+          },
+          "amountToPay": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
           "dueDate",
+          "amount",
           "status",
           "userName",
+          "payments",
+          "amountToPay"
+        ]
+      },
+      "ProcessPaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
           "amount"
         ]
       }

@@ -13,6 +13,19 @@ export class UserService {
   async create(payload: CreateUserDto) {
     const { name, email, password, address, contact, role, roomId } = payload;
 
+    const roomDetails = roomId
+      ? await this.prisma.room.findUnique({
+          where: {
+            id: roomId,
+          },
+          select: {
+            amount: true,
+          },
+        })
+      : undefined;
+
+    const amountToPay = roomDetails && roomDetails.amount;
+
     const createdUser = await this.prisma.user.create({
       data: {
         name,
@@ -34,7 +47,8 @@ export class UserService {
             ? undefined
             : {
                 create: {
-                  roomId: parseInt(roomId as unknown as string),
+                  roomId,
+                  amount: +amountToPay,
                 },
               },
       },

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BILLABLE_STATUS } from '@prisma/client';
+import { BILLABLE_STATUS, Prisma } from '@prisma/client';
 import { FindAllBillableResponseDto } from './dto/find-all.dto';
+import { ProcessPaymentDto } from './dto/process-payment.dto';
 
 type BillableDueType = {
   type: 'AfterDue' | 'BeforeDue';
@@ -11,6 +12,48 @@ type BillableDueType = {
 export class BillableService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async processPayment({ amount, id }: ProcessPaymentDto) {
+    try {
+      await this.prismaService.withTransaction(async (prisma) => {
+        const data = await prisma.billable.findUnique({
+          where: {
+            id,
+            status: BILLABLE_STATUS.ACTIVE,
+          },
+          select: {
+            amount: true,
+          },
+        });
+
+        if (!data)
+          throw new NotFoundException(
+            'This billable record is not found or it has been inactive.',
+          );
+
+        const newAmount = data.amount - amount;
+
+        await Promise.all([
+          prisma.billable.update({
+            where: {
+              id,
+            },
+            data: {
+              amount: newAmount,
+            },
+          }),
+          prisma.payments.create({
+            data: {
+              amount,
+              billableId: id,
+            },
+          }),
+        ]);
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async findAll(): Promise<FindAllBillableResponseDto[]> {
     try {
       const result = await this.prismaService.billable.findMany({
@@ -18,11 +61,22 @@ export class BillableService {
           status: BILLABLE_STATUS.ACTIVE,
         },
         select: {
+          id: true,
           dueDate: true,
           status: true,
+          amount: true,
           room: {
             select: {
               amount: true,
+            },
+          },
+          payments: {
+            select: {
+              amount: true,
+              paidOn: true,
+            },
+            orderBy: {
+              paidOn: Prisma.SortOrder.asc,
             },
           },
           user: {
@@ -35,9 +89,8 @@ export class BillableService {
 
       return result.map((res) => {
         return {
-          amount: res.room.amount,
-          dueDate: res.dueDate,
-          status: res.status,
+          ...res,
+          amountToPay: res.room.amount,
           userName: res.user.name,
         };
       });
