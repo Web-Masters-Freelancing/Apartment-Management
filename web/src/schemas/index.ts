@@ -4,6 +4,14 @@ import * as yup from "yup";
 const passwordPattern =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*[\]{}()?"\\,><':;|_~`=+-])[a-zA-Z\d!@#$%^&*[\]{}()?"\\,><':;|_~`=+-]{12,99}$/;
 
+export const ProcessPaymentSchema = yup.object().shape({
+  amountDue: yup.number().optional(),
+  amount: yup
+    .number()
+    .required("This field is required.")
+    .min(1, "Amount should be greater than 0"),
+});
+
 export const LoginSchema = yup.object().shape({
   username: yup.string().required("This field is required"),
   password: yup.string().required("This field is required"),

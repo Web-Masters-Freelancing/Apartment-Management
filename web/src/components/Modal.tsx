@@ -1,8 +1,17 @@
-import { Box, Modal, Button, Theme, SxProps, Typography } from "@mui/material";
+import {
+  Box,
+  Modal,
+  Button,
+  Theme,
+  SxProps,
+  Typography,
+  ModalProps,
+} from "@mui/material";
 import { Form, Formik, FormikHelpers } from "formik";
 import { AnyObject, Maybe, ObjectSchema } from "yup";
 import Input from "./Input";
 import Select, { SelectFieldProps } from "./Select";
+import Table, { CustomTableProps } from "@/components/Table";
 import {
   Field,
   InputFieldProps,
@@ -30,100 +39,134 @@ const saveButtonWrapper: SxProps<Theme> = {
 };
 
 /**
- * Modal properties
- * @handleClose a function that handles the closing of the modal
- * @open controls the modal state (open/close)
+ * If modal will render a form
  * @initialValues form initial values
  * @validationSchema this is optional, yup schema for form fields
  * @handleSubmit method that will be triggered when the form is submitted
  * @fields Array of {@link Field} prop
  */
-interface ModalProps<T extends Maybe<AnyObject>> {
-  handleClose: () => void;
-  open: boolean;
+interface ModalFormProps<T extends Maybe<AnyObject>> {
   initialValues: T;
   validationSchema?: ObjectSchema<T>;
   handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
   fields: Field<InputFieldProps | SelectFieldProps>[];
+}
+
+/**
+ * If modal will render a list
+ *
+ */
+interface ModalListProps extends CustomTableProps {}
+
+/**
+ * Modal properties
+ * @handleClose a function that handles the closing of the modal
+ * @open controls the modal state (open/close)
+ */
+interface Props<T extends Maybe<AnyObject>> extends Partial<ModalProps> {
+  handleClose: () => void;
+  formProps?: ModalFormProps<T>;
+  listProps?: ModalListProps;
+  open: boolean;
   title: string;
   btnName?: string;
+  modalFor?: "form" | "list";
+  width?: number;
 }
 
 const CustomModal = ({
   handleClose,
   open,
-  fields,
-  initialValues,
-  validationSchema,
-  handleSubmit,
+  formProps,
+  listProps,
   title,
-  btnName,
-}: ModalProps<any>) => {
+  btnName = "Save",
+  modalFor = "form",
+  width,
+  ...props
+}: Props<any>) => {
   const { isInputField, isSelectField } = useModalHook();
 
   return (
-    <Modal keepMounted open={open} onClose={handleClose}>
-      <Box sx={contentWrapperStyle}>
+    <Modal keepMounted open={open} onClose={handleClose} {...props}>
+      <Box
+        sx={{
+          ...contentWrapperStyle,
+          width,
+        }}
+      >
         <Typography>{title}</Typography>
-        <Box sx={{ width: "100%", alignItems: "center" }}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-            enableReinitialize
-          >
-            {({ submitForm, isSubmitting, setFieldValue }) => {
-              return (
-                <Form>
-                  {fields.map((field, index) => {
-                    if (isInputField(field)) {
-                      return (
-                        <Input
-                          {...field.fieldProps}
-                          onChange={(e) => {
-                            if (field.fieldProps.name) {
-                              setFieldValue(
-                                field.fieldProps.name,
-                                e.target.value
-                              );
-                            }
-                          }}
-                          key={index}
-                        />
-                      );
-                    }
+        {modalFor === "form" && formProps ? (
+          <Box sx={{ width: "100%", alignItems: "center" }}>
+            <Formik
+              initialValues={formProps.initialValues}
+              validationSchema={formProps.validationSchema}
+              onSubmit={formProps.handleSubmit}
+              enableReinitialize
+            >
+              {({ submitForm, isSubmitting, setFieldValue }) => {
+                return (
+                  <Form>
+                    {formProps.fields.map((field, index) => {
+                      if (isInputField(field)) {
+                        return (
+                          <Input
+                            {...field.fieldProps}
+                            onChange={(e) => {
+                              if (field.fieldProps.name) {
+                                setFieldValue(
+                                  field.fieldProps.name,
+                                  e.target.value
+                                );
+                              }
+                            }}
+                            key={index}
+                          />
+                        );
+                      }
 
-                    if (isSelectField(field)) {
-                      return (
-                        <Select
-                          {...field.fieldProps}
-                          onChange={(e) => {
-                            if (field.fieldProps.name) {
-                              setFieldValue(
-                                field.fieldProps.name,
-                                e.target.value
-                              );
-                            }
-                          }}
-                          key={index}
-                        />
-                      );
-                    }
-                  })}
-                  <Box sx={saveButtonWrapper}>
-                    <Button
-                      disabled={isSubmitting}
-                      variant="contained"
-                      onClick={submitForm}
-                    >
-                      {btnName}
-                    </Button>
-                  </Box>
-                </Form>
-              );
-            }}
-          </Formik>
-        </Box>
+                      if (isSelectField(field)) {
+                        return (
+                          <Select
+                            {...field.fieldProps}
+                            onChange={(e) => {
+                              if (field.fieldProps.name) {
+                                setFieldValue(
+                                  field.fieldProps.name,
+                                  e.target.value
+                                );
+                              }
+                            }}
+                            key={index}
+                          />
+                        );
+                      }
+                    })}
+                    <Box sx={saveButtonWrapper}>
+                      <Button
+                        disabled={isSubmitting}
+                        variant="contained"
+                        onClick={submitForm}
+                      >
+                        {btnName}
+                      </Button>
+                    </Box>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </Box>
+        ) : modalFor === "list" && listProps ? (
+          <Box sx={{ width: "100%", alignItems: "center" }}>
+            <Table
+              columns={listProps.columns}
+              dataSource={listProps.dataSource}
+              tableHeader={listProps.tableHeader}
+              cellActions={listProps.cellActions}
+              headerActions={listProps.headerActions}
+            />
+          </Box>
+        ) : null}
       </Box>
     </Modal>
   );

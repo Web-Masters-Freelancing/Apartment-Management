@@ -14,12 +14,6 @@ export class Payments {
   @ApiProperty({ type: Number })
   amount: number;
 
-  @ApiProperty({ type: String })
-  attachment: string;
-
-  @ApiProperty({ type: String })
-  monthsCovered: string;
-
   @ApiProperty({ type: () => Billable })
   billable: Billable;
 }

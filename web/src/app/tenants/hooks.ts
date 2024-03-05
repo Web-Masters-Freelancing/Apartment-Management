@@ -1,5 +1,5 @@
 import { FormikHelpers } from "formik";
-import { SearchRoom } from "../rooms/hooks";
+import { SearchKey } from "../rooms/hooks";
 import { ActionButtonProps, Column, TableActions } from "@/components/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
@@ -107,8 +107,8 @@ export const useHook = () => {
   ];
 
   const handleSearch = async (
-    values: SearchRoom,
-    _: FormikHelpers<SearchRoom>
+    values: SearchKey,
+    _: FormikHelpers<SearchKey>
   ) => {
     console.log("values", values);
   };
