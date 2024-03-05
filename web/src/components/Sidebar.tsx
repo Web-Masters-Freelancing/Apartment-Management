@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { Box, List, ListItemButton, ListItemText, Drawer } from "@mui/material";
+import {
+  Box,
+  List,
+  ListItemButton,
+  ListItemText,
+  Drawer,
+  Collapse,
+  ListItemIcon,
+} from "@mui/material";
 import {
   DashboardCustomize,
   BedroomChild,
@@ -8,6 +16,10 @@ import {
   AccountBalance,
   SettingsSuggest,
   Summarize,
+  ExpandLess,
+  ExpandMore,
+  Key,
+  Bed,
 } from "@mui/icons-material";
 import { useHook } from "./hooks/useSideBar";
 
@@ -19,8 +31,12 @@ const Sidebar = () => {
     TENANT,
     BILLABLES,
     TRANSACTIONS,
-    SETTINGS,
+    SECURITY,
     REPORTS,
+    CATEGORY,
+    handleClick,
+    collapse,
+    settingsRoutes,
   } = useHook();
 
   return (
@@ -70,12 +86,37 @@ const Sidebar = () => {
           </ListItemButton>
         </Link>
 
-        <Link href={SETTINGS}>
-          <ListItemButton className={pathname === SETTINGS ? "active" : ""}>
-            <SettingsSuggest />
-            <ListItemText primary={SETTINGS} />
-          </ListItemButton>
-        </Link>
+        <ListItemButton
+          className={settingsRoutes(pathname) ? "active" : ""}
+          onClick={handleClick}
+        >
+          <SettingsSuggest />
+          <ListItemText primary="Settings" />
+          {collapse ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+
+        <Collapse in={collapse} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <Link href={CATEGORY}>
+              <ListItemButton
+                className={pathname === CATEGORY ? "active" : ""}
+                sx={{ pl: 4 }}
+              >
+                <Bed />
+                <ListItemText primary={CATEGORY} />
+              </ListItemButton>
+            </Link>
+            <Link href={SECURITY}>
+              <ListItemButton
+                className={pathname === SECURITY ? "active" : ""}
+                sx={{ pl: 4 }}
+              >
+                <Key />
+                <ListItemText primary={SECURITY} />
+              </ListItemButton>
+            </Link>
+          </List>
+        </Collapse>
 
         <Link href={REPORTS}>
           <ListItemButton className={pathname === REPORTS ? "active" : ""}>

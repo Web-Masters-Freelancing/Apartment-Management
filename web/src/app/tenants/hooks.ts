@@ -23,7 +23,6 @@ const inititialFormValues: TenantFormValues = {
 };
 
 export const useHook = () => {
-  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [btnName, setBtnName] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
@@ -34,6 +33,7 @@ export const useHook = () => {
   const [initialValues, setInitialValues] =
     useState<TenantFormValues>(inititialFormValues);
 
+  const [open, setOpen] = useState(false);
   const toggleModal = () => setOpen((modalState) => !modalState);
 
   const { availableRooms } = useRoomApi();

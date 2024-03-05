@@ -5,7 +5,8 @@ export const Routes = {
     TENANT: "tenants",
     BILLABLES: "billables",
     REPORTS: "reports",
-    SETTINGS: "settings",
+    SECURITY: "security",
+    CATEGORY: "category",
     TRANSACTIONS: "transactions",
   },
 
