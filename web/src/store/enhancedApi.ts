@@ -19,7 +19,7 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
       invalidatesTags: ["rooms"],
     },
     roomControllerDeleteRoom: {
-      invalidatesTags: ["rooms"],
+      invalidatesTags: ["rooms", "available-rooms"],
     },
   },
 });
