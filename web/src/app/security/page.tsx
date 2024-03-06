@@ -29,7 +29,7 @@ const formWrapper: SxProps<Theme> = {
   gap: 1,
 };
 
-const SettingsPage = () => {
+const SecurityPage = () => {
   const { handleResetPassword, handleClick, open, initialValues } = useHook();
   return (
     <WrapperLayout>
@@ -118,4 +118,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage;
+export default SecurityPage;

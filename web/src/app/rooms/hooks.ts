@@ -1,5 +1,5 @@
 import { FormikHelpers } from "formik";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Field, InputFieldProps } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useSnackbar } from "@/hooks/useSnackbar";
@@ -110,10 +110,6 @@ export const useHooks = () => {
     },
   ];
 
-  const dataSource: RoomsFormValues[] = useMemo(() => {
-    return rooms?.length ? (rooms as RoomsFormValues[]) : [];
-  }, [rooms]);
-
   const columns: Column<Schema>[] = [
     {
       key: "type",
@@ -142,13 +138,6 @@ export const useHooks = () => {
       label: "actions",
     },
   ];
-
-  const handleSearch = async (
-    values: SearchKey,
-    _: FormikHelpers<SearchKey>
-  ) => {
-    console.log("values", values);
-  };
 
   const handleCatchError = (e: any) => {
     console.error(e);
@@ -293,6 +282,15 @@ export const useHooks = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [btnName]
   );
+
+  const dataSource: RoomsFormValues[] = useMemo(() => {
+    return rooms?.length ? (rooms as RoomsFormValues[]) : [];
+  }, [rooms]);
+
+  const handleSearch = async (
+    values: SearchKey,
+    _: FormikHelpers<SearchKey>
+  ) => {};
 
   return {
     isFetchingRooms,

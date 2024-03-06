@@ -16,7 +16,6 @@ const CardStyle: SxProps<Theme> = {
   width: "100%",
   display: "flex",
   justifyContent: "space-evenly",
-  wordSpacing: 5,
   paddingBottom: 2,
 };
 
