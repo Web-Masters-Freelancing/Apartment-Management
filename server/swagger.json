@@ -209,7 +209,16 @@
     "/api/room/all": {
       "get": {
         "operationId": "RoomController_getRooms",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

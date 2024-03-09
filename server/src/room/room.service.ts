@@ -91,7 +91,7 @@ export class RoomService {
     }
   }
 
-  async fetchRooms(): Promise<AllRoomsResponseDto[]> {
+  private async findRooms() {
     const result = await this.prisma.room.findMany({
       where: { isArchived: false },
       select: selectAllRooms,
@@ -99,6 +99,30 @@ export class RoomService {
         status: Prisma.SortOrder.asc,
       },
     });
+
+    return result;
+  }
+
+  private async findRoomsByKeyword(keyword: string) {
+    const result = await this.prisma.room.findMany({
+      where: {
+        OR: [
+          {
+            description: {
+              contains: keyword,
+            },
+          },
+        ],
+      },
+    });
+
+    return result;
+  }
+
+  async fetchRooms(keyword?: string): Promise<AllRoomsResponseDto[]> {
+    const result = keyword
+      ? await this.findRoomsByKeyword(keyword)
+      : await this.findRooms();
 
     return result;
   }
