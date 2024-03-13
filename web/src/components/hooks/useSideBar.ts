@@ -7,15 +7,15 @@ export const useHook = () => {
   const urlname = usePathname();
   // Path Name
   const pathname = urlname.replace("/", "").trim();
-  const [collapse, setCollapse] = useState(true);
+
+  const { Protected, Public } = Routes;
+  const routes = [Protected.SECURITY, Protected.CATEGORY];
+
+  const [collapse, setCollapse] = useState(false || routes.includes(pathname));
 
   const handleClick = () => setCollapse(!collapse);
 
-  const { Protected, Public } = Routes;
-
   const settingsRoutes = (pathname: string) => {
-    const routes = [Protected.SECURITY, Protected.CATEGORY];
-
     return routes.includes(pathname);
   };
 

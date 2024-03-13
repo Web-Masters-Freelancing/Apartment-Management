@@ -20,6 +20,9 @@ const config: ConfigFile = {
     "./src/store/api/gen/auth.ts": {
       filterEndpoints: [/appController/],
     },
+    "./src/store/api/gen/category.ts": {
+      filterEndpoints: [/categoryController/],
+    },
   },
 };
 

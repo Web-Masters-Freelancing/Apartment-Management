@@ -25,6 +25,8 @@ export const useHooks = () => {
       values
     );
 
+    console.log("response", response.data.access_token);
+
     setToken(response.data.access_token);
     setSubmitting(false);
     resetForm();

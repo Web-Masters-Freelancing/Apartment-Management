@@ -66,23 +66,22 @@ export type RoomControllerDeleteRoomArgs = {
   id: number;
 };
 export type CreateRoomDto = {
-  type: string;
-  description?: string;
+  categoryId: number;
   amount: number;
   roomNumber: number;
 };
 export type AvailableRoomsResponseDto = {
   id: number;
-  type: string;
-  description?: string;
+  categoryId: number;
   amount: number;
   roomNumber: number;
+  name: string;
+  description: string;
 };
 export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE";
 export type AllRoomsResponseDto = {
   id: number;
-  type: string;
-  description?: string;
+  categoryId: number;
   amount: number;
   status: RoomStatus;
   roomNumber: number;

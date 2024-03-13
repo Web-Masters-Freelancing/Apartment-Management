@@ -1,11 +1,10 @@
 import { useRoomApi } from "@/hooks/api/room";
 import { ChartDataset } from "chart.js";
 import { useEffect, useState } from "react";
-import { ERoomType } from "../rooms/hooks";
 import { useUserApi } from "@/hooks/api/user";
 import moment from "moment";
+import { useCategoryApi } from "@/hooks/api/category";
 
-const roomTypes = Object.values(ERoomType);
 const currentMonth = moment(new Date()).format("MMMM");
 
 export const useHook = () => {
@@ -29,33 +28,44 @@ export const useHook = () => {
   );
   const { availableRooms } = useRoomApi();
   const { users } = useUserApi();
+  const { categories } = useCategoryApi();
 
   useEffect(() => {
-    if (availableRooms && availableRooms.length) {
+    if (
+      availableRooms &&
+      availableRooms.length &&
+      categories &&
+      categories.length
+    ) {
       const availableRoomsLength: number[] = [];
 
-      roomTypes.forEach((type) => {
-        const rooms = availableRooms.filter((value) => value.type === type);
+      categories.forEach((category) => {
+        const rooms = availableRooms.filter(
+          (value) => value.categoryId === category.id
+        );
         availableRoomsLength.push(rooms.length);
       });
 
       setAvailableRoomsDataSets([{ data: availableRoomsLength }]);
+
+      const categoryNames = categories.map((value) => value.name);
+      setLabels(categoryNames);
     }
 
-    setLabels(roomTypes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableRooms]);
 
   useEffect(() => {
-    if (users && users.length) {
+    if (users && users.length && categories && categories.length) {
       const occupiedUsers: number[] = [];
       const amountReceivables: number[] = [];
-
-      roomTypes.forEach((type) => {
+      categories.forEach((category) => {
         /**
          * Occupied Users per type rooms
          */
-        const occupiedUser = users.filter((value) => value.type === type);
+        const occupiedUser = users.filter(
+          (value) => value.categoryId === category.id
+        );
 
         occupiedUsers.push(occupiedUser.length);
 
@@ -63,7 +73,7 @@ export const useHook = () => {
          * Predicted Monthly amount receivables per rooms
          */
         const amountReceivable = users
-          .filter((value) => value.type === type)
+          .filter((value) => value.categoryId === category.id)
           .reduce((accumulator, currentValue) => {
             return accumulator + currentValue.amount;
           }, 0);
@@ -82,6 +92,7 @@ export const useHook = () => {
         { label: "receivables", data: amountReceivables },
       ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users]);
 
   return {

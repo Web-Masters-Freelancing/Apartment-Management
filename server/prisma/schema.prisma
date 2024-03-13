@@ -14,6 +14,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category {
+  id          Int    @id @default(autoincrement())
+  name        String @db.VarChar(100)
+  description String @db.Text
+  isArchived  Boolean       @default(false)
+  Room Room[]
+}
+
 model Auth {
   id           Int      @id @default(autoincrement())
   email        String   @unique(map: "email") @db.VarChar(100)
@@ -50,14 +58,14 @@ model Payments {
 
 model Room {
   id          Int           @id @default(autoincrement())
-  type        String
-  description String?       @db.Text
+  categoryId  Int
   amount      Float
   status      ROOM_STATUS   @default(AVAILABLE)
   isArchived  Boolean       @default(false)
   roomNumber  Int
   billable    Billable[]
   roomhistory RoomHistory[]
+  category    Category      @relation(fields: [categoryId], references: [id])
 
   @@unique([roomNumber])
 }
