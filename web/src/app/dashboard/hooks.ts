@@ -53,7 +53,7 @@ export const useHook = () => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableRooms]);
+  }, [availableRooms, categories]);
 
   useEffect(() => {
     if (users && users.length && categories && categories.length) {
@@ -93,7 +93,7 @@ export const useHook = () => {
       ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [users]);
+  }, [users, categories]);
 
   return {
     labels,
