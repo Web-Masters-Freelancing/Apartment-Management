@@ -100,9 +100,9 @@ export class UserService {
             roomId: true,
             room: {
               select: {
-                type: true,
                 roomNumber: true,
                 amount: true,
+                categoryId: true,
               },
             },
           },
@@ -119,9 +119,9 @@ export class UserService {
       return {
         ...values,
         roomId: billable.roomId,
-        type: billable.room.type,
         roomNumber: billable.room.roomNumber,
         amount: billable.room.amount,
+        categoryId: billable.room.categoryId,
       };
     });
   }

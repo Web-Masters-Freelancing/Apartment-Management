@@ -288,6 +288,98 @@
           }
         }
       }
+    },
+    "/api/category/create": {
+      "post": {
+        "operationId": "CategoryController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/category": {
+      "get": {
+        "operationId": "CategoryController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FindAllCategoryResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/category/edit/{id}": {
+      "put": {
+        "operationId": "CategoryController_edit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/category/{id}": {
+      "delete": {
+        "operationId": "CategoryController_deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {
@@ -372,11 +464,11 @@
           "role": {
             "$ref": "#/components/schemas/USER_ROLE"
           },
-          "roomId": {
+          "categoryId": {
             "type": "number"
           },
-          "type": {
-            "type": "string"
+          "roomId": {
+            "type": "number"
           },
           "roomNumber": {
             "type": "number"
@@ -391,8 +483,8 @@
           "contact",
           "address",
           "role",
+          "categoryId",
           "roomId",
-          "type",
           "roomNumber",
           "amount"
         ]
@@ -400,11 +492,8 @@
       "CreateRoomDto": {
         "type": "object",
         "properties": {
-          "type": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
+          "categoryId": {
+            "type": "number"
           },
           "amount": {
             "type": "number"
@@ -414,7 +503,7 @@
           }
         },
         "required": [
-          "type",
+          "categoryId",
           "amount",
           "roomNumber"
         ]
@@ -425,24 +514,29 @@
           "id": {
             "type": "number"
           },
-          "type": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
+          "categoryId": {
+            "type": "number"
           },
           "amount": {
             "type": "number"
           },
           "roomNumber": {
             "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         },
         "required": [
           "id",
-          "type",
+          "categoryId",
           "amount",
-          "roomNumber"
+          "roomNumber",
+          "name",
+          "description"
         ]
       },
       "ROOM_STATUS": {
@@ -458,11 +552,8 @@
           "id": {
             "type": "number"
           },
-          "type": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
+          "categoryId": {
+            "type": "number"
           },
           "amount": {
             "type": "number"
@@ -476,7 +567,7 @@
         },
         "required": [
           "id",
-          "type",
+          "categoryId",
           "amount",
           "status",
           "roomNumber"
@@ -557,6 +648,322 @@
         "required": [
           "id",
           "amount"
+        ]
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ]
+      },
+      "Auth": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "number"
+          },
+          "token": {
+            "type": "string"
+          },
+          "lastLoggedIn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "password",
+          "userId",
+          "lastLoggedIn",
+          "user"
+        ]
+      },
+      "RoomHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "roomId": {
+            "type": "number"
+          },
+          "userId": {
+            "type": "number"
+          },
+          "occupiedOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "room": {
+            "$ref": "#/components/schemas/Room"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "roomId",
+          "userId",
+          "occupiedOn",
+          "room",
+          "user"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/USER_ROLE"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "auth": {
+            "$ref": "#/components/schemas/Auth"
+          },
+          "billable": {
+            "$ref": "#/components/schemas/Billable"
+          },
+          "roomhistory": {
+            "$ref": "#/components/schemas/RoomHistory"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "contact",
+          "address",
+          "role",
+          "isArchived",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Payments": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "billableId": {
+            "type": "number"
+          },
+          "paidOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "billable": {
+            "$ref": "#/components/schemas/Billable"
+          }
+        },
+        "required": [
+          "id",
+          "billableId",
+          "paidOn",
+          "amount",
+          "billable"
+        ]
+      },
+      "Billable": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "userId": {
+            "type": "number"
+          },
+          "roomId": {
+            "type": "number"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BILLABLE_STATUS"
+          },
+          "room": {
+            "$ref": "#/components/schemas/Room"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "payments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Payments"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "roomId",
+          "dueDate",
+          "amount",
+          "status",
+          "room",
+          "user",
+          "payments"
+        ]
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "Room": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Room"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "isArchived",
+          "Room"
+        ]
+      },
+      "Room": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "categoryId": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ROOM_STATUS"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "roomNumber": {
+            "type": "number"
+          },
+          "billable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Billable"
+            }
+          },
+          "roomhistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomHistory"
+            }
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          }
+        },
+        "required": [
+          "id",
+          "categoryId",
+          "amount",
+          "status",
+          "isArchived",
+          "roomNumber",
+          "billable",
+          "roomhistory",
+          "category"
+        ]
+      },
+      "FindAllCategoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "Room": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Room"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "isArchived",
+          "Room"
         ]
       }
     }

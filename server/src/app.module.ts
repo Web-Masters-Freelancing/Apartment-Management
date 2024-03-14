@@ -12,6 +12,7 @@ import { TwilioService } from './twilio/twilio.service';
 import { BillableService } from './billable/billable.service';
 import { BillableModule } from './billable/billable.module';
 import { PassportModule } from '@nestjs/passport';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PassportModule } from '@nestjs/passport';
     ScheduleModule.forRoot(),
     BillableModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, CronjobService, TwilioService, BillableService],

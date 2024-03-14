@@ -72,8 +72,8 @@ export type FindAllUsersResponseDto = {
   contact: string;
   address: string;
   role: UserRole;
+  categoryId: number;
   roomId: number;
-  type: string;
   roomNumber: number;
   amount: number;
 };

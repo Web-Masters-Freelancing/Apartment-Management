@@ -1,17 +1,15 @@
 import { Billable } from './billable';
 import { RoomHistory } from './room_history';
+import { Category } from './category';
 import { ROOM_STATUS } from '@prisma/client';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class Room {
   @ApiProperty({ type: Number })
   id: number;
 
-  @ApiProperty({ type: String })
-  type: string;
-
-  @ApiPropertyOptional({ type: String })
-  description?: string;
+  @ApiProperty({ type: Number })
+  categoryId: number;
 
   @ApiProperty({ type: Number })
   amount: number;
@@ -30,4 +28,7 @@ export class Room {
 
   @ApiProperty({ isArray: true, type: () => RoomHistory })
   roomhistory: RoomHistory[];
+
+  @ApiProperty({ type: () => Category })
+  category: Category;
 }

@@ -6,10 +6,12 @@ import {
   SxProps,
   Typography,
   ModalProps,
+  TextareaAutosizeProps,
 } from "@mui/material";
 import { Form, Formik, FormikHelpers } from "formik";
 import { AnyObject, Maybe, ObjectSchema } from "yup";
 import Input from "./Input";
+import TextArea from "./TextArea";
 import Select, { SelectFieldProps } from "./Select";
 import Table, { CustomTableProps } from "@/components/Table";
 import {
@@ -49,7 +51,7 @@ interface ModalFormProps<T extends Maybe<AnyObject>> {
   initialValues: T;
   validationSchema?: ObjectSchema<T>;
   handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
-  fields: Field<InputFieldProps | SelectFieldProps>[];
+  fields: Field<InputFieldProps | SelectFieldProps | TextareaAutosizeProps>[];
 }
 
 /**
@@ -85,7 +87,7 @@ const CustomModal = ({
   width,
   ...props
 }: Props<any>) => {
-  const { isInputField, isSelectField } = useModalHook();
+  const { isInputField, isSelectField, isTextAreaField } = useModalHook();
 
   return (
     <Modal keepMounted open={open} onClose={handleClose} {...props}>
@@ -128,6 +130,23 @@ const CustomModal = ({
                       if (isSelectField(field)) {
                         return (
                           <Select
+                            {...field.fieldProps}
+                            onChange={(e) => {
+                              if (field.fieldProps.name) {
+                                setFieldValue(
+                                  field.fieldProps.name,
+                                  e.target.value
+                                );
+                              }
+                            }}
+                            key={index}
+                          />
+                        );
+                      }
+
+                      if (isTextAreaField(field)) {
+                        return (
+                          <TextArea
                             {...field.fieldProps}
                             onChange={(e) => {
                               if (field.fieldProps.name) {

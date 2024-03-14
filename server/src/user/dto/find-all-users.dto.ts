@@ -2,7 +2,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { User as UserEntity } from '../../_gen-prisma-classes/user';
 import { Room as RoomEntity } from '../../_gen-prisma-classes/room';
 import { Billable as BillableEntity } from '../../_gen-prisma-classes/billable';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
 export class FindAllUsersResponseDto extends PickType(UserEntity, [
   'id',
@@ -15,13 +15,12 @@ export class FindAllUsersResponseDto extends PickType(UserEntity, [
     type: Number,
   })
   @IsNumber()
-  roomId: BillableEntity['roomId'];
-
+  categoryId: RoomEntity['categoryId'];
   @ApiProperty({
-    type: String,
+    type: Number,
   })
-  @IsString()
-  type: RoomEntity['type'];
+  @IsNumber()
+  roomId: BillableEntity['roomId'];
 
   @ApiProperty({
     type: Number,
