@@ -50,10 +50,10 @@ export const useHook = () => {
   const roomsAvailable = useMemo(
     (): OptionSelect[] | undefined =>
       availableRooms?.map((value) => {
-        const { id, type, description } = value;
+        const { id, name, description } = value;
         return {
           key: id,
-          value: `${type} ${description}`,
+          value: `${name} ${description}`,
         };
       }),
     [availableRooms]
@@ -227,10 +227,6 @@ export const useHook = () => {
       label: "address",
     },
     {
-      key: "type", // base of roomId
-      label: "Assigned room",
-    },
-    {
       key: "roomNumber",
       label: "Door Number",
       format: (value) => `Door ${value}`,
@@ -246,7 +242,7 @@ export const useHook = () => {
     [users]
   );
 
-  const handleEdit = (values: TenantFormValues | undefined) => {
+  const handleEdit = (values: FindAllUsersResponseDto | undefined) => {
     if (values) {
       const { id, name, contact, address, roomId } = values;
 
@@ -280,7 +276,7 @@ export const useHook = () => {
     setOpenDialog((state) => !state);
   };
 
-  const tableCellActions: ActionButtonProps<TenantFormValues>[] = [
+  const tableCellActions: ActionButtonProps<FindAllUsersResponseDto>[] = [
     {
       name: "edit",
       variant: "contained",

@@ -8,10 +8,11 @@ import { catchError } from '../lib/error';
 
 const rooms = {
   id: true,
-  type: true,
   amount: true,
-  description: true,
+  status: true,
   roomNumber: true,
+  categoryId: true,
+  category: { select: { name: true, description: true } },
 };
 
 const selectAvailableRooms = Prisma.validator<Prisma.RoomSelect>()(rooms);
@@ -55,10 +56,7 @@ export class RoomService {
     }
   }
 
-  async edit(
-    id: number,
-    { amount, type, description, roomNumber }: CreateRoomDto,
-  ) {
+  async edit(id: number, { amount, roomNumber }: CreateRoomDto) {
     try {
       await this.prisma.room.update({
         where: {
@@ -66,8 +64,6 @@ export class RoomService {
         },
         data: {
           amount: parseFloat(amount as unknown as string),
-          description,
-          type,
           roomNumber: parseFloat(roomNumber as unknown as string),
         },
       });
@@ -76,13 +72,12 @@ export class RoomService {
     }
   }
 
-  async create({ amount, type, description, roomNumber }: CreateRoomDto) {
+  async create({ amount, roomNumber, categoryId }: CreateRoomDto) {
     try {
       await this.prisma.room.create({
         data: {
+          categoryId,
           amount: parseFloat(amount as unknown as string),
-          type,
-          description,
           roomNumber: parseFloat(roomNumber as unknown as string),
         },
       });
@@ -110,10 +105,19 @@ export class RoomService {
           status: ROOM_STATUS.AVAILABLE,
           isArchived: false,
         },
-        select: selectAvailableRooms,
+        select: {
+          ...selectAvailableRooms,
+        },
       });
 
-      return result;
+      return result.map((value) => {
+        const { category, ...rooms } = value;
+        return {
+          ...rooms,
+          name: category.name,
+          description: category.description,
+        };
+      });
     } catch (e) {
       catchError(e);
     }

@@ -6,6 +6,8 @@ import { useHook } from "./hooks";
 import CustomTable from "@/components/Table";
 import CustomModal from "@/components/Modal";
 import { CategoryFormSchema } from "@/schemas";
+import { LinearProgress } from "@mui/material";
+import Dialog from "@/components/Dialog";
 
 const CategoryPage = () => {
   const {
@@ -21,6 +23,10 @@ const CategoryPage = () => {
     btnName,
     initialValues,
     handleSubmit,
+    isFetchingCategory,
+    handleToggleDialog,
+    handleDeleteCategory,
+    openDialog,
   } = useHook();
   return (
     <WrapperLayout>
@@ -38,12 +44,24 @@ const CategoryPage = () => {
         btnName={btnName}
       />
       <SearchBar handleSubmit={handleSearch} />
-      <CustomTable
-        tableHeader="Category List"
-        columns={columns}
-        dataSource={dataSource}
-        headerActions={tableHeaderActions}
-        cellActions={tableCellActions}
+      {isFetchingCategory ? (
+        <LinearProgress color="primary" />
+      ) : (
+        <CustomTable
+          tableHeader="Category List"
+          columns={columns}
+          dataSource={dataSource}
+          headerActions={tableHeaderActions}
+          cellActions={tableCellActions}
+        />
+      )}
+
+      <Dialog
+        contentText="This action is irreversible."
+        handleSubmit={handleDeleteCategory}
+        open={openDialog}
+        title="Are you sure you want you delete this room?"
+        toggleDialog={handleToggleDialog}
       />
     </WrapperLayout>
   );

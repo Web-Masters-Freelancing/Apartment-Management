@@ -2,6 +2,7 @@ import { enhancedApi as roomApi } from "./api/gen/room";
 import { enhancedApi as userApi } from "./api/gen/user";
 import { enhancedApi as billableApi } from "./api/gen/billable";
 import { enhancedApi as authApi } from "./api/gen/auth";
+import { enhancedApi as categoryApi } from "./api/gen/category";
 
 const enhancedRoomApi = roomApi.enhanceEndpoints({
   addTagTypes: ["rooms", "available-rooms"],
@@ -63,9 +64,29 @@ const enchancedAuthApi = authApi.enhanceEndpoints({
   },
 });
 
+const enchancedCategoryApi = categoryApi.enhanceEndpoints({
+  addTagTypes: ["category", "rooms", "available-rooms"],
+  endpoints: {
+    categoryControllerCreate: {
+      invalidatesTags: ["category", "rooms", "available-rooms"],
+    },
+    categoryControllerFindAll: {
+      providesTags: ["category"],
+    },
+
+    categoryControllerEdit: {
+      invalidatesTags: ["category", "rooms", "available-rooms"],
+    },
+    categoryControllerDeleteCategory: {
+      invalidatesTags: ["category"],
+    },
+  },
+});
+
 export {
   enhancedRoomApi as roomApi,
   enhancedUserApi as userApi,
   enhancedBillableApi as billableApi,
   enchancedAuthApi as authApi,
+  enchancedCategoryApi as categoryApi,
 };
