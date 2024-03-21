@@ -56,7 +56,7 @@ export class RoomService {
     }
   }
 
-  async edit(id: number, { amount, roomNumber }: CreateRoomDto) {
+  async edit(id: number, { amount, roomNumber, categoryId }: CreateRoomDto) {
     try {
       await this.prisma.room.update({
         where: {
@@ -65,6 +65,7 @@ export class RoomService {
         data: {
           amount: parseFloat(amount as unknown as string),
           roomNumber: parseFloat(roomNumber as unknown as string),
+          categoryId,
         },
       });
     } catch (e) {
@@ -95,7 +96,14 @@ export class RoomService {
       },
     });
 
-    return result;
+    return result.map((value) => {
+      const { category, ...rooms } = value;
+      return {
+        ...rooms,
+        name: category.name,
+        description: category.description,
+      };
+    });
   }
 
   async fetchAvailableRooms(): Promise<AvailableRoomsResponseDto[]> {

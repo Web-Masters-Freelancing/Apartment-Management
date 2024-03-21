@@ -4,9 +4,7 @@ import {
   List,
   ListItemButton,
   ListItemText,
-  Drawer,
   Collapse,
-  ListItemIcon,
 } from "@mui/material";
 import {
   DashboardCustomize,
@@ -30,7 +28,6 @@ const Sidebar = () => {
     ROOM,
     TENANT,
     BILLABLES,
-    TRANSACTIONS,
     SECURITY,
     REPORTS,
     CATEGORY,
@@ -76,13 +73,6 @@ const Sidebar = () => {
           <ListItemButton className={pathname === BILLABLES ? "active" : ""}>
             <MonetizationOnOutlined />
             <ListItemText primary={BILLABLES} />
-          </ListItemButton>
-        </Link>
-
-        <Link href={TRANSACTIONS}>
-          <ListItemButton className={pathname === TRANSACTIONS ? "active" : ""}>
-            <AccountBalance />
-            <ListItemText primary={TRANSACTIONS} />
           </ListItemButton>
         </Link>
 

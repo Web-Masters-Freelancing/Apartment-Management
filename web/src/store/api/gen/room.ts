@@ -85,6 +85,8 @@ export type AllRoomsResponseDto = {
   amount: number;
   status: RoomStatus;
   roomNumber: number;
+  name: string;
+  description: string;
 };
 export const {
   useRoomControllerCreateMutation,
