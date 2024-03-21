@@ -563,6 +563,12 @@
           },
           "roomNumber": {
             "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         },
         "required": [
@@ -570,7 +576,9 @@
           "categoryId",
           "amount",
           "status",
-          "roomNumber"
+          "roomNumber",
+          "name",
+          "description"
         ]
       },
       "BILLABLE_STATUS": {

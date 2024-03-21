@@ -1,6 +1,11 @@
 import { FormikHelpers } from "formik";
 import { SearchKey } from "../rooms/hooks";
-import { ActionButtonProps, Column, TableActions } from "@/components/Table";
+import {
+  ActionButtonProps,
+  Column,
+  HeaderActions,
+  TableActions,
+} from "@/components/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
 import { InputFieldProps, Field } from "@/components/hooks/useModal";
@@ -50,10 +55,10 @@ export const useHook = () => {
   const roomsAvailable = useMemo(
     (): OptionSelect[] | undefined =>
       availableRooms?.map((value) => {
-        const { id, name, description } = value;
+        const { id, name, description, amount } = value;
         return {
           key: id,
-          value: `${name} ${description}`,
+          value: `${name} ${description} ${amount}`,
         };
       }),
     [availableRooms]
@@ -260,11 +265,14 @@ export const useHook = () => {
     }
   };
 
-  const tableHeaderActions: ActionButtonProps<any>[] = [
+  const tableHeaderActions: HeaderActions<ActionButtonProps<any>>[] = [
     {
-      name: "Add Tenant",
-      variant: "contained",
-      handleClick: toggleModal,
+      actionType: "button",
+      actionProps: {
+        name: "Add Tenant",
+        variant: "contained",
+        handleClick: toggleModal,
+      },
     },
   ];
 

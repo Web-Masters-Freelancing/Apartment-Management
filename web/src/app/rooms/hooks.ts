@@ -1,33 +1,25 @@
 import { FormikHelpers } from "formik";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Field, InputFieldProps } from "@/components/hooks/useModal";
 import { useRoomApi } from "@/hooks/api/room";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { OptionSelect, SelectFieldProps } from "@/components/Select";
-import { ActionButtonProps, Column, TableActions } from "@/components/Table";
+import {
+  ActionButtonProps,
+  Column,
+  HeaderActions,
+  TableActions,
+} from "@/components/Table";
 import { red } from "@mui/material/colors";
-
-export enum ERoomType {
-  FAMILY = "family",
-  DELUXE = "deluxe",
-  STANDARD = "standard",
-  BARKADA = "barkada",
-}
-
-export type RoomsFormValues = {
-  id?: number;
-  type: string;
-  description?: string;
-  amount: number;
-  status?: string;
-  roomNumber: number;
-};
+import { AllRoomsResponseDto } from "@/store/api/gen/room";
+import { useCategoryApi } from "@/hooks/api/category";
+import { PartialPick } from "@/types/generic";
 
 export type SearchKey = {
   keyword: string;
 };
 
-interface Schema extends RoomsFormValues, TableActions {}
+interface Schema extends AllRoomsResponseDto, TableActions {}
 
 export const useHooks = () => {
   const {
@@ -37,6 +29,9 @@ export const useHooks = () => {
     isFetchingRooms,
     handleDeleteRoom: deleteRoom,
   } = useRoomApi();
+
+  const { categories } = useCategoryApi();
+
   const { setSnackbarProps } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -46,46 +41,45 @@ export const useHooks = () => {
     undefined
   );
 
-  const initialFormValues: RoomsFormValues = {
-    type: "",
-    description: "",
+  interface InitialValues
+    extends Pick<
+      AllRoomsResponseDto,
+      "categoryId" | "description" | "amount" | "roomNumber" | "id"
+    > {}
+
+  const initialFormValues: PartialPick<InitialValues, "description" | "id"> = {
+    categoryId: 0,
     amount: 0,
-    status: "",
     roomNumber: 0,
   };
 
   const [initialValues, setInitialValues] =
-    useState<RoomsFormValues>(initialFormValues);
+    useState<PartialPick<InitialValues, "description" | "id">>(
+      initialFormValues
+    );
 
-  const roomTypes: OptionSelect[] = [
-    { key: ERoomType.FAMILY, value: "Family" },
-    { key: ERoomType.DELUXE, value: "Deluxe" },
-    { key: ERoomType.STANDARD, value: "Standard" },
-    { key: ERoomType.BARKADA, value: "Barkada" },
-  ];
+  const categoriesType = useMemo((): OptionSelect[] | undefined => {
+    const optionSelect = categories?.map((value): OptionSelect => {
+      const { id, name } = value;
+
+      return { key: id, value: name };
+    });
+
+    return optionSelect;
+  }, [categories]);
 
   const fields: Field<InputFieldProps | SelectFieldProps>[] = [
     {
       fieldType: "select",
       fieldProps: <SelectFieldProps>{
-        id: "type",
-        label: "Room type",
-        options: roomTypes,
-        inputLabelId: "type",
-        labelId: "type",
+        id: "categoryId",
+        label: "Room Category",
+        options: categoriesType,
+        inputLabelId: "categoryId",
+        labelId: "categoryId",
         margin: "dense",
-        name: "type",
+        name: "categoryId",
         defaultValue: "",
-      },
-    },
-    {
-      fieldType: "text",
-      fieldProps: <InputFieldProps>{
-        label: "Description",
-        name: "description",
-        id: "description",
-        type: "text",
-        margin: "dense",
       },
     },
     {
@@ -112,8 +106,8 @@ export const useHooks = () => {
 
   const columns: Column<Schema>[] = [
     {
-      key: "type",
-      label: "type",
+      key: "name",
+      label: "category",
     },
     {
       key: "description",
@@ -159,10 +153,15 @@ export const useHooks = () => {
   };
 
   const handleCreateRoom = async (
-    payload: RoomsFormValues,
-    { setSubmitting, resetForm }: FormikHelpers<RoomsFormValues>
+    payload: AllRoomsResponseDto,
+    {
+      setSubmitting,
+      resetForm,
+    }: FormikHelpers<PartialPick<InitialValues, "description" | "id">>
   ) => {
     try {
+      console.log("payload", payload);
+
       await createRoom(payload);
 
       showSnackbar("Room is successfully created!");
@@ -180,8 +179,10 @@ export const useHooks = () => {
   };
 
   const handleEditRoom = async (
-    { id, ...payload }: RoomsFormValues,
-    { setSubmitting }: FormikHelpers<RoomsFormValues>
+    { id, ...payload }: AllRoomsResponseDto,
+    {
+      setSubmitting,
+    }: FormikHelpers<PartialPick<InitialValues, "description" | "id">>
   ) => {
     try {
       id && (await editRoom(id, payload));
@@ -225,7 +226,9 @@ export const useHooks = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomToDelete]);
 
-  const toggleModal = (values?: RoomsFormValues | undefined) => {
+  const toggleModal = (
+    values?: PartialPick<InitialValues, "description" | "id"> | undefined
+  ) => {
     if (values) {
       setTitle(values.id ? "EDIT ROOMS" : "CREATE ROOMS");
       setBtnName(values.id ? "Save Changes" : "Save");
@@ -235,7 +238,9 @@ export const useHooks = () => {
     setOpen((modalState) => !modalState);
   };
 
-  const handleToggleDialog = (values?: RoomsFormValues | undefined) => {
+  const handleToggleDialog = (
+    values?: PartialPick<InitialValues, "description" | "id"> | undefined
+  ) => {
     if (values && values.id) {
       setRoomToDelete(values.id);
     }
@@ -243,7 +248,9 @@ export const useHooks = () => {
     setOpenDialog((state) => !state);
   };
 
-  const tableCellActions: ActionButtonProps<RoomsFormValues>[] = [
+  const tableCellActions: ActionButtonProps<
+    PartialPick<InitialValues, "description" | "id">
+  >[] = [
     {
       name: "Edit",
       variant: "contained",
@@ -262,18 +269,23 @@ export const useHooks = () => {
     },
   ];
 
-  const tableHeaderActions: ActionButtonProps<any>[] = [
+  const tableHeaderActions: HeaderActions<ActionButtonProps<any>>[] = [
     {
-      name: "Add Rooms",
-      variant: "contained",
-      handleClick: toggleModal,
+      actionType: "button",
+      actionProps: {
+        name: "Add Rooms",
+        variant: "contained",
+        handleClick: toggleModal,
+      },
     },
   ];
 
   const handleSubmit = useCallback(
     function (
-      formValues: RoomsFormValues,
-      formActions: FormikHelpers<RoomsFormValues>
+      formValues: AllRoomsResponseDto,
+      formActions: FormikHelpers<
+        PartialPick<InitialValues, "description" | "id">
+      >
     ) {
       btnName === "Save"
         ? handleCreateRoom(formValues, formActions)
@@ -283,8 +295,8 @@ export const useHooks = () => {
     [btnName]
   );
 
-  const dataSource: RoomsFormValues[] = useMemo(() => {
-    return rooms?.length ? (rooms as RoomsFormValues[]) : [];
+  const dataSource: AllRoomsResponseDto[] = useMemo(() => {
+    return rooms?.length ? (rooms as AllRoomsResponseDto[]) : [];
   }, [rooms]);
 
   const handleSearch = async (

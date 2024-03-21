@@ -16,6 +16,7 @@ import {
 import React, { memo } from "react";
 import { useHook } from "./hooks/useTable";
 import { Typography, SxProps } from "@mui/material";
+import CustomDateRangePicker, { CustomDateRangePickerProps } from "./DateRange";
 
 const container: SxProps<Theme> = {
   width: "100%",
@@ -37,9 +38,18 @@ export interface ActionButtonProps<T> extends ButtonProps {
   handleClick: (element?: T) => void;
 }
 
+export interface HeaderActions<
+  T extends ActionButtonProps<any> | CustomDateRangePickerProps
+> {
+  actionType: "button" | "dateRange";
+  actionProps: T;
+}
+
 export interface TableActions {
   cellActions?: ActionButtonProps<any>[];
-  headerActions?: ActionButtonProps<any>[];
+  headerActions?: HeaderActions<
+    ActionButtonProps<any> | CustomDateRangePickerProps
+  >[];
 }
 
 /**
@@ -75,8 +85,14 @@ const CustomTable = ({
   cellActions,
   headerActions,
 }: CustomTableProps) => {
-  const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage } =
-    useHook();
+  const {
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    isButton,
+    isDateRange,
+  } = useHook();
 
   return (
     <Paper sx={container}>
@@ -94,25 +110,42 @@ const CustomTable = ({
             </Typography>
           )}
           {headerActions && headerActions.length && (
-            <Box sx={{ gap: 2 }}>
-              {headerActions.map((action, key) => {
-                const {
-                  onClick,
-                  handleClick,
-                  variant = "contained",
-                  ...props
-                } = action;
+            <Box sx={{ gap: 1, display: "flex" }}>
+              {headerActions.map((component, key) => {
+                if (isDateRange(component)) {
+                  const { actionProps } = component;
+                  const { localeText } = actionProps;
+                  return (
+                    <CustomDateRangePicker key={key} localeText={localeText} />
+                  );
+                }
+                if (isButton(component)) {
+                  const { actionProps } = component;
+                  const {
+                    onClick,
+                    handleClick,
+                    variant = "contained",
+                    ...props
+                  } = actionProps;
 
-                return (
-                  <Button
-                    key={key}
-                    variant={variant}
-                    {...props}
-                    onClick={() => handleClick()}
-                  >
-                    {props.name}
-                  </Button>
-                );
+                  return (
+                    <Box
+                      sx={{
+                        paddingTop: 2,
+                      }}
+                      key={key}
+                    >
+                      <Button
+                        key={key}
+                        variant={variant}
+                        {...props}
+                        onClick={() => handleClick()}
+                      >
+                        {props.name}
+                      </Button>
+                    </Box>
+                  );
+                }
               })}
             </Box>
           )}
