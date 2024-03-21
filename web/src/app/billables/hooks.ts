@@ -18,7 +18,9 @@ export interface BillableValues extends FindAllBillableResponseDto {
   roomId: number;
 }
 
-interface TableCellValues extends FindAllBillableResponseDto, TableActions {}
+export interface TableCellValues
+  extends FindAllBillableResponseDto,
+    TableActions {}
 
 interface ModalFormValues {
   amount: number;

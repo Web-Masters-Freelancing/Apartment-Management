@@ -7,7 +7,6 @@ export const Routes = {
     REPORTS: "reports",
     SECURITY: "security",
     CATEGORY: "category",
-    TRANSACTIONS: "transactions",
   },
 
   Public: {
