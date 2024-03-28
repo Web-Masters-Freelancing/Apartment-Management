@@ -3,6 +3,7 @@ import { prompt } from 'enquirer';
 import { createStandaloneApplication } from 'src/create-application';
 import { seedRooms } from './seeders/seed-rooms';
 import { seedUsers } from './seeders/seed-users';
+import { seedCategory } from './seeders/seed-category';
 
 const prisma = new PrismaClient();
 
@@ -52,6 +53,7 @@ const main = async () => {
   const app = await createStandaloneApplication({ logger: ['error'] });
   const answers: Answers = await getAnswers();
 
+  await seedCategory({ app });
   // Dili na ni necessary na iparallel query kay need macreate daan ang room before ang user
   await seedRooms({ app, count: answers.roomCount });
   await seedUsers({

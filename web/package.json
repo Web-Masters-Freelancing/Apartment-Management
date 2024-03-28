@@ -28,6 +28,7 @@
     "moment": "^2.30.1",
     "next": "latest",
     "npm-run-all": "^4.1.5",
+    "pdfmake": "^0.2.10",
     "react": "latest",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "latest",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "latest",
+    "@types/pdfmake": "^0.2.9",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",
