@@ -17,6 +17,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.processPaymentDto,
       }),
     }),
+    billableControllerFindAllPayments: build.query<
+      BillableControllerFindAllPaymentsResponse,
+      BillableControllerFindAllPaymentsArgs
+    >({
+      query: () => ({ url: `/api/billable/payments` }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -28,6 +34,9 @@ export type BillableControllerProcessPaymentResponse = unknown;
 export type BillableControllerProcessPaymentArgs = {
   processPaymentDto: ProcessPaymentDto;
 };
+export type BillableControllerFindAllPaymentsResponse =
+  /** status 200  */ FindAllPaymentsDto[];
+export type BillableControllerFindAllPaymentsArgs = void;
 export type BillableStatus = "ACTIVE" | "INACTIVE";
 export type FindAllPaymentsForFindAllBillableResponseDto = {
   paidOn: string;
@@ -46,7 +55,20 @@ export type ProcessPaymentDto = {
   id: number;
   amount: number;
 };
+export type FindAllPaymentsDto = {
+  id: number;
+  dueDate: string;
+  roomNumber: number;
+  description: string;
+  userName: string;
+  categoryName: string;
+  amountToPay: number;
+  amountPaid: number;
+  balance: number;
+  advance: number;
+};
 export const {
   useBillableControllerFindAllQuery,
   useBillableControllerProcessPaymentMutation,
+  useBillableControllerFindAllPaymentsQuery,
 } = injectedRtkApi;

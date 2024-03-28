@@ -8,6 +8,9 @@ export const useBillableApi = () => {
 
   const [pay] = billableApi.useBillableControllerProcessPaymentMutation();
 
+  const { isFetching: isFetchingPayments, data: payments } =
+    billableApi.useBillableControllerFindAllPaymentsQuery();
+
   const processPayment = async (payload: ProcessPaymentDto) => {
     try {
       const result: any = await pay({
@@ -24,5 +27,7 @@ export const useBillableApi = () => {
     isFetching,
     billables,
     processPayment,
+    isFetchingPayments,
+    payments,
   };
 };
