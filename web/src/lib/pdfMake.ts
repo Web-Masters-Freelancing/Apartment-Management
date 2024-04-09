@@ -4,6 +4,7 @@ import * as pdfFonts from "pdfmake/build/vfs_fonts";
 import {
   Content,
   ContentColumns,
+  ContentTable,
   Margins,
   PageSize,
   StyleDictionary,
@@ -13,15 +14,37 @@ import {
 } from "pdfmake/interfaces";
 
 interface pdfMakeProps {
+  documentHeader: ContentColumns;
   tableColumns: string[];
   tableRows: (string | number)[][];
-  totalRows: (string | number)[];
+  totalRows: TableCell[];
 }
 
-const formatNumber = (value: number) =>
+export const styles: StyleDictionary = {
+  TABLESTYLE: {
+    fontSize: 8,
+  },
+  TABLEHEADER: {
+    fillColor: "#d2d2d4",
+    bold: true,
+    fontSize: 8,
+    alignment: "center",
+  },
+  HEADERLEFT: {
+    fontSize: 8,
+    alignment: "left",
+  },
+  HEADERRIGHT: {
+    fontSize: 8,
+    alignment: "right",
+  },
+};
+
+export const formatNumber = (value: number) =>
   value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 export const openPdfMake = ({
+  documentHeader,
   tableColumns,
   tableRows,
   totalRows,
@@ -29,17 +52,6 @@ export const openPdfMake = ({
   /**
    * PDF styles
    */
-  const styles: StyleDictionary = {
-    TABLESTYLE: {
-      fontSize: 8,
-    },
-    TABLEHEADER: {
-      fillColor: "#d2d2d4",
-      bold: true,
-      fontSize: 8,
-      alignment: "center",
-    },
-  };
 
   /**
    * Create default settings
@@ -60,51 +72,19 @@ export const openPdfMake = ({
           value && typeof value === "number" ? formatNumber(value) : value
         )
       ),
-      totalRows.map((value, index): TableCell => {
-        const tableCell: TableCell = !index
-          ? {
-              text: value,
-              colSpan: 5,
-              style: { alignment: "right", fontSize: 10, bold: true },
-            }
-          : {
-              text:
-                value && typeof value === "number"
-                  ? formatNumber(value)
-                  : value,
-            };
-        return tableCell;
-      }),
+      totalRows,
     ],
-  };
-
-  const pageHeader: ContentColumns = {
-    columns: [
-      [
-        {
-          text: "Whitehouse Apartment Management",
-          style: { alignment: "left" },
-        },
-        {
-          text: "Income Report",
-          style: { alignment: "left" },
-        },
-      ],
-    ],
-    columnGap: 10,
   };
 
   /**
    * Document Content
    */
-  const content: Content[] = [
-    { ...pageHeader },
-    {
-      margin: [0, 10, 10, 0],
-      style: styles["TABLESTYLE"],
-      table,
-    },
-  ];
+  const tableContent: ContentTable = {
+    margin: [0, 10, 10, 0],
+    style: styles["TABLESTYLE"],
+    table,
+  };
+  const content: Content[] = [documentHeader, tableContent];
 
   const document: TDocumentDefinitions = { content, pageMargins, pageSize };
 

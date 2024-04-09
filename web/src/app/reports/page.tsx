@@ -12,6 +12,7 @@ const ReportsPage = () => {
     dataSource,
     tableHeaderActions,
     isFetchingPayments,
+    tableCellActions,
   } = useHooks();
   return (
     <WrapperLayout>
@@ -24,6 +25,7 @@ const ReportsPage = () => {
           columns={columns}
           dataSource={dataSource ?? []}
           headerActions={tableHeaderActions}
+          cellActions={tableCellActions}
         />
       )}
     </WrapperLayout>

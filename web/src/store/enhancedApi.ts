@@ -26,16 +26,16 @@ const enhancedRoomApi = roomApi.enhanceEndpoints({
 });
 
 const enhancedUserApi = userApi.enhanceEndpoints({
-  addTagTypes: ["users", "billables"],
+  addTagTypes: ["users", "billables", "rooms", "available-rooms"],
   endpoints: {
     userControllerCreate: {
-      invalidatesTags: ["users", "billables"],
+      invalidatesTags: ["users", "billables", "rooms", "available-rooms"],
     },
     userControllerFindAll: {
       providesTags: ["users"],
     },
     userControllerEdit: {
-      invalidatesTags: ["users"],
+      invalidatesTags: ["users", "rooms", "available-rooms"],
     },
     userControllerRemove: {
       invalidatesTags: ["users"],

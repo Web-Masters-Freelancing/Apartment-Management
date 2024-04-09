@@ -1,12 +1,19 @@
 import { FormikHelpers } from "formik";
 import { SearchKey } from "../rooms/hooks";
-import { ActionButtonProps, Column, HeaderActions } from "@/components/Table";
+import {
+  ActionButtonProps,
+  Column,
+  DateRangeValues,
+  HeaderActions,
+  TableActions,
+} from "@/components/Table";
 import moment from "moment";
 import { FindAllPaymentsDto } from "@/store/api/gen/billable";
 import { CustomDateRangePickerProps } from "@/components/DateRange";
-import { openPdfMake } from "@/lib/pdfMake";
+import { formatNumber, openPdfMake, styles } from "@/lib/pdfMake";
 import { useBillableApi } from "@/hooks/api/billable";
 import { useMemo } from "react";
+import { ContentColumns, TableCell } from "pdfmake/interfaces";
 
 export const useHooks = () => {
   const { payments, isFetchingPayments } = useBillableApi();
@@ -14,7 +21,9 @@ export const useHooks = () => {
   const handleSearch = (values: SearchKey, _: FormikHelpers<SearchKey>) => {};
 
   const handlePDF = () => {
-    const tableColumns = columns.map((value) => value.label);
+    const tableColumns = columns
+      .filter((value) => value.label !== "Action")
+      .map((value) => value.label);
 
     if (payments && payments.length) {
       const totalAmount: Pick<
@@ -54,8 +63,38 @@ export const useHooks = () => {
         amountPaid,
         balance,
         "",
-      ];
-      openPdfMake({ tableColumns, tableRows, totalRows });
+      ].map((value, index): TableCell => {
+        const tableCell: TableCell = !index
+          ? {
+              text: value,
+              colSpan: 5,
+              style: { alignment: "right", fontSize: 10, bold: true },
+            }
+          : {
+              text:
+                value && typeof value === "number"
+                  ? formatNumber(value)
+                  : value,
+            };
+        return tableCell;
+      });
+
+      const documentHeader: ContentColumns = {
+        columns: [
+          [
+            {
+              text: "Whitehouse Apartment Management",
+              style: { alignment: "left" },
+            },
+            {
+              text: "Income Report",
+              style: { alignment: "left" },
+            },
+          ],
+        ],
+        columnGap: 10,
+      };
+      openPdfMake({ documentHeader, tableColumns, tableRows, totalRows });
     }
   };
 
@@ -64,7 +103,7 @@ export const useHooks = () => {
     [payments]
   );
 
-  const columns: Column<FindAllPaymentsDto>[] = [
+  const columns: Column<FindAllPaymentsDto & TableActions>[] = [
     {
       key: "userName",
       label: "TENANT",
@@ -107,6 +146,114 @@ export const useHooks = () => {
       label: "DUE DATE",
       format: (value) => moment(value).format("DD/MM/YYYY"),
     },
+    {
+      key: "cellActions",
+      label: "Action",
+    },
+  ];
+
+  const handleTenantSoa = (payload: FindAllPaymentsDto | undefined) => {
+    if (payload) {
+      const {
+        userName,
+        contact,
+        address,
+        dueDate,
+        categoryName,
+        description,
+        payments,
+        amountToPay,
+        balance,
+      } = payload;
+      const documentHeader: ContentColumns = {
+        columns: [
+          [
+            {
+              text: "STATEMENT OF ACCOUNT",
+              style: { alignment: "center" },
+            },
+            {
+              text: "Whitehouse Apartment Management",
+              style: { alignment: "center" },
+            },
+            {
+              text: "To:",
+              style: { alignment: "left", bold: true },
+            },
+            {
+              text: userName,
+              style: styles["HEADERLEFT"],
+            },
+            {
+              text: contact,
+              style: styles["HEADERLEFT"],
+            },
+            {
+              text: address,
+              style: styles["HEADERLEFT"],
+            },
+          ],
+        ],
+        columnGap: 10,
+      };
+
+      const tableColumns: string[] = [
+        "Issue Date",
+        "Due Date",
+        "Category",
+        "Description",
+        "Amount",
+        "Payment",
+        "Balance",
+      ];
+
+      let totalPayments: number = 0;
+
+      const tableRows = payments.map((value) => {
+        totalPayments += value.amount;
+        return [
+          moment(value.paidOn).format("l"),
+          moment(dueDate).format("l"),
+          categoryName,
+          description,
+          amountToPay,
+          value.amount,
+          balance,
+        ];
+      });
+
+      const totalRows = ["Total", "", "", "", "", totalPayments, balance].map(
+        (value, key): TableCell => {
+          return !key
+            ? {
+                text: value,
+                colSpan: 5,
+                style: { alignment: "right", fontSize: 10, bold: true },
+                border: [false, false, false, false],
+              }
+            : {
+                text:
+                  value && typeof value === "number"
+                    ? formatNumber(value)
+                    : value,
+              };
+        }
+      );
+
+      openPdfMake({ documentHeader, tableColumns, tableRows, totalRows });
+    }
+  };
+
+  const handleFilterDate = (payload: any, helpers: FormikHelpers<any>) => {
+    console.log("payload", payload);
+  };
+
+  const tableCellActions: ActionButtonProps<FindAllPaymentsDto>[] = [
+    {
+      name: "View SOA",
+      variant: "outlined",
+      handleClick: handleTenantSoa,
+    },
   ];
 
   const tableHeaderActions: HeaderActions<
@@ -116,13 +263,8 @@ export const useHooks = () => {
       actionType: "dateRange",
       actionProps: <CustomDateRangePickerProps>{
         localeText: { start: "Start date", end: "End date" },
-      },
-    },
-    {
-      actionType: "button",
-      actionProps: <ActionButtonProps<any>>{
-        name: "Filter by date",
-        variant: "contained",
+        onSubmit: handleFilterDate,
+        name: "dateRange",
       },
     },
     {
@@ -141,5 +283,6 @@ export const useHooks = () => {
     dataSource,
     tableHeaderActions,
     isFetchingPayments,
+    tableCellActions,
   };
 };
