@@ -10,16 +10,6 @@ export interface SeedRoomProps {
 
 const rooms = [
   {
-    type: 'deluxe',
-    description: faker.lorem.paragraph(),
-    amount: 5000,
-  },
-  {
-    type: 'family',
-    description: faker.lorem.paragraph(),
-    amount: 3000,
-  },
-  {
     type: 'standard',
     description: faker.lorem.paragraph(),
     amount: 1500,
@@ -46,7 +36,7 @@ export const seedRooms = async (props: SeedRoomProps) => {
 
     await roomService.create({
       ...room,
-      roomNumber: i,
+      roomNumber: i + 1,
       categoryId: category.id,
     });
   }

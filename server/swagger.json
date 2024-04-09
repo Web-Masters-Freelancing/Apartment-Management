@@ -289,6 +289,27 @@
         }
       }
     },
+    "/api/billable/payments": {
+      "get": {
+        "operationId": "BillableController_findAllPayments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FindAllPaymentsDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/category/create": {
       "post": {
         "operationId": "CategoryController_create",
@@ -656,6 +677,54 @@
         "required": [
           "id",
           "amount"
+        ]
+      },
+      "FindAllPaymentsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "roomNumber": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "categoryName": {
+            "type": "string"
+          },
+          "amountToPay": {
+            "type": "number"
+          },
+          "amountPaid": {
+            "type": "number"
+          },
+          "balance": {
+            "type": "number"
+          },
+          "advance": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "dueDate",
+          "roomNumber",
+          "description",
+          "userName",
+          "categoryName",
+          "amountToPay",
+          "amountPaid",
+          "balance",
+          "advance"
         ]
       },
       "CreateCategoryDto": {

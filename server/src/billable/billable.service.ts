@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { BILLABLE_STATUS, Prisma } from '@prisma/client';
 import { FindAllBillableResponseDto } from './dto/find-all.dto';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
+import { FindAllPaymentsDto } from './dto/findall-payments';
 
 type BillableDueType = {
   type: 'AfterDue' | 'BeforeDue';
@@ -132,5 +133,43 @@ export class BillableService {
     });
 
     return result;
+  }
+
+  async findAllPayments(): Promise<FindAllPaymentsDto[]> {
+    const result = await this.prismaService.billable.findMany({
+      select: {
+        id: true,
+        dueDate: true,
+        amount: true,
+        user: { select: { name: true } },
+        room: {
+          select: {
+            category: { select: { name: true, description: true } },
+            roomNumber: true,
+            amount: true,
+          },
+        },
+        payments: { select: { amount: true } },
+      },
+    });
+
+    return result.map((value) => {
+      const { id, dueDate, amount, user, room, payments } = value;
+      return {
+        id,
+        userName: user.name,
+        categoryName: room.category.name,
+        description: room.category.description,
+        roomNumber: room.roomNumber,
+        amountToPay: room.amount,
+        amountPaid: payments.reduce(
+          (accumulator, currentValue) => accumulator + currentValue.amount,
+          0,
+        ),
+        dueDate,
+        advance: amount < 0 ? Math.abs(amount) : 0,
+        balance: amount > 0 ? amount : 0,
+      } as FindAllPaymentsDto;
+    });
   }
 }
