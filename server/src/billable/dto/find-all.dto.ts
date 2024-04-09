@@ -5,7 +5,7 @@ import { Payments as PaymentsEntity } from './../../_gen-prisma-classes/payments
 import { Room as RoomEntity } from './../../_gen-prisma-classes/room';
 import { IsArray, IsNumber, IsString } from 'class-validator';
 
-class FindAllPaymentsForFindAllBillableResponseDto extends PickType(
+export class FindAllPaymentsForFindAllBillableResponseDto extends PickType(
   PaymentsEntity,
   ['amount', 'paidOn'],
 ) {}
