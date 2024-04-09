@@ -141,7 +141,7 @@ export class BillableService {
         id: true,
         dueDate: true,
         amount: true,
-        user: { select: { name: true } },
+        user: { select: { name: true, contact: true, address: true } },
         room: {
           select: {
             category: { select: { name: true, description: true } },
@@ -149,7 +149,7 @@ export class BillableService {
             amount: true,
           },
         },
-        payments: { select: { amount: true } },
+        payments: { select: { paidOn: true, amount: true } },
       },
     });
 
@@ -158,6 +158,8 @@ export class BillableService {
       return {
         id,
         userName: user.name,
+        contact: user.contact,
+        address: user.address,
         categoryName: room.category.name,
         description: room.category.description,
         roomNumber: room.roomNumber,
@@ -169,6 +171,7 @@ export class BillableService {
         dueDate,
         advance: amount < 0 ? Math.abs(amount) : 0,
         balance: amount > 0 ? amount : 0,
+        payments,
       } as FindAllPaymentsDto;
     });
   }

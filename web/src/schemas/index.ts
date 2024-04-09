@@ -59,3 +59,8 @@ export const CategoryFormSchema = yup.object().shape({
   name: yup.string().required("This field is required"),
   description: yup.string().required("This field is required"),
 });
+
+export const DateRangeFormSchema = yup.object().shape({
+  startDate: yup.string().required("This field is required"),
+  endDate: yup.string().required("This field is required")
+})

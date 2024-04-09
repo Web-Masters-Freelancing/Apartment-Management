@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { BILLABLE_STATUS, USER_ROLE } from '@prisma/client';
+import { BILLABLE_STATUS, ROOM_STATUS, USER_ROLE } from '@prisma/client';
 import { signData } from '../lib/token';
 import { FindAllUsersResponseDto } from './dto/find-all-users.dto';
 import { catchError } from 'src/lib/error';
@@ -14,9 +14,9 @@ export class UserService {
     const { name, email, password, address, contact, role, roomId } = payload;
 
     const roomDetails = roomId
-      ? await this.prisma.room.findUnique({
+      ? await this.prisma.room.findFirst({
           where: {
-            id: roomId,
+            AND: [{ id: roomId }, { status: ROOM_STATUS.AVAILABLE }],
           },
           select: {
             amount: true,
@@ -60,6 +60,11 @@ export class UserService {
           },
         },
       },
+    });
+
+    await this.prisma.room.update({
+      where: { id: roomId },
+      data: { status: ROOM_STATUS.OCCUPIED },
     });
 
     // if role is admin, return the token to instruct the user for password reset
@@ -136,6 +141,11 @@ export class UserService {
           address,
           billable: { update: { data: { roomId } } },
         },
+      });
+
+      await this.prisma.room.update({
+        where: { id: roomId },
+        data: { status: ROOM_STATUS.OCCUPIED },
       });
     } catch (e) {
       catchError(e);

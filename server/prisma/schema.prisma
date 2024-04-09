@@ -98,6 +98,7 @@ model User {
 enum ROOM_STATUS {
   AVAILABLE
   NOT_AVAILABLE
+  OCCUPIED
 }
 
 enum USER_ROLE {

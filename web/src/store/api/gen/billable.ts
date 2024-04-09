@@ -61,11 +61,14 @@ export type FindAllPaymentsDto = {
   roomNumber: number;
   description: string;
   userName: string;
+  contact: string;
+  address: string;
   categoryName: string;
   amountToPay: number;
   amountPaid: number;
   balance: number;
   advance: number;
+  payments: FindAllPaymentsForFindAllBillableResponseDto[];
 };
 export const {
   useBillableControllerFindAllQuery,

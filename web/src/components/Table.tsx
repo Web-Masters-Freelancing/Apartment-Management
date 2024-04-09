@@ -13,11 +13,16 @@ import {
   Box,
   Theme,
 } from "@mui/material";
-import React, { memo } from "react";
+import React, { ChangeEvent, memo } from "react";
 import { useHook } from "./hooks/useTable";
 import { Typography, SxProps } from "@mui/material";
 import CustomDateRangePicker, { CustomDateRangePickerProps } from "./DateRange";
+import { Formik } from "formik";
 
+export interface DateRangeValues {
+  startDate: string;
+  endDate: string;
+}
 const container: SxProps<Theme> = {
   width: "100%",
   overflow: "hidden",
@@ -29,6 +34,10 @@ const tableHeaderWrapper: SxProps<Theme> = {
   width: "100%",
   justifyContent: "space-between",
   padding: 1,
+};
+
+const initialValues = {
+  dateRange: "",
 };
 
 /**
@@ -114,10 +123,29 @@ const CustomTable = ({
               {headerActions.map((component, key) => {
                 if (isDateRange(component)) {
                   const { actionProps } = component;
-                  const { localeText } = actionProps;
-                  return (
-                    <CustomDateRangePicker key={key} localeText={localeText} />
-                  );
+                  const { onSubmit, ...props } = actionProps;
+                  if (onSubmit) {
+                    return (
+                      <Formik
+                        key={key}
+                        initialValues={initialValues}
+                        onSubmit={onSubmit}
+                      >
+                        {({ submitForm, isSubmitting }) => (
+                          <>
+                            <CustomDateRangePicker {...props} />
+                            <Button
+                              disabled={isSubmitting}
+                              variant="contained"
+                              onClick={submitForm}
+                            >
+                              Filter By Date
+                            </Button>
+                          </>
+                        )}
+                      </Formik>
+                    );
+                  }
                 }
                 if (isButton(component)) {
                   const { actionProps } = component;
@@ -131,7 +159,7 @@ const CustomTable = ({
                   return (
                     <Box
                       sx={{
-                        paddingTop: 2,
+                        paddingTop: 1,
                       }}
                       key={key}
                     >
