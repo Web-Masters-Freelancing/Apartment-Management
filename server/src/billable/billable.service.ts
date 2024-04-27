@@ -4,6 +4,7 @@ import { BILLABLE_STATUS, Prisma } from '@prisma/client';
 import { FindAllBillableResponseDto } from './dto/find-all.dto';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
 import { FindAllPaymentsDto } from './dto/findall-payments';
+import { sendNotification } from 'src/cronjob/cronjob.service';
 
 type BillableDueType = {
   type: 'AfterDue' | 'BeforeDue';
@@ -23,6 +24,7 @@ export class BillableService {
           },
           select: {
             amount: true,
+            user: { select: { contact: true, name: true } },
           },
         });
 
@@ -49,6 +51,16 @@ export class BillableService {
             },
           }),
         ]);
+
+        /**
+         * After the transactions sets!
+         * Send a message to the tenant via sms
+         */
+        const { amount: _, ...notifPayload } = data;
+        await sendNotification({
+          data: [{ ...notifPayload }],
+          type: 'payment',
+        });
       });
     } catch (e) {
       throw e;
