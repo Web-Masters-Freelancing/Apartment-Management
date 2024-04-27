@@ -56,8 +56,9 @@ export class BillableService {
          * After the transactions sets!
          * Send a message to the tenant via sms
          */
+        const { amount: _, ...notifPayload } = data;
         await sendNotification({
-          data: [{ user: { ...data.user } }],
+          data: [{ ...notifPayload }],
           type: 'payment',
         });
       });
