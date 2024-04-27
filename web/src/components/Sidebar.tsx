@@ -11,7 +11,6 @@ import {
   BedroomChild,
   Person3,
   MonetizationOnOutlined,
-  AccountBalance,
   SettingsSuggest,
   Summarize,
   ExpandLess,
