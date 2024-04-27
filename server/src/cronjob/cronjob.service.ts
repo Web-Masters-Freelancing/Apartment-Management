@@ -10,8 +10,38 @@ interface BillableUsers {
 
 interface sendNotifPayload {
   data: BillableUsers[];
-  type: 'before' | 'after';
+  type: 'before' | 'after' | 'payment';
 }
+const twilioService = new TwilioService();
+
+// SendSms
+export const sendNotification = async ({ data, type }: sendNotifPayload) => {
+  const logger = new Logger(CronjobService.name);
+  logger.debug(
+    `Sending notification to these numbers: ${data
+      .map((billable) => billable.user.contact)
+      .join(', ')}\n\n`,
+  );
+  for (const dues of data) {
+    const {
+      user: { contact: receiverPhoneNumber, name },
+    } = dues;
+
+    const message =
+      type === 'before'
+        ? `Hello ${name}, this is a reminder that your rent is due in 3 days, please settle your bills before the due date to avoid penalties, thank you!`
+        : type === 'after'
+        ? `Hello ${name}, this is a reminder that your rent is past due for 1 day, please settle your bills to avoid penalties, thank you!`
+        : `Dear ${name}, Your payment transactions is successfull. To confirm, contact the tenant holder. Thank you`;
+
+    await twilioService.sendSms(receiverPhoneNumber, message);
+
+    logger.debug(`Notification is sent to ${receiverPhoneNumber}`);
+  }
+  logger.debug(
+    `\n\nDone sending SMS notifications for all billables ${type} their due.`,
+  );
+};
 
 @Injectable()
 export class CronjobService {
@@ -21,31 +51,6 @@ export class CronjobService {
     private readonly twilioService: TwilioService,
     private readonly billableService: BillableService,
   ) {}
-
-  private async sendNotification({ data, type }: sendNotifPayload) {
-    this.logger.debug(
-      `Sending notification to these numbers: ${data
-        .map((billable) => billable.user.contact)
-        .join(', ')}\n\n`,
-    );
-    for (const dues of data) {
-      const {
-        user: { contact: receiverPhoneNumber, name },
-      } = dues;
-
-      const message =
-        type === 'before'
-          ? `Hello ${name}, this is a reminder that your rent is due in 3 days, please settle your bills before the due date to avoid penalties, thank you!`
-          : `Hello ${name}, this is a reminder that your rent is past due for 1 day, please settle your bills to avoid penalties, thank you!`;
-
-      await this.twilioService.sendSms(receiverPhoneNumber, message);
-
-      this.logger.debug(`Notification is sent to ${receiverPhoneNumber}`);
-    }
-    this.logger.debug(
-      `\n\nDone sending SMS notifications for all billables ${type} their due.`,
-    );
-  }
 
   /**
    * This cronjob will run every minute (for testing purposes)
@@ -67,14 +72,14 @@ export class CronjobService {
 
     try {
       if (beforeDueBillables.length) {
-        await this.sendNotification({
+        await sendNotification({
           data: beforeDueBillables,
           type: 'before',
         });
       }
 
       if (afterDueBillables.length) {
-        await this.sendNotification({
+        await sendNotification({
           data: afterDueBillables,
           type: 'after',
         });
