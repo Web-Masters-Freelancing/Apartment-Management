@@ -49,11 +49,11 @@ model Billable {
 model Payments {
   id             Int      @id @default(autoincrement())
   billableId     Int
-  paidOn         DateTime @default(now()) @db.Timestamp(0)
+  paidOn         DateTime
   advancePayment Float    @default(0)
   balance        Float    @default(0)
   amountPaid     Float
-  billable Billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
+  billable       Billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
 
   @@index([billableId], map: "Payments_billableId_fkey")
 }
