@@ -106,7 +106,7 @@ const CustomModal = ({
               onSubmit={formProps.handleSubmit}
               enableReinitialize
             >
-              {({ submitForm, isSubmitting, setFieldValue }) => {
+              {({ submitForm, isSubmitting, setFieldValue, values }) => {
                 return (
                   <Form>
                     {formProps.fields.map((field, index) => {
@@ -128,17 +128,25 @@ const CustomModal = ({
                       }
 
                       if (isSelectField(field)) {
+                        const { handleSelectChange, onChange, ...props } =
+                          field.fieldProps;
+
                         return (
                           <Select
-                            {...field.fieldProps}
-                            onChange={(e) => {
+                            {...props}
+                            handleChange={(e) => {
                               if (field.fieldProps.name) {
-                                setFieldValue(
-                                  field.fieldProps.name,
-                                  e.target.value
-                                );
+                                setFieldValue(field.fieldProps.name, e);
+                              }
+
+                              if (handleSelectChange) {
+                                const { propertyName, value } =
+                                  handleSelectChange(e);
+
+                                setFieldValue(propertyName, value);
                               }
                             }}
+                            value={values[props.name as string]}
                             key={index}
                           />
                         );

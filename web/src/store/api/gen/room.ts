@@ -78,7 +78,7 @@ export type AvailableRoomsResponseDto = {
   name: string;
   description: string;
 };
-export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE";
+export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE" | "OCCUPIED";
 export type AllRoomsResponseDto = {
   id: number;
   categoryId: number;

@@ -33,6 +33,7 @@ const Sidebar = () => {
     handleClick,
     collapse,
     settingsRoutes,
+    role,
   } = useHook();
 
   return (
@@ -54,26 +55,30 @@ const Sidebar = () => {
           </ListItemButton>
         </Link>
 
-        <Link href={ROOM}>
-          <ListItemButton className={pathname === ROOM ? "active" : ""}>
-            <BedroomChild />
-            <ListItemText primary={ROOM} />
-          </ListItemButton>
-        </Link>
-
-        <Link href={TENANT}>
-          <ListItemButton className={pathname === TENANT ? "active" : ""}>
-            <Person3 />
-            <ListItemText primary={TENANT} />
-          </ListItemButton>
-        </Link>
-
-        <Link href={BILLABLES}>
-          <ListItemButton className={pathname === BILLABLES ? "active" : ""}>
-            <MonetizationOnOutlined />
-            <ListItemText primary={BILLABLES} />
-          </ListItemButton>
-        </Link>
+        {role === "ADMIN" && (
+          <>
+            <Link href={ROOM}>
+              <ListItemButton className={pathname === ROOM ? "active" : ""}>
+                <BedroomChild />
+                <ListItemText primary={ROOM} />
+              </ListItemButton>
+            </Link>
+            <Link href={TENANT}>
+              <ListItemButton className={pathname === TENANT ? "active" : ""}>
+                <Person3 />
+                <ListItemText primary={TENANT} />
+              </ListItemButton>
+            </Link>
+            <Link href={BILLABLES}>
+              <ListItemButton
+                className={pathname === BILLABLES ? "active" : ""}
+              >
+                <MonetizationOnOutlined />
+                <ListItemText primary={BILLABLES} />
+              </ListItemButton>
+            </Link>
+          </>
+        )}
 
         <ListItemButton
           className={settingsRoutes(pathname) ? "active" : ""}
@@ -86,15 +91,17 @@ const Sidebar = () => {
 
         <Collapse in={collapse} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <Link href={CATEGORY}>
-              <ListItemButton
-                className={pathname === CATEGORY ? "active" : ""}
-                sx={{ pl: 4 }}
-              >
-                <Bed />
-                <ListItemText primary={CATEGORY} />
-              </ListItemButton>
-            </Link>
+            {role === "ADMIN" && (
+              <Link href={CATEGORY}>
+                <ListItemButton
+                  className={pathname === CATEGORY ? "active" : ""}
+                  sx={{ pl: 4 }}
+                >
+                  <Bed />
+                  <ListItemText primary={CATEGORY} />
+                </ListItemButton>
+              </Link>
+            )}
             <Link href={SECURITY}>
               <ListItemButton
                 className={pathname === SECURITY ? "active" : ""}
@@ -107,12 +114,14 @@ const Sidebar = () => {
           </List>
         </Collapse>
 
-        <Link href={REPORTS}>
-          <ListItemButton className={pathname === REPORTS ? "active" : ""}>
-            <Summarize />
-            <ListItemText primary={REPORTS} />
-          </ListItemButton>
-        </Link>
+        {role === "ADMIN" && (
+          <Link href={REPORTS}>
+            <ListItemButton className={pathname === REPORTS ? "active" : ""}>
+              <Summarize />
+              <ListItemText primary={REPORTS} />
+            </ListItemButton>
+          </Link>
+        )}
       </List>
     </Box>
   );

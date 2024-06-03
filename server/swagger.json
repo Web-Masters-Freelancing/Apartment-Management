@@ -496,6 +496,9 @@
           },
           "amount": {
             "type": "number"
+          },
+          "email": {
+            "type": "string"
           }
         },
         "required": [
@@ -507,7 +510,8 @@
           "categoryId",
           "roomId",
           "roomNumber",
-          "amount"
+          "amount",
+          "email"
         ]
       },
       "CreateRoomDto": {
@@ -617,13 +621,21 @@
             "format": "date-time",
             "type": "string"
           },
-          "amount": {
+          "advancePayment": {
+            "type": "number"
+          },
+          "balance": {
+            "type": "number"
+          },
+          "amountPaid": {
             "type": "number"
           }
         },
         "required": [
           "paidOn",
-          "amount"
+          "advancePayment",
+          "balance",
+          "amountPaid"
         ]
       },
       "FindAllBillableResponseDto": {
@@ -636,7 +648,7 @@
             "format": "date-time",
             "type": "string"
           },
-          "amount": {
+          "amountDue": {
             "type": "number"
           },
           "status": {
@@ -651,18 +663,22 @@
               "$ref": "#/components/schemas/FindAllPaymentsForFindAllBillableResponseDto"
             }
           },
-          "amountToPay": {
+          "roomPrice": {
+            "type": "number"
+          },
+          "advancePayment": {
             "type": "number"
           }
         },
         "required": [
           "id",
           "dueDate",
-          "amount",
+          "amountDue",
           "status",
           "userName",
           "payments",
-          "amountToPay"
+          "roomPrice",
+          "advancePayment"
         ]
       },
       "ProcessPaymentDto": {
@@ -673,11 +689,19 @@
           },
           "amount": {
             "type": "number"
+          },
+          "advancePayment": {
+            "type": "number"
+          },
+          "balance": {
+            "type": "number"
           }
         },
         "required": [
           "id",
-          "amount"
+          "amount",
+          "advancePayment",
+          "balance"
         ]
       },
       "FindAllPaymentsDto": {
@@ -689,6 +713,9 @@
           "dueDate": {
             "format": "date-time",
             "type": "string"
+          },
+          "amountDue": {
+            "type": "number"
           },
           "roomNumber": {
             "type": "number"
@@ -708,18 +735,6 @@
           "categoryName": {
             "type": "string"
           },
-          "amountToPay": {
-            "type": "number"
-          },
-          "amountPaid": {
-            "type": "number"
-          },
-          "balance": {
-            "type": "number"
-          },
-          "advance": {
-            "type": "number"
-          },
           "payments": {
             "type": "array",
             "items": {
@@ -730,16 +745,13 @@
         "required": [
           "id",
           "dueDate",
+          "amountDue",
           "roomNumber",
           "description",
           "userName",
           "contact",
           "address",
           "categoryName",
-          "amountToPay",
-          "amountPaid",
-          "balance",
-          "advance",
           "payments"
         ]
       },
@@ -888,7 +900,13 @@
             "format": "date-time",
             "type": "string"
           },
-          "amount": {
+          "advancePayment": {
+            "type": "number"
+          },
+          "balance": {
+            "type": "number"
+          },
+          "amountPaid": {
             "type": "number"
           },
           "billable": {
@@ -899,7 +917,9 @@
           "id",
           "billableId",
           "paidOn",
-          "amount",
+          "advancePayment",
+          "balance",
+          "amountPaid",
           "billable"
         ]
       },
@@ -919,7 +939,7 @@
             "format": "date-time",
             "type": "string"
           },
-          "amount": {
+          "amountDue": {
             "type": "number"
           },
           "status": {
@@ -943,7 +963,7 @@
           "userId",
           "roomId",
           "dueDate",
-          "amount",
+          "amountDue",
           "status",
           "room",
           "user",

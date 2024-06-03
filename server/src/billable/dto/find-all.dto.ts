@@ -7,14 +7,14 @@ import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class FindAllPaymentsForFindAllBillableResponseDto extends PickType(
   PaymentsEntity,
-  ['amount', 'paidOn'],
+  ['amountPaid', 'paidOn', 'advancePayment', 'balance'],
 ) {}
 
 export class FindAllBillableResponseDto extends PickType(Billable, [
   'dueDate',
   'status',
   'id',
-  'amount',
+  'amountDue',
 ]) {
   @ApiProperty({
     type: String,
@@ -33,5 +33,9 @@ export class FindAllBillableResponseDto extends PickType(Billable, [
     type: Number,
   })
   @IsNumber()
-  amountToPay: RoomEntity['amount'];
+  roomPrice: RoomEntity['amount'];
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  advancePayment: PaymentsEntity['advancePayment'];
 }

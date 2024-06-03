@@ -15,11 +15,11 @@ datasource db {
 }
 
 model Category {
-  id          Int    @id @default(autoincrement())
-  name        String @db.VarChar(100)
-  description String @db.Text
-  isArchived  Boolean       @default(false)
-  Room Room[]
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(100)
+  description String  @db.Text
+  isArchived  Boolean @default(false)
+  Room        Room[]
 }
 
 model Auth {
@@ -33,25 +33,27 @@ model Auth {
 }
 
 model Billable {
-  id       Int             @id @default(autoincrement())
-  userId   Int             @unique(map: "Billable_userId_key")
-  roomId   Int
-  dueDate  DateTime        @default(now()) @db.Timestamp(0)
-  amount   Float
-  status   BILLABLE_STATUS @default(ACTIVE)
-  room     Room            @relation(fields: [roomId], references: [id], map: "Billable_roomId_fkey")
-  user     User            @relation(fields: [userId], references: [id], map: "Billable_userId_fkey")
-  payments Payments[]
+  id        Int             @id @default(autoincrement())
+  userId    Int             @unique(map: "Billable_userId_key")
+  roomId    Int
+  dueDate   DateTime        @default(now()) @db.Timestamp(0)
+  amountDue Float
+  status    BILLABLE_STATUS @default(ACTIVE)
+  room      Room            @relation(fields: [roomId], references: [id], map: "Billable_roomId_fkey")
+  user      User            @relation(fields: [userId], references: [id], map: "Billable_userId_fkey")
+  payments  Payments[]
 
   @@index([roomId], map: "Billable_roomId_fkey")
 }
 
 model Payments {
-  id         Int      @id @default(autoincrement())
-  billableId Int
-  paidOn     DateTime @default(now()) @db.Timestamp(0)
-  amount     Float
-  billable   Billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
+  id             Int      @id @default(autoincrement())
+  billableId     Int
+  paidOn         DateTime @default(now()) @db.Timestamp(0)
+  advancePayment Float    @default(0)
+  balance        Float    @default(0)
+  amountPaid     Float
+  billable Billable @relation(fields: [billableId], references: [id], map: "Payments_billableId_fkey")
 
   @@index([billableId], map: "Payments_billableId_fkey")
 }

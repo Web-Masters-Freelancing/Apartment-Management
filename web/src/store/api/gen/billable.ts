@@ -40,34 +40,36 @@ export type BillableControllerFindAllPaymentsArgs = void;
 export type BillableStatus = "ACTIVE" | "INACTIVE";
 export type FindAllPaymentsForFindAllBillableResponseDto = {
   paidOn: string;
-  amount: number;
+  advancePayment: number;
+  balance: number;
+  amountPaid: number;
 };
 export type FindAllBillableResponseDto = {
   id: number;
   dueDate: string;
-  amount: number;
+  amountDue: number;
   status: BillableStatus;
   userName: string;
   payments: FindAllPaymentsForFindAllBillableResponseDto[];
-  amountToPay: number;
+  roomPrice: number;
+  advancePayment: number;
 };
 export type ProcessPaymentDto = {
   id: number;
   amount: number;
+  advancePayment: number;
+  balance: number;
 };
 export type FindAllPaymentsDto = {
   id: number;
   dueDate: string;
+  amountDue: number;
   roomNumber: number;
   description: string;
   userName: string;
   contact: string;
   address: string;
   categoryName: string;
-  amountToPay: number;
-  amountPaid: number;
-  balance: number;
-  advance: number;
   payments: FindAllPaymentsForFindAllBillableResponseDto[];
 };
 export const {

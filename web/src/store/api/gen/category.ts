@@ -60,7 +60,7 @@ export type CreateCategoryDto = {
   name: string;
   description: string;
 };
-export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE";
+export type RoomStatus = "AVAILABLE" | "NOT_AVAILABLE" | "OCCUPIED";
 export type BillableStatus = "ACTIVE" | "INACTIVE";
 export type UserRole = "ADMIN" | "TENANT";
 export type Auth = {
@@ -97,7 +97,9 @@ export type Payments = {
   id: number;
   billableId: number;
   paidOn: string;
-  amount: number;
+  advancePayment: number;
+  balance: number;
+  amountPaid: number;
   billable: Billable;
 };
 export type Billable = {
@@ -105,7 +107,7 @@ export type Billable = {
   userId: number;
   roomId: number;
   dueDate: string;
-  amount: number;
+  amountDue: number;
   status: BillableStatus;
   room: Room;
   user: User;

@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useUserApi } from "@/hooks/api/user";
 import moment from "moment";
 import { useCategoryApi } from "@/hooks/api/category";
+import { getLocalStorage } from "@/lib/tokenStorage";
+import { Payments, Room } from "@/store/api/gen/category";
+import { FindAllPaymentsDto } from "@/store/api/gen/billable";
+import { ActionButtonProps, Column, TableActions } from "@/components/Table";
 
 const currentMonth = moment(new Date()).format("MMMM");
 
@@ -95,6 +99,30 @@ export const useHook = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, categories]);
 
+  const { role, billable } = getLocalStorage();
+
+  const columns: Column<Payments>[] = [
+    {
+      key: "paidOn",
+      label: "Paid on",
+      format: (value) => moment(value).format("DD/MM/YYYY"),
+    },
+    {
+      key: "advancePayment",
+      label: "Advance payment",
+    },
+    {
+      key: "balance",
+      label: "Balance",
+    },
+    {
+      key: "amountPaid",
+      label: "Amount paid",
+    },
+  ];
+
+  const dataSource = billable ? billable.payments : [];
+
   return {
     labels,
     availableRoomsDatasets,
@@ -104,5 +132,9 @@ export const useHook = () => {
     monthlyReceivables,
     users,
     totalBillables,
+    billable,
+    role,
+    columns,
+    dataSource,
   };
 };

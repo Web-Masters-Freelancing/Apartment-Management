@@ -2,8 +2,9 @@ import { FormikHelpers } from "formik";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { setToken } from "@/lib/tokenStorage";
+import { decodeToken, setLocalStorage, setToken } from "@/lib/tokenStorage";
 import { Routes } from "@/utils/enums";
+import { User } from "@/store/api/gen/category";
 
 export type LoginFormValues = {
   username: string;
@@ -33,7 +34,14 @@ export const useHooks = () => {
       open: true,
       message: "Logged in successfully!",
     });
-    push(Routes.Protected.DASHBOARD);
+
+    const secretUser = decodeToken();
+    if (secretUser) {
+      const { user } = secretUser as { user: User };
+
+      setLocalStorage(user);
+      push(Routes.Protected.DASHBOARD);
+    }
   };
 
   return {
