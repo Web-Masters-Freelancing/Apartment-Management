@@ -156,7 +156,11 @@ export const useHook = () => {
 
   const handlePayment = useCallback(
     async (
-      { amount: amountString, amountDue }: { amount: number } & BillableValues,
+      {
+        amount: amountString,
+        amountDue,
+        advancePayment: advanced,
+      }: { amount: number } & BillableValues,
       { setSubmitting }: FormikHelpers<BillableValues>
     ) => {
       if (payeeData) {
@@ -166,7 +170,7 @@ export const useHook = () => {
           let advancePayment = 0;
           let balance = 0;
           if (amount > amountDue) {
-            advancePayment = amount - amountDue;
+            advancePayment = amount - amountDue + advanced;
           }
           if (amount < amountDue) {
             balance = amountDue - amount;
