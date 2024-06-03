@@ -38,13 +38,43 @@ export class BillableService {
           select: {
             amountDue: true,
             user: { select: { contact: true, name: true } },
+            room: { select: { amount: true } },
           },
         });
-
         if (!data)
           throw new NotFoundException(
             'This billable record is not found or it has been inactive.',
           );
+
+        const { amountDue: _, room, ...notifPayload } = data;
+
+        // Bill next month
+        const advanceRemained =
+          advancePayment > room.amount
+            ? advancePayment - room.amount
+            : advancePayment;
+
+        const balanceAmount = room.amount + balance;
+
+        const balanceRemained =
+          balanceAmount > advancePayment ? balanceAmount - advancePayment : 0;
+
+        const amountPaidRemaining =
+          advancePayment > room.amount ? room.amount : 0;
+
+        // Add month for next bills
+        const currentDate = new Date();
+        const dateReference = new Date(currentDate);
+
+        dateReference.setMonth(currentDate.getMonth() + 1);
+        dateReference.setUTCHours(0, 0, 0, 0);
+
+        console.log(
+          'next bills',
+          advanceRemained,
+          balanceRemained,
+          amountPaidRemaining,
+        );
 
         await Promise.all([
           prisma.billable.update({
@@ -61,6 +91,18 @@ export class BillableService {
               advancePayment,
               balance,
               billableId: id,
+              paidOn: currentDate.toISOString(),
+            },
+          }),
+
+          // Create Bill for next month
+          prisma.payments.create({
+            data: {
+              amountPaid: amountPaidRemaining,
+              advancePayment: advanceRemained,
+              balance: balanceRemained,
+              billableId: id,
+              paidOn: dateReference.toISOString(),
             },
           }),
         ]);
@@ -69,7 +111,6 @@ export class BillableService {
          * After the transactions sets!
          * Send a message to the tenant via sms
          */
-        const { amountDue: _, ...notifPayload } = data;
         await sendNotification({
           data: [{ ...notifPayload }],
           type: 'payment',
@@ -118,15 +159,12 @@ export class BillableService {
       return result.map((res) => {
         const { user, room, ...data } = res;
         let advancePayment = 0;
-        const clonePayments = structuredClone(data.payments);
 
-        if (clonePayments && clonePayments.length) {
+        if (data.payments && data.payments.length) {
           // Sort payments into descending order to get the last object of payments
-          const [recentPayments] = clonePayments.sort((a, b) =>
-            a.paidOn > b.paidOn ? -1 : 1,
-          );
+          const lastElementOfPayment = data.payments[data.payments.length - 1];
 
-          advancePayment = recentPayments.advancePayment;
+          advancePayment = lastElementOfPayment.advancePayment;
           // data.amountDue = recentPayments.balance;
         } else {
           data.amountDue = room.amount;
@@ -185,7 +223,7 @@ export class BillableService {
             });
 
             await prisma.payments.create({
-              data,
+              data: { ...data, paidOn: new Date().toISOString() },
             });
           }),
         );
