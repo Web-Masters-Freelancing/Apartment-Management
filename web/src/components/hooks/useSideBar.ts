@@ -1,3 +1,4 @@
+import { getLocalStorage } from "@/lib/tokenStorage";
 import { Routes } from "@/utils/enums";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -19,5 +20,14 @@ export const useHook = () => {
     return routes.includes(pathname);
   };
 
-  return { pathname, collapse, handleClick, settingsRoutes, ...Protected };
+  const { name, role } = getLocalStorage();
+
+  return {
+    pathname,
+    collapse,
+    handleClick,
+    settingsRoutes,
+    ...Protected,
+    role,
+  };
 };

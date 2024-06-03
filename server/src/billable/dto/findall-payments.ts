@@ -1,5 +1,5 @@
 import { ApiProperty, IntersectionType, PickType } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { Billable as BillableEntity } from './../../_gen-prisma-classes/billable';
 import { Room as RoomEntity } from './../../_gen-prisma-classes/room';
 import { Payments as PaymentsEntity } from './../../_gen-prisma-classes/payments';
@@ -9,7 +9,7 @@ import { FindAllPaymentsForFindAllBillableResponseDto } from './find-all.dto';
 
 export class FindAllPaymentsDto extends PickType(
   IntersectionType(BillableEntity, PaymentsEntity, RoomEntity, CategoryEntity),
-  ['id', 'dueDate', 'roomNumber', 'description'],
+  ['id', 'dueDate', 'roomNumber', 'description', 'amountDue'],
 ) {
   @ApiProperty({ type: String })
   @IsString()
@@ -26,22 +26,6 @@ export class FindAllPaymentsDto extends PickType(
   @ApiProperty({ type: String })
   @IsString()
   categoryName: CategoryEntity['name'];
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  amountToPay: RoomEntity['amount'];
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  amountPaid: PaymentsEntity['amount'];
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  balance: BillableEntity['amount'];
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  advance: BillableEntity['amount'];
 
   @ApiProperty({
     type: FindAllPaymentsForFindAllBillableResponseDto,

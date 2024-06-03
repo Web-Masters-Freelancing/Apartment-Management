@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { TwilioService } from '../twilio/twilio.service';
 import { BillableService } from '../billable/billable.service';
 import { User } from '@prisma/client';
@@ -47,17 +47,14 @@ export const sendNotification = async ({ data, type }: sendNotifPayload) => {
 export class CronjobService {
   private readonly logger = new Logger(CronjobService.name);
 
-  constructor(
-    private readonly twilioService: TwilioService,
-    private readonly billableService: BillableService,
-  ) {}
+  constructor(private readonly billableService: BillableService) {}
 
   /**
    * This cronjob will run every minute (for testing purposes)
    * Update this to use '0 0 * * *', to run the cronjob daily
    * To test this, replace cron value to '1 * * * *'
    */
-  @Cron('0 0 * * *')
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async handleCron() {
     this.logger.debug('Starting to execute scheduled task...');
 
@@ -83,6 +80,62 @@ export class CronjobService {
           data: afterDueBillables,
           type: 'after',
         });
+        //
+
+        /**
+         * Create Bill here
+         * Before 3 days of  due date
+         */
+        const bills = afterDueBillables.map((billable) => {
+          const { id: billableId, payments, room } = billable;
+          const [recentPaymentsOne, recentPaymentsTwo] = payments.sort((a, b) =>
+            a.paidOn > b.paidOn ? -1 : 1,
+          );
+
+          let amountDue = room.amount; // Room price
+
+          /**
+           * If balance is not equal to zero
+           * then add to the price of room
+           */
+          if (recentPaymentsOne.balance) {
+            amountDue = room.amount + recentPaymentsOne.balance;
+          }
+
+          let advancePayment = recentPaymentsOne.advancePayment;
+
+          /**
+           * Add two advancePayment if it consecutives exist in a row
+           */
+          if (
+            recentPaymentsOne.advancePayment &&
+            recentPaymentsTwo.advancePayment
+          ) {
+            advancePayment =
+              recentPaymentsOne.advancePayment +
+              recentPaymentsTwo.advancePayment;
+          }
+          if (amountDue > advancePayment) {
+            amountDue = amountDue - advancePayment;
+          }
+
+          if (advancePayment > amountDue) {
+            amountDue = 0;
+            advancePayment = advancePayment - amountDue;
+          }
+
+          return {
+            billableId,
+            amountDue,
+            advancePayment,
+            balance: amountDue,
+            amountPaid: 0,
+          };
+        });
+
+        if (bills && bills.length) {
+          await this.billableService.createBill(bills);
+        }
       }
     } catch (error) {
       this.logger.error(`Error sending SMS: ${error.message}`);

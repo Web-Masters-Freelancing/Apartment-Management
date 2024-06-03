@@ -10,11 +10,24 @@ type BillableDueType = {
   type: 'AfterDue' | 'BeforeDue';
 };
 
+export interface CreateBill {
+  billableId: number;
+  amountDue: number;
+  advancePayment: number;
+  balance: number;
+  amountPaid: number;
+}
+
 @Injectable()
 export class BillableService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async processPayment({ amount, id }: ProcessPaymentDto) {
+  async processPayment({
+    advancePayment,
+    balance,
+    amount,
+    id,
+  }: ProcessPaymentDto) {
     try {
       await this.prismaService.withTransaction(async (prisma) => {
         const data = await prisma.billable.findUnique({
@@ -23,7 +36,7 @@ export class BillableService {
             status: BILLABLE_STATUS.ACTIVE,
           },
           select: {
-            amount: true,
+            amountDue: true,
             user: { select: { contact: true, name: true } },
           },
         });
@@ -33,20 +46,20 @@ export class BillableService {
             'This billable record is not found or it has been inactive.',
           );
 
-        const newAmount = data.amount - amount;
-
         await Promise.all([
           prisma.billable.update({
             where: {
               id,
             },
             data: {
-              amount: newAmount,
+              amountDue: balance,
             },
           }),
           prisma.payments.create({
             data: {
-              amount,
+              amountPaid: amount,
+              advancePayment,
+              balance,
               billableId: id,
             },
           }),
@@ -56,7 +69,7 @@ export class BillableService {
          * After the transactions sets!
          * Send a message to the tenant via sms
          */
-        const { amount: _, ...notifPayload } = data;
+        const { amountDue: _, ...notifPayload } = data;
         await sendNotification({
           data: [{ ...notifPayload }],
           type: 'payment',
@@ -77,7 +90,7 @@ export class BillableService {
           id: true,
           dueDate: true,
           status: true,
-          amount: true,
+          amountDue: true,
           room: {
             select: {
               amount: true,
@@ -85,8 +98,10 @@ export class BillableService {
           },
           payments: {
             select: {
-              amount: true,
+              amountPaid: true,
               paidOn: true,
+              balance: true,
+              advancePayment: true,
             },
             orderBy: {
               paidOn: Prisma.SortOrder.asc,
@@ -101,14 +116,82 @@ export class BillableService {
       });
 
       return result.map((res) => {
+        const { user, room, ...data } = res;
+        let advancePayment = 0;
+        const clonePayments = structuredClone(data.payments);
+
+        if (clonePayments && clonePayments.length) {
+          // Sort payments into descending order to get the last object of payments
+          const [recentPayments] = clonePayments.sort((a, b) =>
+            a.paidOn > b.paidOn ? -1 : 1,
+          );
+
+          advancePayment = recentPayments.advancePayment;
+          // data.amountDue = recentPayments.balance;
+        } else {
+          data.amountDue = room.amount;
+        }
         return {
-          ...res,
-          amountToPay: res.room.amount,
-          userName: res.user.name,
+          ...data,
+          roomPrice: room.amount,
+          userName: user.name,
+          advancePayment,
         };
       });
     } catch (e) {
       throw e;
+    }
+  }
+
+  async findDueByDate(dueDate: Date) {
+    const result = await this.prismaService.billable.findMany({
+      where: {
+        dueDate: {
+          equals: new Date(dueDate).toISOString(),
+        },
+        AND: {
+          status: BILLABLE_STATUS.ACTIVE,
+        },
+      },
+      select: {
+        id: true,
+        user: {
+          select: {
+            contact: true,
+            name: true,
+          },
+        },
+
+        payments: {
+          select: { advancePayment: true, balance: true, paidOn: true },
+        },
+        room: { select: { amount: true } },
+      },
+    });
+
+    return result;
+  }
+
+  async createBill(bills: CreateBill[]) {
+    try {
+      await this.prismaService.withTransaction(async (prisma) => {
+        await Promise.all(
+          bills.map(async (value) => {
+            const { amountDue, ...data } = value;
+
+            await prisma.billable.update({
+              where: { id: data.billableId },
+              data: { amountDue },
+            });
+
+            await prisma.payments.create({
+              data,
+            });
+          }),
+        );
+      });
+    } catch (err) {
+      throw err;
     }
   }
 
@@ -125,24 +208,7 @@ export class BillableService {
 
     dateReference.setUTCHours(0, 0, 0, 0);
 
-    const result = await this.prismaService.billable.findMany({
-      where: {
-        dueDate: {
-          equals: new Date(dateReference).toISOString(),
-        },
-        AND: {
-          status: BILLABLE_STATUS.ACTIVE,
-        },
-      },
-      select: {
-        user: {
-          select: {
-            contact: true,
-            name: true,
-          },
-        },
-      },
-    });
+    const result = await this.findDueByDate(dateReference);
 
     return result;
   }
@@ -152,7 +218,7 @@ export class BillableService {
       select: {
         id: true,
         dueDate: true,
-        amount: true,
+        amountDue: true,
         user: { select: { name: true, contact: true, address: true } },
         room: {
           select: {
@@ -161,12 +227,19 @@ export class BillableService {
             amount: true,
           },
         },
-        payments: { select: { paidOn: true, amount: true } },
+        payments: {
+          select: {
+            paidOn: true,
+            advancePayment: true,
+            balance: true,
+            amountPaid: true,
+          },
+        },
       },
     });
 
     return result.map((value) => {
-      const { id, dueDate, amount, user, room, payments } = value;
+      const { id, dueDate, user, amountDue, room, payments } = value;
       return {
         id,
         userName: user.name,
@@ -175,14 +248,8 @@ export class BillableService {
         categoryName: room.category.name,
         description: room.category.description,
         roomNumber: room.roomNumber,
-        amountToPay: room.amount,
-        amountPaid: payments.reduce(
-          (accumulator, currentValue) => accumulator + currentValue.amount,
-          0,
-        ),
         dueDate,
-        advance: amount < 0 ? Math.abs(amount) : 0,
-        balance: amount > 0 ? amount : 0,
+        amountDue,
         payments,
       } as FindAllPaymentsDto;
     });

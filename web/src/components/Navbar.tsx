@@ -3,7 +3,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useHook } from "./hooks/useNavbar";
 
 const Navbar = () => {
-  const { logOutUser } = useHook();
+  const { logOutUser, name, role } = useHook();
 
   return (
     <AppBar sx={{ background: "#000", position: "sticky" }}>
@@ -15,18 +15,23 @@ const Navbar = () => {
         }}
       >
         <Typography variant="h6">Whitehouse Apartment Management</Typography>
-        <Tooltip
-          style={{ margin: 5 }}
-          onClick={logOutUser}
-          title="Log out"
-          arrow
-        >
-          <LogoutIcon
-            sx={{
-              ":hover": { color: "blue", cursor: "pointer" },
-            }}
-          />
-        </Tooltip>
+        <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
+          <Typography sx={{ paddingRight: 2 }} variant="subtitle2">
+            Good day! {name}
+          </Typography>
+          <Tooltip
+            style={{ margin: 0 }}
+            onClick={logOutUser}
+            title={`Log out as ${role}`}
+            arrow
+          >
+            <LogoutIcon
+              sx={{
+                ":hover": { color: "blue", cursor: "pointer" },
+              }}
+            />
+          </Tooltip>
+        </Box>
       </Toolbar>
     </AppBar>
   );

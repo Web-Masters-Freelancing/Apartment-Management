@@ -1,10 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { BILLABLE_STATUS, ROOM_STATUS, USER_ROLE } from '@prisma/client';
+import {
+  BILLABLE_STATUS,
+  Prisma,
+  ROOM_STATUS,
+  USER_ROLE,
+} from '@prisma/client';
 import { signData } from '../lib/token';
 import { FindAllUsersResponseDto } from './dto/find-all-users.dto';
 import { catchError } from 'src/lib/error';
+import { hashPassword } from 'src/lib/password';
 
 @Injectable()
 export class UserService {
@@ -12,6 +18,9 @@ export class UserService {
 
   async create(payload: CreateUserDto) {
     const { name, email, password, address, contact, role, roomId } = payload;
+
+    const hashPassWord =
+      role === 'ADMIN' ? password : await hashPassword(password);
 
     const roomDetails = roomId
       ? await this.prisma.room.findFirst({
@@ -32,23 +41,20 @@ export class UserService {
         address,
         contact,
         role,
-        auth:
-          role === USER_ROLE.ADMIN
-            ? {
-                create: {
-                  token: undefined,
-                  email,
-                  password,
-                },
-              }
-            : undefined,
+        auth: {
+          create: {
+            token: undefined,
+            email,
+            password: hashPassWord,
+          },
+        },
         billable:
           role === USER_ROLE.ADMIN
             ? undefined
             : {
                 create: {
                   roomId,
-                  amount: +amountToPay,
+                  amountDue: +amountToPay,
                 },
               },
       },
@@ -68,7 +74,9 @@ export class UserService {
     });
 
     // if role is admin, return the token to instruct the user for password reset
-    return role === USER_ROLE.ADMIN ? signData(createdUser) : undefined;
+    // return role === USER_ROLE.ADMIN ? signData(createdUser) : undefined;
+
+    return signData(createdUser);
   }
 
   async findOne({ email }: { email: string }) {
@@ -84,6 +92,24 @@ export class UserService {
             address: true,
             contact: true,
             name: true,
+            role: true,
+            id: true,
+            billable: {
+              select: {
+                amountDue: true,
+                dueDate: true,
+                payments: {
+                  select: {
+                    paidOn: true,
+                    advancePayment: true,
+                    balance: true,
+                    amountPaid: true,
+                  },
+                  orderBy: { paidOn: Prisma.SortOrder.asc },
+                },
+                room: { select: { roomNumber: true, amount: true } },
+              },
+            },
           },
         },
       },
@@ -100,6 +126,7 @@ export class UserService {
         contact: true,
         address: true,
         role: true,
+
         billable: {
           select: {
             roomId: true,
@@ -112,6 +139,7 @@ export class UserService {
             },
           },
         },
+        auth: { select: { email: true } },
       },
       where: {
         role: USER_ROLE.TENANT,
@@ -120,18 +148,22 @@ export class UserService {
     });
 
     return result.map((res) => {
-      const { billable, ...values } = res;
+      const { billable, auth, ...values } = res;
       return {
         ...values,
         roomId: billable.roomId,
         roomNumber: billable.room.roomNumber,
         amount: billable.room.amount,
         categoryId: billable.room.categoryId,
+        email: auth?.email ?? '',
       };
     });
   }
 
-  async edit(id: number, { name, contact, address, roomId }: CreateUserDto) {
+  async edit(
+    id: number,
+    { name, contact, address, roomId, email }: CreateUserDto,
+  ) {
     try {
       await this.prisma.user.update({
         where: { id },
@@ -140,6 +172,7 @@ export class UserService {
           contact,
           address,
           billable: { update: { data: { roomId } } },
+          auth: { update: { data: { email } } },
         },
       });
 

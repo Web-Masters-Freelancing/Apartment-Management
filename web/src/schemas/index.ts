@@ -6,6 +6,7 @@ const passwordPattern =
 
 export const ProcessPaymentSchema = yup.object().shape({
   amountDue: yup.number().optional(),
+  advancePayment: yup.number().optional(),
   amount: yup
     .number()
     .required("This field is required.")
@@ -51,8 +52,13 @@ export const TenantFormSchema = yup.object().shape({
   id: yup.number().optional(),
   name: yup.string().required("This field is required"),
   contact: yup.string().required("This field is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("This field is required"),
   address: yup.string().required("This field is required"),
-  roomId: yup.number().min(1, "This field is required"),
+  roomId: yup.number().min(1).required("This field is required"),
+  description: yup.string().optional(),
 });
 
 export const CategoryFormSchema = yup.object().shape({
@@ -62,5 +68,5 @@ export const CategoryFormSchema = yup.object().shape({
 
 export const DateRangeFormSchema = yup.object().shape({
   startDate: yup.string().required("This field is required"),
-  endDate: yup.string().required("This field is required")
-})
+  endDate: yup.string().required("This field is required"),
+});

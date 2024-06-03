@@ -14,9 +14,11 @@ import { useUserApi } from "@/hooks/api/user";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { CreateUserDto, FindAllUsersResponseDto } from "@/store/api/gen/user";
 import { red } from "@mui/material/colors";
+import { TextareaAutosizeProps } from "@mui/material";
 
 interface TenantFormValues extends CreateUserDto {
   id?: number;
+  description?: string;
 }
 
 const inititialFormValues: TenantFormValues = {
@@ -24,6 +26,8 @@ const inititialFormValues: TenantFormValues = {
   contact: "",
   address: "",
   roomId: 0,
+  description: "",
+  email: "",
   role: "TENANT",
 };
 
@@ -55,16 +59,18 @@ export const useHook = () => {
   const roomsAvailable = useMemo(
     (): OptionSelect[] | undefined =>
       availableRooms?.map((value) => {
-        const { id, name, description, amount } = value;
+        const { id, name, amount } = value;
         return {
           key: id,
-          value: `${name} ${description} ${amount}`,
+          value: `${name} ${amount}`,
         };
       }),
     [availableRooms]
   );
 
-  const fields: Field<InputFieldProps | SelectFieldProps>[] = [
+  const fields: Field<
+    InputFieldProps | SelectFieldProps | TextareaAutosizeProps
+  >[] = [
     {
       fieldType: "text",
       fieldProps: <InputFieldProps>{
@@ -89,6 +95,16 @@ export const useHook = () => {
     {
       fieldType: "text",
       fieldProps: <InputFieldProps>{
+        label: "Email",
+        name: "email",
+        id: "email",
+        type: "text",
+        margin: "dense",
+      },
+    },
+    {
+      fieldType: "text",
+      fieldProps: <InputFieldProps>{
         label: "Address",
         name: "address",
         id: "address",
@@ -96,6 +112,7 @@ export const useHook = () => {
         margin: "dense",
       },
     },
+
     {
       fieldType: "select",
       fieldProps: <SelectFieldProps>{
@@ -106,7 +123,34 @@ export const useHook = () => {
         labelId: "roomId",
         margin: "dense",
         name: "roomId",
-        defaultValue: 0,
+        defaultValue: "",
+        handleSelectChange: (id) => {
+          if (availableRooms && availableRooms.length) {
+            const filteredRoom = availableRooms.find(
+              (value) => value.id === id
+            );
+
+            if (filteredRoom) {
+              const { description } = filteredRoom;
+              return {
+                propertyName: "description",
+                value: description,
+              };
+            }
+          }
+        },
+      },
+    },
+    {
+      fieldType: "textarea",
+      fieldProps: <TextareaAutosizeProps>{
+        label: "Room description",
+        name: "description",
+        id: "description",
+        type: "textarea",
+        margin: "dense",
+        placeholder: "Room Description",
+        disabled: true,
       },
     },
   ];
@@ -146,7 +190,7 @@ export const useHook = () => {
   };
 
   const handleCreateUser = async (
-    { name, contact, address, roomId }: TenantFormValues,
+    { name, contact, address, roomId, email }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {
     try {
@@ -155,6 +199,8 @@ export const useHook = () => {
         contact,
         address,
         roomId,
+        email,
+        password: "tenant",
         role: "TENANT",
       });
       showSnackbar("Tenant is successfully created!");
@@ -224,6 +270,10 @@ export const useHook = () => {
       label: "name",
     },
     {
+      key: "email",
+      label: "email",
+    },
+    {
       key: "contact",
       label: "contact",
     },
@@ -243,13 +293,15 @@ export const useHook = () => {
   ];
 
   const dataSource: TenantFormValues[] = useMemo(
-    () => (users?.length ? (users as TenantFormValues[]) : []),
+    () => (users?.length ? (users as unknown as TenantFormValues[]) : []),
     [users]
   );
 
-  const handleEdit = (values: FindAllUsersResponseDto | undefined) => {
+  const handleEdit = (
+    values: (FindAllUsersResponseDto & { description?: string }) | undefined
+  ) => {
     if (values) {
-      const { id, name, contact, address, roomId } = values;
+      const { id, name, contact, address, roomId, description, email } = values;
 
       setTitle("EDIT TENANT");
       setBtnName("Save Changes");
@@ -259,6 +311,8 @@ export const useHook = () => {
         contact,
         address,
         roomId,
+        email,
+        description: description ?? "",
         role: "TENANT",
       });
       toggleModal();

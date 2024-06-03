@@ -12,7 +12,13 @@ export class Payments {
   paidOn: Date;
 
   @ApiProperty({ type: Number })
-  amount: number;
+  advancePayment: number;
+
+  @ApiProperty({ type: Number })
+  balance: number;
+
+  @ApiProperty({ type: Number })
+  amountPaid: number;
 
   @ApiProperty({ type: () => Billable })
   billable: Billable;
