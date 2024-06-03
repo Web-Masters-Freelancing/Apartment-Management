@@ -12,6 +12,7 @@ import { useBillableApi } from "@/hooks/api/billable";
 import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import moment from "moment";
+import { Payments } from "@/store/api/gen/category";
 
 export interface BillableValues extends FindAllBillableResponseDto {
   userId: number;
@@ -25,12 +26,14 @@ export interface TableCellValues
 interface ModalFormValues {
   amount: number;
   amountDue?: number;
+  advancePayment?: number;
 }
 
 export const useHook = () => {
   const initialFormValues: ModalFormValues = {
     amount: 0,
     amountDue: 0,
+    advancePayment: 0,
   };
 
   const [initialValues, setInitialValues] =
@@ -39,7 +42,9 @@ export const useHook = () => {
   const [openModal, setOpenDialog] = useState(false);
   const [openPaymentListModal, setOpenPaymentListModal] = useState(false);
 
-  const [payeeData, setPayeeData] = useState<ProcessPaymentDto | undefined>();
+  const [payeeData, setPayeeData] = useState<
+    (ProcessPaymentDto & Pick<Payments, "advancePayment">) | undefined
+  >();
   const [listOfPayments, setListOfPayments] = useState<
     FindAllPaymentsForFindAllBillableResponseDto[]
   >([]);
@@ -64,8 +69,18 @@ export const useHook = () => {
         format: (value) => moment(value).format("DD/MM/YYYY hh:MM:ss"),
       },
       {
-        key: "amount",
-        label: "Amount",
+        key: "advancePayment",
+        label: "Advance payment",
+        format: (value) => value.toLocaleString("en-US"),
+      },
+      {
+        key: "balance",
+        label: "Balance",
+        format: (value) => value.toLocaleString("en-US"),
+      },
+      {
+        key: "amountPaid",
+        label: "Amount paid",
         format: (value) => value.toLocaleString("en-US"),
       },
     ];
@@ -76,13 +91,13 @@ export const useHook = () => {
       label: "Names",
     },
     {
-      key: "amountToPay",
-      label: "amount due",
+      key: "roomPrice", // Room price
+      label: "Room Price",
       format: (value: number) => value.toLocaleString("en-US"),
     },
     {
-      key: "amount",
-      label: "balance",
+      key: "amountDue",
+      label: "amount due",
       format: (value: number) => value.toLocaleString("en-US"),
     },
     {
@@ -104,6 +119,18 @@ export const useHook = () => {
     {
       fieldType: "text",
       fieldProps: {
+        placeholder: "",
+        label: "Advance payment",
+        name: "advancePayment",
+        id: "advancePayment",
+        type: "number",
+        margin: "dense",
+        disabled: true,
+      },
+    },
+    {
+      fieldType: "text",
+      fieldProps: {
         placeholder: "Amount due",
         label: "Amount due",
         name: "amountDue",
@@ -113,6 +140,7 @@ export const useHook = () => {
         disabled: true,
       },
     },
+
     {
       fieldType: "text",
       fieldProps: {
@@ -128,15 +156,28 @@ export const useHook = () => {
 
   const handlePayment = useCallback(
     async (
-      { amount }: BillableValues,
+      { amount: amountString, amountDue }: { amount: number } & BillableValues,
       { setSubmitting }: FormikHelpers<BillableValues>
     ) => {
       if (payeeData) {
         try {
+          const amount = parseFloat(amountString.toString());
+
+          let advancePayment = 0;
+          let balance = 0;
+          if (amount > amountDue) {
+            advancePayment = amount - amountDue;
+          }
+          if (amount < amountDue) {
+            balance = amountDue - amount;
+          }
+
           setSubmitting(true);
           await processPayment({
             id: payeeData.id,
             amount,
+            advancePayment,
+            balance,
           });
 
           setSnackbarProps({
@@ -175,15 +216,19 @@ export const useHook = () => {
   const handleToggleModal = (values?: BillableValues) => {
     if (values) {
       if (isBillableValues(values)) {
-        const { id, amountToPay } = values;
+        const { id, amountDue, advancePayment } = values;
+
         setPayeeData({
           id,
-          amount: amountToPay,
+          amount: amountDue, // amountDue is the Balance amount
+          advancePayment,
+          balance: 0,
         });
 
         setInitialValues({
           ...initialFormValues,
-          amountDue: amountToPay,
+          amountDue: amountDue,
+          advancePayment,
         });
       } else {
         setInitialValues(initialFormValues);

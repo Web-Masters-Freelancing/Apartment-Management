@@ -76,6 +76,7 @@ export type FindAllUsersResponseDto = {
   roomId: number;
   roomNumber: number;
   amount: number;
+  email: string;
 };
 export const {
   useUserControllerCreateMutation,

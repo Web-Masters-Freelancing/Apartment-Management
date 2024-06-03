@@ -20,84 +20,6 @@ export const useHooks = () => {
 
   const handleSearch = (values: SearchKey, _: FormikHelpers<SearchKey>) => {};
 
-  const handlePDF = () => {
-    const tableColumns = columns
-      .filter((value) => value.label !== "Action")
-      .map((value) => value.label);
-
-    if (payments && payments.length) {
-      const totalAmount: Pick<
-        FindAllPaymentsDto,
-        "advance" | "amountPaid" | "balance"
-      > = {
-        advance: 0,
-        amountPaid: 0,
-        balance: 0,
-      };
-      const tableRows = payments.map((value) => {
-        totalAmount.advance += value.advance;
-        totalAmount.amountPaid += value.amountPaid;
-        totalAmount.balance += value.balance;
-
-        return [
-          value.userName,
-          value.categoryName,
-          value.description,
-          value.roomNumber,
-          value.balance,
-          value.advance,
-          value.amountPaid,
-          value.balance,
-          moment(value.dueDate).format("DD/MM/YYYY"),
-        ];
-      });
-
-      const { advance, amountPaid, balance } = totalAmount;
-      const totalRows = [
-        "TOTAL",
-        "",
-        "",
-        "",
-        "",
-        advance,
-        amountPaid,
-        balance,
-        "",
-      ].map((value, index): TableCell => {
-        const tableCell: TableCell = !index
-          ? {
-              text: value,
-              colSpan: 5,
-              style: { alignment: "right", fontSize: 10, bold: true },
-            }
-          : {
-              text:
-                value && typeof value === "number"
-                  ? formatNumber(value)
-                  : value,
-            };
-        return tableCell;
-      });
-
-      const documentHeader: ContentColumns = {
-        columns: [
-          [
-            {
-              text: "Whitehouse Apartment Management",
-              style: { alignment: "left" },
-            },
-            {
-              text: "Income Report",
-              style: { alignment: "left" },
-            },
-          ],
-        ],
-        columnGap: 10,
-      };
-      openPdfMake({ documentHeader, tableColumns, tableRows, totalRows });
-    }
-  };
-
   const dataSource: FindAllPaymentsDto[] = useMemo(
     () => (payments?.length ? payments : []),
     [payments]
@@ -120,27 +42,12 @@ export const useHooks = () => {
       key: "roomNumber",
       label: "ROOM NUMBER",
     },
-    {
-      key: "amountToPay",
-      label: "AMOUNT TO PAY / MONTH",
-      format: (value: number) => value.toLocaleString("en-US"),
-    },
 
     {
-      key: "advance",
-      label: "ADVANCE",
-      format: (value: number) => value.toLocaleString("en-US"),
+      key: "amountDue",
+      label: "amount due",
     },
-    {
-      key: "amountPaid",
-      label: "AMOUNT PAID",
-      format: (value: number) => value.toLocaleString("en-US"),
-    },
-    {
-      key: "balance",
-      label: "BALANCE",
-      format: (value: number) => value.toLocaleString("en-US"),
-    },
+
     {
       key: "dueDate",
       label: "DUE DATE",
@@ -162,9 +69,9 @@ export const useHooks = () => {
         categoryName,
         description,
         payments,
-        amountToPay,
-        balance,
+        amountDue,
       } = payload;
+
       const documentHeader: ContentColumns = {
         columns: [
           [
@@ -198,47 +105,53 @@ export const useHooks = () => {
       };
 
       const tableColumns: string[] = [
-        "Issue Date",
+        "Paid on",
         "Due Date",
         "Category",
         "Description",
-        "Amount",
-        "Payment",
+        "Advance payment",
         "Balance",
+        "Amount paid",
       ];
 
-      let totalPayments: number = 0;
+      let totalAmountPaid: number = 0;
 
       const tableRows = payments.map((value) => {
-        totalPayments += value.amount;
+        totalAmountPaid += value.amountPaid;
         return [
           moment(value.paidOn).format("l"),
           moment(dueDate).format("l"),
           categoryName,
           description,
-          amountToPay,
-          value.amount,
-          balance,
+          value.advancePayment ?? 0,
+          value.balance ?? 0,
+          value.amountPaid,
         ];
       });
 
-      const totalRows = ["Total", "", "", "", "", totalPayments, balance].map(
-        (value, key): TableCell => {
-          return !key
-            ? {
-                text: value,
-                colSpan: 5,
-                style: { alignment: "right", fontSize: 10, bold: true },
-                border: [false, false, false, false],
-              }
-            : {
-                text:
-                  value && typeof value === "number"
-                    ? formatNumber(value)
-                    : value,
-              };
-        }
-      );
+      const totalRows = [
+        "Total",
+        "",
+        "",
+        "",
+        "",
+        amountDue,
+        totalAmountPaid,
+      ].map((value, key): TableCell => {
+        return !key
+          ? {
+              text: value,
+              colSpan: 5,
+              style: { alignment: "right", fontSize: 10, bold: true },
+              border: [false, false, false, false],
+            }
+          : {
+              text:
+                value && typeof value === "number"
+                  ? formatNumber(value)
+                  : value,
+            };
+      });
 
       openPdfMake({ documentHeader, tableColumns, tableRows, totalRows });
     }
@@ -267,14 +180,14 @@ export const useHooks = () => {
         name: "dateRange",
       },
     },
-    {
-      actionType: "button",
-      actionProps: <ActionButtonProps<any>>{
-        name: "Print",
-        variant: "outlined",
-        handleClick: handlePDF,
-      },
-    },
+    // {
+    //   actionType: "button",
+    //   actionProps: <ActionButtonProps<any>>{
+    //     name: "Print",
+    //     variant: "outlined",
+    //     handleClick: handlePDF,
+    //   },
+    // },
   ];
 
   return {
