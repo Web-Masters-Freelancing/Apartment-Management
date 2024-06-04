@@ -35,6 +35,10 @@ export class UserService {
 
     const amountToPay = roomDetails && roomDetails.amount;
 
+    const currentDate = new Date();
+
+    currentDate.setUTCHours(0, 0, 0, 0);
+
     const createdUser = await this.prisma.user.create({
       data: {
         name,
@@ -55,6 +59,7 @@ export class UserService {
                 create: {
                   roomId,
                   amountDue: +amountToPay,
+                  dueDate: currentDate.toISOString(),
                 },
               },
       },
