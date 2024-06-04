@@ -39,6 +39,7 @@ export class BillableService {
             amountDue: true,
             user: { select: { contact: true, name: true } },
             room: { select: { amount: true } },
+            dueDate: true,
           },
         });
         if (!data)
@@ -46,7 +47,7 @@ export class BillableService {
             'This billable record is not found or it has been inactive.',
           );
 
-        const { amountDue: _, room, ...notifPayload } = data;
+        const { amountDue: _, room, dueDate, ...notifPayload } = data;
 
         // Bill next month
         const advanceRemained =
@@ -64,10 +65,9 @@ export class BillableService {
 
         // Add month for next bills
         const currentDate = new Date();
-        const nextBilldateReference = new Date(currentDate);
 
-        nextBilldateReference.setMonth(currentDate.getMonth() + 1);
-        nextBilldateReference.setUTCHours(0, 0, 0, 0);
+        dueDate.setMonth(dueDate.getMonth() + 1);
+        dueDate.setUTCHours(0, 0, 0, 0);
 
         await Promise.all([
           prisma.billable.update({
@@ -76,7 +76,7 @@ export class BillableService {
             },
             data: {
               amountDue: balance,
-              dueDate: nextBilldateReference.toISOString(),
+              dueDate: dueDate.toISOString(),
             },
           }),
           prisma.payments.create({
@@ -96,7 +96,7 @@ export class BillableService {
               advancePayment: advanceRemained,
               balance: balanceRemained,
               billableId: id,
-              paidOn: nextBilldateReference.toISOString(),
+              paidOn: dueDate.toISOString(),
             },
           }),
         ]);
