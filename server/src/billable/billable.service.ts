@@ -64,17 +64,10 @@ export class BillableService {
 
         // Add month for next bills
         const currentDate = new Date();
-        const dateReference = new Date(currentDate);
+        const nextBilldateReference = new Date(currentDate);
 
-        dateReference.setMonth(currentDate.getMonth() + 1);
-        dateReference.setUTCHours(0, 0, 0, 0);
-
-        console.log(
-          'next bills',
-          advanceRemained,
-          balanceRemained,
-          amountPaidRemaining,
-        );
+        nextBilldateReference.setMonth(currentDate.getMonth() + 1);
+        nextBilldateReference.setUTCHours(0, 0, 0, 0);
 
         await Promise.all([
           prisma.billable.update({
@@ -83,6 +76,7 @@ export class BillableService {
             },
             data: {
               amountDue: balance,
+              dueDate: nextBilldateReference.toISOString(),
             },
           }),
           prisma.payments.create({
@@ -102,7 +96,7 @@ export class BillableService {
               advancePayment: advanceRemained,
               balance: balanceRemained,
               billableId: id,
-              paidOn: dateReference.toISOString(),
+              paidOn: nextBilldateReference.toISOString(),
             },
           }),
         ]);
