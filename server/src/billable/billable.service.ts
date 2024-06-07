@@ -151,10 +151,10 @@ export class BillableService {
          * After the transactions sets!
          * Send a message to the tenant via sms
          */
-        // await sendNotification({
-        //   data: [{ ...notifPayload }],
-        //   type: 'payment',
-        // });
+        await sendNotification({
+          data: [{ ...notifPayload }],
+          type: 'payment',
+        });
       });
     } catch (e) {
       throw e;
