@@ -51,7 +51,7 @@ export const useHooks = () => {
     {
       key: "dueDate",
       label: "DUE DATE",
-      format: (value) => moment(value).format("DD/MM/YYYY"),
+      format: (value) => moment(value).format("MM/DD/YYYY"),
     },
     {
       key: "cellActions",
@@ -99,6 +99,10 @@ export const useHooks = () => {
               text: address,
               style: styles["HEADERLEFT"],
             },
+            {
+              text: `Due Date: ${moment(dueDate).format("YYYY-MM-DD")}`,
+              style: styles["HEADERLEFT"],
+            },
           ],
         ],
         columnGap: 10,
@@ -106,7 +110,6 @@ export const useHooks = () => {
 
       const tableColumns: string[] = [
         "Paid on",
-        "Due Date",
         "Category",
         "Description",
         "Advance payment",
@@ -120,7 +123,6 @@ export const useHooks = () => {
         totalAmountPaid += value.amountPaid;
         return [
           moment(value.paidOn).format("l"),
-          moment(dueDate).format("l"),
           categoryName,
           description,
           value.advancePayment ?? 0,
@@ -129,29 +131,24 @@ export const useHooks = () => {
         ];
       });
 
-      const totalRows = [
-        "Total",
-        "",
-        "",
-        "",
-        "",
-        amountDue,
-        totalAmountPaid,
-      ].map((value, key): TableCell => {
-        return !key
-          ? {
-              text: value,
-              colSpan: 5,
-              style: { alignment: "right", fontSize: 10, bold: true },
-              border: [false, false, false, false],
-            }
-          : {
-              text:
-                value && typeof value === "number"
-                  ? formatNumber(value)
-                  : value,
-            };
-      });
+      const totalRows = ["Total", "", "", "", "", totalAmountPaid].map(
+        (value, key): TableCell => {
+          return !key
+            ? {
+                text: value,
+                colSpan: 6,
+                style: { alignment: "right", fontSize: 10, bold: true },
+                border: [false, false, false, false],
+              }
+            : {
+                text:
+                  value && typeof value === "number"
+                    ? formatNumber(value)
+                    : value,
+                border: [false, false, false, false],
+              };
+        }
+      );
 
       openPdfMake({ documentHeader, tableColumns, tableRows, totalRows });
     }
@@ -180,14 +177,6 @@ export const useHooks = () => {
         name: "dateRange",
       },
     },
-    // {
-    //   actionType: "button",
-    //   actionProps: <ActionButtonProps<any>>{
-    //     name: "Print",
-    //     variant: "outlined",
-    //     handleClick: handlePDF,
-    //   },
-    // },
   ];
 
   return {

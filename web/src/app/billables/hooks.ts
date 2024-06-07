@@ -66,7 +66,7 @@ export const useHook = () => {
       {
         key: "paidOn",
         label: "Date paid",
-        format: (value) => moment(value).format("DD/MM/YYYY hh:MM:ss"),
+        format: (value) => moment(value).format("MM/DD/YYYY hh:MM:ss"),
       },
       {
         key: "advancePayment",
@@ -101,9 +101,14 @@ export const useHook = () => {
       format: (value: number) => value.toLocaleString("en-US"),
     },
     {
+      key: "startDate",
+      label: "start date",
+      format: (value) => moment(value).format("MM/DD/YYYY"),
+    },
+    {
       key: "dueDate",
       label: "due date",
-      format: (value) => moment(value).format("DD/MM/YYYY"),
+      format: (value) => moment(value).format("MM/DD/YYYY"),
     },
     {
       key: "status",
