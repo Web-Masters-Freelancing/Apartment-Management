@@ -51,7 +51,7 @@ export const useHooks = () => {
     {
       key: "dueDate",
       label: "DUE DATE",
-      format: (value) => moment(value).format("DD/MM/YYYY"),
+      format: (value) => moment(value).format("MM/DD/YYYY"),
     },
     {
       key: "cellActions",

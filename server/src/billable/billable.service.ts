@@ -69,14 +69,14 @@ export class BillableService {
         dueDate.setMonth(dueDate.getMonth() + 1);
         dueDate.setUTCHours(0, 0, 0, 0);
 
-        await Promise.all([
+        const [billablesBalances, paymentsCreation] = await Promise.all([
           prisma.billable.update({
             where: {
               id,
             },
             data: {
               amountDue: balance,
-              dueDate: dueDate.toISOString(),
+              // dueDate: dueDate.toISOString(),
             },
           }),
           prisma.payments.create({
@@ -88,27 +88,73 @@ export class BillableService {
               paidOn: currentDate.toISOString(),
             },
           }),
-
-          // Create Bill for next month
-          prisma.payments.create({
-            data: {
-              amountPaid: amountPaidRemaining,
-              advancePayment: advanceRemained,
-              balance: balanceRemained,
-              billableId: id,
-              paidOn: dueDate.toISOString(),
-            },
-          }),
         ]);
+
+        /** Payments Creation */
+        if (paymentsCreation) {
+          const billDateReference = new Date(currentDate);
+
+          billDateReference.setMonth(dueDate.getMonth() - 1);
+          billDateReference.setDate(dueDate.getDate());
+          billDateReference.setUTCHours(0, 0, 0, 0);
+          // Create Bill for next month
+          const [nextMonthBill] = await prisma.payments.findMany({
+            where: {
+              AND: [
+                { amountPaid: 0 },
+                {
+                  billable: {
+                    AND: [
+                      { id },
+                      { dueDate: { equals: billDateReference.toISOString() } },
+                    ],
+                  },
+                },
+              ],
+            },
+            select: {
+              id: true,
+              advancePayment: true,
+              amountPaid: true,
+              balance: true,
+            },
+            orderBy: { paidOn: Prisma.SortOrder.desc },
+          });
+
+          if (nextMonthBill) {
+            const advancePayment =
+              advanceRemained + nextMonthBill.advancePayment;
+            await prisma.payments.update({
+              where: { id: nextMonthBill.id },
+              data: {
+                amountPaid: 0,
+                advancePayment,
+                balance: advancePayment
+                  ? 0
+                  : balanceRemained + nextMonthBill.balance,
+              },
+            });
+          } else {
+            await prisma.payments.create({
+              data: {
+                amountPaid: amountPaidRemaining,
+                advancePayment: advanceRemained,
+                balance: balanceRemained,
+                billableId: id,
+                paidOn: dueDate.toISOString(),
+              },
+            });
+          }
+        }
 
         /**
          * After the transactions sets!
          * Send a message to the tenant via sms
          */
-        await sendNotification({
-          data: [{ ...notifPayload }],
-          type: 'payment',
-        });
+        // await sendNotification({
+        //   data: [{ ...notifPayload }],
+        //   type: 'payment',
+        // });
       });
     } catch (e) {
       throw e;
@@ -126,6 +172,7 @@ export class BillableService {
           dueDate: true,
           status: true,
           amountDue: true,
+          startDate: true,
           room: {
             select: {
               amount: true,

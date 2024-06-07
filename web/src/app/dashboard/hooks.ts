@@ -105,7 +105,7 @@ export const useHook = () => {
     {
       key: "paidOn",
       label: "Paid on",
-      format: (value) => moment(value).format("DD/MM/YYYY"),
+      format: (value) => moment(value).format("MM/DD/YYYY"),
     },
     {
       key: "advancePayment",

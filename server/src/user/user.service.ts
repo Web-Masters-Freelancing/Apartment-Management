@@ -37,7 +37,13 @@ export class UserService {
 
     const currentDate = new Date();
 
-    currentDate.setUTCHours(0, 0, 0, 0);
+    const dateReference = new Date(currentDate);
+
+    dateReference.setMonth(currentDate.getMonth() + 1);
+
+    dateReference.setDate(currentDate.getDate() + 1);
+
+    dateReference.setUTCHours(0, 0, 0, 0);
 
     const createdUser = await this.prisma.user.create({
       data: {
@@ -59,7 +65,7 @@ export class UserService {
                 create: {
                   roomId,
                   amountDue: +amountToPay,
-                  dueDate: currentDate.toISOString(),
+                  dueDate: dateReference.toISOString(),
                 },
               },
       },
