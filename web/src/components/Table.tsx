@@ -221,7 +221,7 @@ const CustomTable = ({
                           if (column.key !== "cellActions") {
                             return (
                               <TableCell key={cellIndex} align={column.align}>
-                                {column?.format
+                                {column?.format && row[column.key]
                                   ? column.format(row[column.key])
                                   : row[column.key]}
                               </TableCell>

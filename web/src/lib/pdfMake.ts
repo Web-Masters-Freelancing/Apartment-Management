@@ -43,7 +43,6 @@ export const styles: StyleDictionary = {
 export const formatNumber = (value: number) =>
   value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-
 export const openPdfMake = ({
   documentHeader,
   tableColumns,
@@ -75,6 +74,7 @@ export const openPdfMake = ({
    * Table Content
    */
   const table: Table = {
+    widths: ["auto", 120, 200, "auto", "auto", "auto"],
     body: [
       tableColumns.map((value): TableCell => {
         return { text: value, style: styles["TABLEHEADER"] };
@@ -97,11 +97,6 @@ export const openPdfMake = ({
     table,
   };
   const content: Content[] = [documentHeader, tableContent];
-
-    
-    
-
-
 
   const document: TDocumentDefinitions = { content, pageMargins, pageSize };
 

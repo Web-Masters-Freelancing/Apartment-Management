@@ -109,6 +109,7 @@ export type Billable = {
   dueDate: string;
   amountDue: number;
   status: BillableStatus;
+  startDate: string;
   room: Room;
   user: User;
   payments: Payments[];

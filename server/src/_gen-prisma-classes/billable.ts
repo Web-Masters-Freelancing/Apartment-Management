@@ -23,6 +23,9 @@ export class Billable {
   @ApiProperty({ enum: BILLABLE_STATUS, enumName: 'BILLABLE_STATUS' })
   status: BILLABLE_STATUS = BILLABLE_STATUS.ACTIVE;
 
+  @ApiProperty({ type: Date })
+  startDate: Date;
+
   @ApiProperty({ type: () => Room })
   room: Room;
 

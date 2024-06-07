@@ -49,6 +49,7 @@ export type FindAllBillableResponseDto = {
   dueDate: string;
   amountDue: number;
   status: BillableStatus;
+  startDate: string;
   userName: string;
   payments: FindAllPaymentsForFindAllBillableResponseDto[];
   roomPrice: number;

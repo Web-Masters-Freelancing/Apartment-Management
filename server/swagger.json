@@ -654,6 +654,10 @@
           "status": {
             "$ref": "#/components/schemas/BILLABLE_STATUS"
           },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          },
           "userName": {
             "type": "string"
           },
@@ -675,6 +679,7 @@
           "dueDate",
           "amountDue",
           "status",
+          "startDate",
           "userName",
           "payments",
           "roomPrice",
@@ -945,6 +950,10 @@
           "status": {
             "$ref": "#/components/schemas/BILLABLE_STATUS"
           },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          },
           "room": {
             "$ref": "#/components/schemas/Room"
           },
@@ -965,6 +974,7 @@
           "dueDate",
           "amountDue",
           "status",
+          "startDate",
           "room",
           "user",
           "payments"
