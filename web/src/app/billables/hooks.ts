@@ -95,11 +95,12 @@ export const useHook = () => {
       label: "Room Price",
       format: (value: number) => value.toLocaleString("en-US"),
     },
+
     {
-      key: "amountDue",
-      label: "amount due",
-      format: (value: number) => value.toLocaleString("en-US"),
+      key: "deposit",
+      label: "Deposit",
     },
+
     {
       key: "startDate",
       label: "start date",
@@ -109,6 +110,11 @@ export const useHook = () => {
       key: "dueDate",
       label: "due date",
       format: (value) => moment(value).format("MM/DD/YYYY"),
+    },
+    {
+      key: "amountDue",
+      label: "amount due",
+      format: (value: number) => value.toLocaleString("en-US"),
     },
     {
       key: "status",

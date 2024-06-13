@@ -15,10 +15,16 @@ import { useSnackbar } from "@/hooks/useSnackbar";
 import { CreateUserDto, FindAllUsersResponseDto } from "@/store/api/gen/user";
 import { red } from "@mui/material/colors";
 import { TextareaAutosizeProps } from "@mui/material";
+import { CustomDatePickerProps } from "@/components/DatePicker";
+import moment from "moment";
+import { Payments } from "@/store/api/gen/category";
 
-interface TenantFormValues extends CreateUserDto {
+interface TenantFormValues
+  extends CreateUserDto,
+    Pick<Payments, "advancePayment"> {
   id?: number;
   description?: string;
+  deposit: number;
 }
 
 const inititialFormValues: TenantFormValues = {
@@ -28,7 +34,10 @@ const inititialFormValues: TenantFormValues = {
   roomId: 0,
   description: "",
   email: "",
+  startDate: "",
   role: "TENANT",
+  deposit: 0,
+  advancePayment: 0,
 };
 
 export const useHook = () => {
@@ -69,7 +78,10 @@ export const useHook = () => {
   );
 
   const fields: Field<
-    InputFieldProps | SelectFieldProps | TextareaAutosizeProps
+    | InputFieldProps
+    | SelectFieldProps
+    | TextareaAutosizeProps
+    | CustomDatePickerProps
   >[] = [
     {
       fieldType: "text",
@@ -153,6 +165,35 @@ export const useHook = () => {
         disabled: true,
       },
     },
+
+    {
+      fieldType: "date",
+      fieldProps: <CustomDatePickerProps>{
+        label: "Select start date",
+        name: "startDate",
+      },
+    },
+
+    {
+      fieldType: "text",
+      fieldProps: <InputFieldProps>{
+        label: "Deposit",
+        name: "deposit",
+        id: "deposit",
+        type: "number",
+        margin: "dense",
+      },
+    },
+    {
+      fieldType: "text",
+      fieldProps: <InputFieldProps>{
+        label: "Advance payment",
+        name: "advancePayment",
+        id: "advancePayment",
+        type: "number",
+        margin: "dense",
+      },
+    },
   ];
 
   const handleSearch = async (
@@ -190,19 +231,16 @@ export const useHook = () => {
   };
 
   const handleCreateUser = async (
-    { name, contact, address, roomId, email }: TenantFormValues,
+    { password, role, id, description, ...payload }: TenantFormValues,
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {
     try {
       await createUser({
-        name,
-        contact,
-        address,
-        roomId,
-        email,
+        ...payload,
         password: "tenant",
         role: "TENANT",
       });
+
       showSnackbar("Tenant is successfully created!");
       setSubmitting(false);
       resetForm({ values: initialValues });
@@ -218,7 +256,8 @@ export const useHook = () => {
     { resetForm, setSubmitting }: FormikHelpers<TenantFormValues>
   ) => {
     try {
-      id && (await editUser(id, { ...payload, role: "TENANT" }));
+      id &&
+        (await editUser(id, { ...payload, role: "TENANT" } as CreateUserDto));
 
       showSnackbar("Tenant is successfully updated.");
 
@@ -266,6 +305,25 @@ export const useHook = () => {
 
   const columns: Column<FindAllUsersResponseDto & TableActions>[] = [
     {
+      key: "startDate",
+      label: "start date",
+      format: (value) => moment(value).format("YYYY/MM/DD"),
+    },
+    {
+      key: "dueDate",
+      label: "next due date",
+      format: (value) => moment(value).format("YYYY/MM/DD"),
+    },
+    {
+      key: "roomNumber",
+      label: "Door Number",
+      format: (value) => `Door ${value}`,
+    },
+    {
+      key: "deposit",
+      label: "amount deposit",
+    },
+    {
       key: "name",
       label: "name",
     },
@@ -281,11 +339,7 @@ export const useHook = () => {
       key: "address",
       label: "address",
     },
-    {
-      key: "roomNumber",
-      label: "Door Number",
-      format: (value) => `Door ${value}`,
-    },
+
     {
       key: "cellActions",
       label: "actions",
@@ -301,20 +355,17 @@ export const useHook = () => {
     values: (FindAllUsersResponseDto & { description?: string }) | undefined
   ) => {
     if (values) {
-      const { id, name, contact, address, roomId, description, email } = values;
+      const { role, description, deposit, startDate, ...payload } = values;
 
       setTitle("EDIT TENANT");
       setBtnName("Save Changes");
       setInitialValues({
-        id,
-        name,
-        contact,
-        address,
-        roomId,
-        email,
+        ...payload,
+        deposit,
+        advancePayment: deposit,
         description: description ?? "",
         role: "TENANT",
-      });
+      } as any);
       toggleModal();
     }
   };
@@ -330,7 +381,7 @@ export const useHook = () => {
     },
   ];
 
-  const handleToggleDialog = (values?: TenantFormValues) => {
+  const handleToggleDialog = (values?: FindAllUsersResponseDto | undefined) => {
     if (values && values.id) {
       setUserToDelete(values.id);
     }

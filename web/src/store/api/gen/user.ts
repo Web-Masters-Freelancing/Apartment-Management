@@ -62,9 +62,12 @@ export type CreateUserDto = {
   contact: string;
   address: string;
   role: UserRole;
+  startDate?: string;
   email?: string;
   password?: string;
   roomId?: number;
+  deposit: number;
+  advancePayment: number;
 };
 export type FindAllUsersResponseDto = {
   id: number;
@@ -72,11 +75,14 @@ export type FindAllUsersResponseDto = {
   contact: string;
   address: string;
   role: UserRole;
+  startDate?: string;
   categoryId: number;
   roomId: number;
   roomNumber: number;
   amount: number;
   email: string;
+  deposit: number;
+  dueDate: string;
 };
 export const {
   useUserControllerCreateMutation,

@@ -92,6 +92,7 @@ export type User = {
   auth?: Auth;
   billable?: Billable;
   roomhistory?: RoomHistory;
+  startDate?: string;
 };
 export type Payments = {
   id: number;
@@ -107,6 +108,7 @@ export type Billable = {
   userId: number;
   roomId: number;
   dueDate: string;
+  deposit?: number;
   amountDue: number;
   status: BillableStatus;
   startDate: string;
