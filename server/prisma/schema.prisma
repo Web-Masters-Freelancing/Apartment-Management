@@ -37,6 +37,7 @@ model Billable {
   userId    Int             @unique(map: "Billable_userId_key")
   roomId    Int
   dueDate   DateTime
+  deposit   Float?
   amountDue Float
   status    BILLABLE_STATUS @default(ACTIVE)
   startDate DateTime        @default(now()) @db.Timestamp(0)
@@ -96,6 +97,7 @@ model User {
   auth        Auth?
   billable    Billable?
   roomhistory RoomHistory?
+  startDate   DateTime?
 }
 
 enum ROOM_STATUS {

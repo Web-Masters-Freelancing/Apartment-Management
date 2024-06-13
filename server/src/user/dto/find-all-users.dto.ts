@@ -11,6 +11,7 @@ export class FindAllUsersResponseDto extends PickType(UserEntity, [
   'contact',
   'address',
   'role',
+  'startDate',
 ]) {
   @ApiProperty({
     type: Number,
@@ -36,4 +37,11 @@ export class FindAllUsersResponseDto extends PickType(UserEntity, [
   @ApiProperty({ type: String })
   @IsString()
   email: AuthEntity['email'];
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  deposit: BillableEntity['deposit'];
+
+  @ApiProperty({ type: Date })
+  dueDate: BillableEntity['dueDate'];
 }

@@ -16,6 +16,7 @@ export class FindAllBillableResponseDto extends PickType(Billable, [
   'id',
   'amountDue',
   'startDate',
+  'deposit',
 ]) {
   @ApiProperty({
     type: String,
