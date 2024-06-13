@@ -20,6 +20,8 @@ import {
   useHook as useModalHook,
 } from "./hooks/useModal";
 import { memo } from "react";
+import { CustomDatePickerProps } from "./DatePicker";
+import DatePicker from "./../components/DatePicker";
 
 const contentWrapperStyle: SxProps<Theme> = {
   position: "absolute",
@@ -31,6 +33,7 @@ const contentWrapperStyle: SxProps<Theme> = {
   border: "1px solid gray",
   boxShadow: "24",
   p: 4,
+  overflow: "auto",
 };
 
 const saveButtonWrapper: SxProps<Theme> = {
@@ -51,7 +54,12 @@ interface ModalFormProps<T extends Maybe<AnyObject>> {
   initialValues: T;
   validationSchema?: ObjectSchema<T>;
   handleSubmit: (values: T, helpers: FormikHelpers<T>) => void;
-  fields: Field<InputFieldProps | SelectFieldProps | TextareaAutosizeProps>[];
+  fields: Field<
+    | InputFieldProps
+    | SelectFieldProps
+    | TextareaAutosizeProps
+    | CustomDatePickerProps
+  >[];
 }
 
 /**
@@ -87,7 +95,8 @@ const CustomModal = ({
   width,
   ...props
 }: Props<any>) => {
-  const { isInputField, isSelectField, isTextAreaField } = useModalHook();
+  const { isInputField, isSelectField, isTextAreaField, isDateField } =
+    useModalHook();
 
   return (
     <Modal keepMounted open={open} onClose={handleClose} {...props}>
@@ -99,7 +108,7 @@ const CustomModal = ({
       >
         <Typography>{title}</Typography>
         {modalFor === "form" && formProps ? (
-          <Box sx={{ width: "100%", alignItems: "center" }}>
+          <Box sx={{ width: "100%", alignItems: "center", maxHeight: "80vh" }}>
             <Formik
               initialValues={formProps.initialValues}
               validationSchema={formProps.validationSchema}
@@ -165,6 +174,20 @@ const CustomModal = ({
                               }
                             }}
                             key={index}
+                          />
+                        );
+                      }
+
+                      if (isDateField(field)) {
+                        return (
+                          <DatePicker
+                            {...field.fieldProps}
+                            key={index}
+                            onChange={(e) => {
+                              if (field.fieldProps.name) {
+                                setFieldValue(field.fieldProps.name, e);
+                              }
+                            }}
                           />
                         );
                       }

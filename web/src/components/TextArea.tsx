@@ -46,7 +46,7 @@ const CustomTextArea = ({ autoFocus, ...props }: TextareaAutosizeProps) => {
   return (
     <>
       <Textarea
-        sx={{ width: "100%", marginTop: 1 }}
+        sx={{ width: "100%", marginY: 1 }}
         autoFocus={true}
         {...props}
         {...field}

@@ -210,7 +210,7 @@ const CustomTable = ({
                 .map((row, index) => {
                   return (
                     <TableRow
-                      sx={{ textTransform: "capitalize" }}
+                      sx={{ textTransform: "capitalize", cursor: "pointer" }}
                       hover
                       role="checkbox"
                       tabIndex={-1}

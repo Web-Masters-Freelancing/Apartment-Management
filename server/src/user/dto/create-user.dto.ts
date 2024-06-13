@@ -1,14 +1,17 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { User } from '../../_gen-prisma-classes/user';
 import { Auth } from '@prisma/client';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Billable } from './../../_gen-prisma-classes/billable';
+import { Payments as PaymentEntity } from './../../_gen-prisma-classes/payments';
 
 export class CreateUserDto extends PickType(User, [
   'name',
   'contact',
   'address',
   'role',
+  'startDate',
 ]) {
   @ApiProperty({
     type: String,
@@ -34,4 +37,10 @@ export class CreateUserDto extends PickType(User, [
   @IsNumber()
   @IsOptional() // Make this as optional para dili mag required if mag create ug admin user sa seeder
   roomId?: number;
+
+  @ApiProperty({ type: Number })
+  deposit: Billable['deposit'];
+
+  @ApiProperty({ type: Number })
+  advancePayment: PaymentEntity['advancePayment'];
 }
