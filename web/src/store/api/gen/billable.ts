@@ -47,6 +47,7 @@ export type FindAllPaymentsForFindAllBillableResponseDto = {
 export type FindAllBillableResponseDto = {
   id: number;
   dueDate: string;
+  deposit?: number;
   amountDue: number;
   status: BillableStatus;
   startDate: string;

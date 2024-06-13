@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BILLABLE_STATUS, Prisma } from '@prisma/client';
+import { BILLABLE_STATUS, Payments, Prisma } from '@prisma/client';
 import { FindAllBillableResponseDto } from './dto/find-all.dto';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
 import { FindAllPaymentsDto } from './dto/findall-payments';
@@ -40,6 +40,11 @@ export class BillableService {
             user: { select: { contact: true, name: true } },
             room: { select: { amount: true } },
             dueDate: true,
+            payments: {
+              select: { advancePayment: true, balance: true, amountPaid: true },
+              orderBy: { paidOn: Prisma.SortOrder.desc },
+              take: 1,
+            },
           },
         });
         if (!data)
@@ -47,104 +52,124 @@ export class BillableService {
             'This billable record is not found or it has been inactive.',
           );
 
-        const { amountDue: _, room, dueDate, ...notifPayload } = data;
+        const { amountDue: _, room, dueDate, payments, ...notifPayload } = data;
 
-        // Bill next month
-        const advanceRemained =
-          advancePayment > room.amount
-            ? advancePayment - room.amount
-            : advancePayment;
+        if (amount < room.amount) {
+          const amountDue = room.amount - amount;
+          const nextDue = new Date(dueDate);
+          nextDue.setMonth(nextDue.getMonth() + 1);
+          nextDue.setUTCHours(0, 0, 0, 0);
 
-        const balanceAmount = room.amount + balance;
-
-        const balanceRemained =
-          balanceAmount > advancePayment ? balanceAmount - advancePayment : 0;
-
-        const amountPaidRemaining =
-          advancePayment > room.amount ? room.amount : 0;
-
-        // Add month for next bills
-        const currentDate = new Date();
-
-        dueDate.setMonth(dueDate.getMonth() + 1);
-        dueDate.setUTCHours(0, 0, 0, 0);
-
-        const [billablesBalances, paymentsCreation] = await Promise.all([
-          prisma.billable.update({
-            where: {
-              id,
-            },
-            data: {
-              amountDue: balance,
-              // dueDate: dueDate.toISOString(),
-            },
-          }),
-          prisma.payments.create({
-            data: {
-              amountPaid: amount,
-              advancePayment,
-              balance,
-              billableId: id,
-              paidOn: currentDate.toISOString(),
-            },
-          }),
-        ]);
-
-        /** Payments Creation */
-        if (paymentsCreation) {
-          const billDateReference = new Date(currentDate);
-
-          billDateReference.setMonth(dueDate.getMonth() - 1);
-          billDateReference.setDate(dueDate.getDate());
-          billDateReference.setUTCHours(0, 0, 0, 0);
-          // Create Bill for next month
-          const [nextMonthBill] = await prisma.payments.findMany({
-            where: {
-              AND: [
-                { amountPaid: 0 },
-                {
-                  billable: {
-                    AND: [
-                      { id },
-                      { dueDate: { equals: billDateReference.toISOString() } },
-                    ],
-                  },
-                },
-              ],
-            },
-            select: {
-              id: true,
-              advancePayment: true,
-              amountPaid: true,
-              balance: true,
-            },
-            orderBy: { paidOn: Prisma.SortOrder.desc },
-          });
-
-          if (nextMonthBill) {
-            const advancePayment =
-              advanceRemained + nextMonthBill.advancePayment;
-            await prisma.payments.update({
-              where: { id: nextMonthBill.id },
+          await Promise.all([
+            prisma.payments.create({
               data: {
-                amountPaid: 0,
-                advancePayment,
-                balance: advancePayment
-                  ? 0
-                  : balanceRemained + nextMonthBill.balance,
-              },
-            });
-          } else {
-            await prisma.payments.create({
-              data: {
-                amountPaid: amountPaidRemaining,
-                advancePayment: advanceRemained,
-                balance: balanceRemained,
+                amountPaid: amount,
+                advancePayment: 0,
+                balance: amountDue,
                 billableId: id,
-                paidOn: dueDate.toISOString(),
+                paidOn: new Date(),
               },
-            });
+            }),
+
+            prisma.billable.update({
+              where: { id },
+              data: { dueDate: nextDue, amountDue: amountDue },
+            }),
+          ]);
+        }
+
+        /** Higher amount than room price */
+        if (amount > room.amount) {
+          const quotientResult = amount / room.amount;
+
+          // Create Bill
+          const wholeNumberResult =
+            Math.floor(quotientResult); /** Omit the decimal point  */
+
+          let count = 1;
+
+          if (wholeNumberResult) {
+            while (count <= wholeNumberResult) {
+              const nextDue = new Date(dueDate);
+              nextDue.setMonth(nextDue.getMonth() + count);
+              nextDue.setUTCHours(0, 0, 0, 0);
+
+              await Promise.all([
+                prisma.payments.create({
+                  data: {
+                    amountPaid: room.amount,
+                    advancePayment: 0,
+                    balance: 0,
+                    billableId: id,
+                    paidOn: new Date(),
+                  },
+                }),
+
+                prisma.billable.update({
+                  where: { id },
+                  data: { dueDate: nextDue, amountDue: room.amount },
+                }),
+              ]);
+
+              count++;
+            }
           }
+
+          //
+          const decimalNumberResult =
+            quotientResult % 1; /** Calculate the decimal */
+
+          if (decimalNumberResult) {
+            /** Difference result is the advance payment for the next month */
+            const amountPaidResult = decimalNumberResult * room.amount;
+            const amountPaid = Math.round(amountPaidResult);
+            /** Create a balance if it is lower than room amount which is the price of the room */
+            const balanceResult =
+              amountPaid < room.amount ? room.amount - amountPaid : 0;
+
+            const nextDue = new Date(dueDate);
+            nextDue.setMonth(count + 1);
+            nextDue.setUTCHours(0, 0, 0, 0);
+
+            await Promise.all([
+              prisma.payments.create({
+                data: {
+                  balance: balanceResult,
+                  amountPaid,
+                  advancePayment: 0,
+                  paidOn: new Date(),
+                  billableId: id,
+                },
+              }),
+              prisma.billable.update({
+                where: { id },
+                data: { dueDate: nextDue, amountDue: balanceResult },
+              }),
+            ]);
+          }
+        }
+
+        if (amount === room.amount) {
+          const nextDue = new Date(dueDate);
+          nextDue.setMonth(nextDue.getMonth() + 1);
+          nextDue.setUTCHours(0, 0, 0, 0);
+
+          await Promise.all([
+            prisma.payments.create({
+              data: {
+                amountPaid: room.amount,
+                advancePayment: 0,
+                balance: 0,
+                billableId: id,
+                paidOn: new Date(),
+              },
+            }),
+
+            prisma.billable.update({
+              where: { id },
+              data: { dueDate: nextDue, amountDue: room.amount },
+            }),
+          ]);
         }
 
         /**
@@ -172,7 +197,7 @@ export class BillableService {
           dueDate: true,
           status: true,
           amountDue: true,
-          startDate: true,
+          deposit: true,
           room: {
             select: {
               amount: true,
@@ -192,6 +217,7 @@ export class BillableService {
           user: {
             select: {
               name: true,
+              startDate: true,
             },
           },
         },
@@ -215,6 +241,7 @@ export class BillableService {
           roomPrice: room.amount,
           userName: user.name,
           advancePayment,
+          startDate: user.startDate,
         };
       });
     } catch (e) {

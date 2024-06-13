@@ -17,77 +17,102 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(payload: CreateUserDto) {
-    const { name, email, password, address, contact, role, roomId } = payload;
+    const {
+      name,
+      email,
+      password,
+      address,
+      contact,
+      role,
+      roomId,
+      startDate,
+      deposit,
+      advancePayment,
+    } = payload;
 
     const hashPassWord =
       role === 'ADMIN' ? password : await hashPassword(password);
 
-    const roomDetails = roomId
-      ? await this.prisma.room.findFirst({
-          where: {
-            AND: [{ id: roomId }, { status: ROOM_STATUS.AVAILABLE }],
+    this.prisma.withTransaction(async (prisma) => {
+      const roomDetails = roomId
+        ? await prisma.room.findFirst({
+            where: {
+              AND: [{ id: roomId }, { status: ROOM_STATUS.AVAILABLE }],
+            },
+            select: {
+              amount: true,
+            },
+          })
+        : undefined;
+
+      const amountToPay = roomDetails && roomDetails.amount;
+
+      const dateReference = new Date(startDate);
+
+      dateReference.setMonth(dateReference.getMonth() + 2);
+      dateReference.setDate(dateReference.getDate() + 1);
+      dateReference.setUTCHours(0, 0, 0, 0);
+
+      const createdUser = await prisma.user.create({
+        data: {
+          name,
+          address,
+          contact,
+          role,
+          startDate,
+          auth: {
+            create: {
+              token: undefined,
+              email,
+              password: hashPassWord,
+            },
           },
-          select: {
-            amount: true,
-          },
-        })
-      : undefined;
-
-    const amountToPay = roomDetails && roomDetails.amount;
-
-    const currentDate = new Date();
-
-    const dateReference = new Date(currentDate);
-
-    dateReference.setMonth(currentDate.getMonth() + 1);
-
-    dateReference.setDate(currentDate.getDate() + 1);
-
-    dateReference.setUTCHours(0, 0, 0, 0);
-
-    const createdUser = await this.prisma.user.create({
-      data: {
-        name,
-        address,
-        contact,
-        role,
-        auth: {
-          create: {
-            token: undefined,
-            email,
-            password: hashPassWord,
-          },
-        },
-        billable:
-          role === USER_ROLE.ADMIN
-            ? undefined
-            : {
-                create: {
-                  roomId,
-                  amountDue: +amountToPay,
-                  dueDate: dateReference.toISOString(),
+          billable:
+            role === USER_ROLE.ADMIN
+              ? undefined
+              : {
+                  create: {
+                    roomId,
+                    amountDue: +amountToPay,
+                    dueDate: dateReference.toISOString(),
+                    deposit: parseFloat(deposit.toString()),
+                  },
                 },
-              },
-      },
-      select: {
-        id: true,
-        auth: {
-          select: {
-            email: true,
-          },
         },
-      },
+        select: {
+          id: true,
+          auth: {
+            select: {
+              email: true,
+            },
+          },
+          billable: { select: { id: true } },
+        },
+      });
+
+      await prisma.room.update({
+        where: { id: roomId },
+        data: { status: ROOM_STATUS.OCCUPIED },
+      });
+
+      // 1 month advance
+      if (advancePayment) {
+        await prisma.payments.create({
+          data: {
+            billableId: createdUser.billable.id,
+            advancePayment: 0,
+            balance: 0,
+            amountPaid: parseFloat(advancePayment.toString()),
+            paidOn: new Date(),
+          },
+        });
+      }
+
+      // if role is admin, return the token to instruct the user for password reset
+      // return role === USER_ROLE.ADMIN ? signData(createdUser) : undefined;
+
+      return signData(createdUser);
     });
-
-    await this.prisma.room.update({
-      where: { id: roomId },
-      data: { status: ROOM_STATUS.OCCUPIED },
-    });
-
-    // if role is admin, return the token to instruct the user for password reset
-    // return role === USER_ROLE.ADMIN ? signData(createdUser) : undefined;
-
-    return signData(createdUser);
   }
 
   async findOne({ email }: { email: string }) {
@@ -137,9 +162,11 @@ export class UserService {
         contact: true,
         address: true,
         role: true,
-
+        startDate: true,
         billable: {
           select: {
+            dueDate: true,
+            deposit: true,
             roomId: true,
             room: {
               select: {
@@ -167,13 +194,15 @@ export class UserService {
         amount: billable.room.amount,
         categoryId: billable.room.categoryId,
         email: auth?.email ?? '',
+        deposit: billable.deposit,
+        dueDate: billable.dueDate,
       };
     });
   }
 
   async edit(
     id: number,
-    { name, contact, address, roomId, email }: CreateUserDto,
+    { name, contact, address, roomId, email, deposit }: CreateUserDto,
   ) {
     try {
       await this.prisma.user.update({
@@ -182,7 +211,7 @@ export class UserService {
           name,
           contact,
           address,
-          billable: { update: { data: { roomId } } },
+          billable: { update: { data: { roomId, deposit } } },
           auth: { update: { data: { email } } },
         },
       });

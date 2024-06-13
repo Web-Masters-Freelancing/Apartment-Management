@@ -450,6 +450,10 @@
           "role": {
             "$ref": "#/components/schemas/USER_ROLE"
           },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          },
           "email": {
             "type": "string"
           },
@@ -458,13 +462,21 @@
           },
           "roomId": {
             "type": "number"
+          },
+          "deposit": {
+            "type": "number"
+          },
+          "advancePayment": {
+            "type": "number"
           }
         },
         "required": [
           "name",
           "contact",
           "address",
-          "role"
+          "role",
+          "deposit",
+          "advancePayment"
         ]
       },
       "FindAllUsersResponseDto": {
@@ -485,6 +497,10 @@
           "role": {
             "$ref": "#/components/schemas/USER_ROLE"
           },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          },
           "categoryId": {
             "type": "number"
           },
@@ -499,6 +515,13 @@
           },
           "email": {
             "type": "string"
+          },
+          "deposit": {
+            "type": "number"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
@@ -511,7 +534,9 @@
           "roomId",
           "roomNumber",
           "amount",
-          "email"
+          "email",
+          "deposit",
+          "dueDate"
         ]
       },
       "CreateRoomDto": {
@@ -647,6 +672,9 @@
           "dueDate": {
             "format": "date-time",
             "type": "string"
+          },
+          "deposit": {
+            "type": "number"
           },
           "amountDue": {
             "type": "number"
@@ -879,6 +907,10 @@
           },
           "roomhistory": {
             "$ref": "#/components/schemas/RoomHistory"
+          },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
@@ -943,6 +975,9 @@
           "dueDate": {
             "format": "date-time",
             "type": "string"
+          },
+          "deposit": {
+            "type": "number"
           },
           "amountDue": {
             "type": "number"

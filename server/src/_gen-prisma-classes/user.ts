@@ -37,4 +37,7 @@ export class User {
 
   @ApiPropertyOptional({ type: () => RoomHistory })
   roomhistory?: RoomHistory;
+
+  @ApiPropertyOptional({ type: Date })
+  startDate?: Date;
 }

@@ -30,6 +30,8 @@ export const seedUsers = async (props: SeedUsersProps) => {
     name: faker.person.fullName(),
     password: adminPassword,
     role: USER_ROLE.ADMIN,
+    deposit: 1500,
+    advancePayment: 1500,
   });
   console.log(
     `Done seeding admin user, created admin token: ${adminToken}, reset your admin password here - http://localhost:3000/reset-password/${adminToken}\n\nNow seeding ${count} tenants...`,
@@ -53,6 +55,8 @@ export const seedUsers = async (props: SeedUsersProps) => {
         password: userPassword,
         role: USER_ROLE.TENANT,
         roomId: id,
+        deposit: 1500,
+        advancePayment: 1500,
       });
     }
   }
