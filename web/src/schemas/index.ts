@@ -11,6 +11,7 @@ export const ProcessPaymentSchema = yup.object().shape({
     .number()
     .required("This field is required.")
     .min(1, "Amount should be greater than 0"),
+  paidOn: yup.date().required("Date is required").nullable("Date is required"),
 });
 
 export const LoginSchema = yup.object().shape({

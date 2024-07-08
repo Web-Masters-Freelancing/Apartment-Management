@@ -3,7 +3,6 @@ import { SearchKey } from "../rooms/hooks";
 import {
   ActionButtonProps,
   Column,
-  DateRangeValues,
   HeaderActions,
   TableActions,
 } from "@/components/Table";
@@ -109,7 +108,7 @@ export const useHooks = () => {
       };
 
       const tableColumns: string[] = [
-        "Paid on",
+        "Month of",
         "Category",
         "Description",
         "Advance payment",

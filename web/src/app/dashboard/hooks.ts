@@ -5,9 +5,10 @@ import { useUserApi } from "@/hooks/api/user";
 import moment from "moment";
 import { useCategoryApi } from "@/hooks/api/category";
 import { getLocalStorage } from "@/lib/tokenStorage";
-import { Payments, Room } from "@/store/api/gen/category";
-import { FindAllPaymentsDto } from "@/store/api/gen/billable";
-import { ActionButtonProps, Column, TableActions } from "@/components/Table";
+import { Payments } from "@/store/api/gen/category";
+import { Column } from "@/components/Table";
+import { useBillableApi } from "@/hooks/api/billable";
+import { FindAllPaymentsForFindAllBillableResponseDto } from "@/store/api/gen/billable";
 
 const currentMonth = moment(new Date()).format("MMMM");
 
@@ -26,6 +27,10 @@ export const useHook = () => {
     Number(0).toLocaleString("en-US")
   );
 
+  const [currentIncome, setTotalCurrentIncome] = useState<string>(
+    Number(0).toLocaleString("en-US")
+  );
+
   const [labels, setLabels] = useState<string[]>([]);
   const [billablesCardTitle, setBillablesCardTitle] = useState<string>(
     `Month of ${currentMonth} Receivables`
@@ -33,14 +38,38 @@ export const useHook = () => {
   const { availableRooms } = useRoomApi();
   const { users } = useUserApi();
   const { categories } = useCategoryApi();
+  const { payments: billables } = useBillableApi();
 
   useEffect(() => {
-    if (
-      availableRooms &&
-      availableRooms.length &&
-      categories &&
-      categories.length
-    ) {
+    if (billables?.length) {
+      const payments: FindAllPaymentsForFindAllBillableResponseDto[] = [];
+      billables.forEach((value) => {
+        const findCurrentPayments = value.payments.filter((value) => {
+          const paidOn = moment(value.paidOn).format("YYYY-MM");
+
+          const currentDate = moment();
+          const currentYearMonth = currentDate.format("YYYY-MM");
+          return paidOn === currentYearMonth;
+        });
+
+        payments.push(...findCurrentPayments);
+      });
+
+      if (payments?.length) {
+        const totalCurrentIncome = payments.reduce(
+          (accumulator, currentValue) => {
+            return accumulator + currentValue.amountPaid;
+          },
+          0
+        );
+
+        setTotalCurrentIncome(totalCurrentIncome.toLocaleString("en-US"));
+      }
+    }
+  }, [billables]);
+
+  useEffect(() => {
+    if (availableRooms?.length && categories?.length) {
       const availableRoomsLength: number[] = [];
 
       categories.forEach((category) => {
@@ -104,7 +133,7 @@ export const useHook = () => {
   const columns: Column<Payments>[] = [
     {
       key: "paidOn",
-      label: "Paid on",
+      label: "Month of",
       format: (value) => moment(value).format("MM/DD/YYYY"),
     },
     {
@@ -136,5 +165,6 @@ export const useHook = () => {
     role,
     columns,
     dataSource,
+    currentIncome,
   };
 };

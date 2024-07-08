@@ -728,13 +728,18 @@
           },
           "balance": {
             "type": "number"
+          },
+          "paidOn": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
           "id",
           "amount",
           "advancePayment",
-          "balance"
+          "balance",
+          "paidOn"
         ]
       },
       "FindAllPaymentsDto": {

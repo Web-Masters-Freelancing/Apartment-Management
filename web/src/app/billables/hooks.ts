@@ -13,10 +13,12 @@ import { InputFieldProps, Field } from "@/components/hooks/useModal";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import moment from "moment";
 import { Payments } from "@/store/api/gen/category";
+import { CustomDatePickerProps } from "@/components/DatePicker";
 
 export interface BillableValues extends FindAllBillableResponseDto {
   userId: number;
   roomId: number;
+  paidOn: string;
 }
 
 export interface TableCellValues
@@ -27,6 +29,7 @@ interface ModalFormValues {
   amount: number;
   amountDue?: number;
   advancePayment?: number;
+  paidOn: string;
 }
 
 export const useHook = () => {
@@ -34,6 +37,7 @@ export const useHook = () => {
     amount: 0,
     amountDue: 0,
     advancePayment: 0,
+    paidOn: "",
   };
 
   const [initialValues, setInitialValues] =
@@ -66,7 +70,7 @@ export const useHook = () => {
       {
         key: "paidOn",
         label: "Date paid",
-        format: (value) => moment(value).format("MM/DD/YYYY hh:MM:ss"),
+        format: (value) => moment(value).format("MM/DD/YYYY"),
       },
       {
         key: "advancePayment",
@@ -126,7 +130,7 @@ export const useHook = () => {
     },
   ];
 
-  const fields: Field<InputFieldProps>[] = [
+  const fields: Field<InputFieldProps | CustomDatePickerProps>[] = [
     {
       fieldType: "text",
       fieldProps: {
@@ -163,6 +167,14 @@ export const useHook = () => {
         margin: "dense",
       },
     },
+
+    {
+      fieldType: "date",
+      fieldProps: <CustomDatePickerProps>{
+        label: "Select date",
+        name: "paidOn",
+      },
+    },
   ];
 
   const handlePayment = useCallback(
@@ -171,6 +183,7 @@ export const useHook = () => {
         amount: amountString,
         amountDue,
         advancePayment: advanced,
+        paidOn,
       }: { amount: number } & BillableValues,
       { setSubmitting }: FormikHelpers<BillableValues>
     ) => {
@@ -193,6 +206,7 @@ export const useHook = () => {
             amount,
             advancePayment,
             balance,
+            paidOn,
           });
 
           setSnackbarProps({
@@ -231,13 +245,14 @@ export const useHook = () => {
   const handleToggleModal = (values?: BillableValues) => {
     if (values) {
       if (isBillableValues(values)) {
-        const { id, amountDue, advancePayment } = values;
+        const { id, amountDue, advancePayment, paidOn } = values;
 
         setPayeeData({
           id,
           amount: amountDue, // amountDue is the Balance amount
           advancePayment,
           balance: 0,
+          paidOn,
         });
 
         setInitialValues({
