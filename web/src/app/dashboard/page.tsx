@@ -6,6 +6,7 @@ import {
   MonetizationOnOutlined,
   Person3,
   DateRange,
+  Paid,
 } from "@mui/icons-material";
 import React from "react";
 import CustomChart from "@/components/Chart";
@@ -37,6 +38,7 @@ const DashBoard = () => {
     billable,
     columns,
     dataSource,
+    currentIncome,
   } = useHook();
 
   return (
@@ -72,6 +74,14 @@ const DashBoard = () => {
             title={role === "ADMIN" ? "Total Billable" : "Amount Due"}
             value={role === "ADMIN" ? totalBillables : billable?.amountDue ?? 0}
           />
+
+          {role === "ADMIN" && (
+            <SummaryCard
+              icon={<Paid fontSize="large" color="error" />}
+              title={"Current Total Income"}
+              value={currentIncome}
+            />
+          )}
         </Box>
 
         {role === "ADMIN" ? (

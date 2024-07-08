@@ -61,6 +61,7 @@ export type ProcessPaymentDto = {
   amount: number;
   advancePayment: number;
   balance: number;
+  paidOn: string;
 };
 export type FindAllPaymentsDto = {
   id: number;

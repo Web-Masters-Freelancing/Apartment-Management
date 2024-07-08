@@ -17,4 +17,7 @@ export class ProcessPaymentDto extends PickType(BillableEntity, ['id']) {
   @ApiProperty({ type: Number })
   @IsNumber()
   balance: PaymentEntity['balance'];
+
+  @ApiProperty({ type: Date })
+  paidOn: Date;
 }

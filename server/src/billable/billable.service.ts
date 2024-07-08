@@ -26,6 +26,7 @@ export class BillableService {
     advancePayment,
     balance,
     amount,
+    paidOn,
     id,
   }: ProcessPaymentDto) {
     try {
@@ -67,7 +68,7 @@ export class BillableService {
                 advancePayment: 0,
                 balance: amountDue,
                 billableId: id,
-                paidOn: new Date(),
+                paidOn,
               },
             }),
 
@@ -101,7 +102,7 @@ export class BillableService {
                     advancePayment: 0,
                     balance: 0,
                     billableId: id,
-                    paidOn: new Date(),
+                    paidOn,
                   },
                 }),
 
@@ -137,7 +138,7 @@ export class BillableService {
                   balance: balanceResult,
                   amountPaid,
                   advancePayment: 0,
-                  paidOn: new Date(),
+                  paidOn,
                   billableId: id,
                 },
               }),
@@ -161,7 +162,7 @@ export class BillableService {
                 advancePayment: 0,
                 balance: 0,
                 billableId: id,
-                paidOn: new Date(),
+                paidOn,
               },
             }),
 
@@ -176,10 +177,10 @@ export class BillableService {
          * After the transactions sets!
          * Send a message to the tenant via sms
          */
-        await sendNotification({
-          data: [{ ...notifPayload }],
-          type: 'payment',
-        });
+        // await sendNotification({
+        //   data: [{ ...notifPayload }],
+        //   type: 'payment',
+        // });
       });
     } catch (e) {
       throw e;
